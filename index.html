@@ -7,165 +7,387 @@
   <title>Samson Mainah Portfolio </title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="assets/favicon.png" />  
+  <!-- Bootstrap 4 CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Optional Bootstrap 4 JavaScript (if needed) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
   <script src="https://kit.fontawesome.com/66aa7c98b3.js" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <style>
+/* Main contact section styling */
+.contact-section {
+  padding: 50px 0;
+  background-color: #f9f9f9;
+}
+
+/* Contact info styles */
+.contact-info h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.contact-info p,
+.contact-info a {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.contact-info i {
+  margin-right: 5px;
+}
+
+/* Contact form container */
+.contact-form-container {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form-container h3 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.contact-form-container .form-control {
+  border-radius: 5px;
+}
+
+.contact-form-container .btn {
+  background-color: #007bff;
+  border: none;
+  padding: 10px 20px;
+}
+
+/* Main section padding */
+.my-works-section {
+  padding: 50px 0;
+}
+
+/* Project card container */
+.project-card {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+/* Project card hover effect */
+.project-card:hover {
+  transform: scale(1.05);
+}
+
+/* Project details styling */
+.project-details h2 {
+  font-size: 1.8rem;
+  margin-top: 15px;
+}
+
+.project-details p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.project-details .btn {
+  margin-top: 10px;
+  background-color: #007bff;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+}
+
+/* Tech icon styling */
+.tech-icons i {
+  font-size: 1.8rem;
+  color: #333;
+  margin-right: 10px;
+}
+
+.tech-icons i:hover {
+  color: #007bff;
+}
+/* Header background and padding */
+.header {
+  background-color: #f8f9fa; /* Light background for the header */
+  padding: 20px 0;
+}
+
+/* Home content styling */
+.home-content {
+  padding: 100px 0; /* Padding for the home content */
+  color: #333; /* Text color */
+}
+
+/* Name section styling */
+.name h1 {
+  font-size: 2.5rem; /* Adjust font size for prominence */
+}
+
+.name p {
+  font-size: 1.2rem; /* Adjust font size for the description */
+}
+
+/* Angle down icon */
+.angle-down-icon {
+  margin-top: 20px;
+}
+
+.angle-down-icon a {
+  color: #007bff; /* Bootstrap primary color */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .name h1 {
+    font-size: 2rem; /* Smaller font size for mobile */
+  }
+
+  .name p {
+    font-size: 1rem; /* Smaller font size for mobile */
+  }
+}
+
+.about-heading,
+.skills-heading {
+  font-weight: 700; /* Bold for emphasis */
+  font-size: 2rem;  /* Larger heading size */
+  color: #ffffff; /* Ensure heading color is white */
+}
+
+.lead {
+  font-size: 1.2rem; /* Slightly larger text for the description */
+  line-height: 1.5;  /* Increase line height for readability */
+}
+
+.skills-bar .progress {
+  height: 30px; /* Customize the height of the progress bars */
+}
+
+.progress-bar {
+  font-weight: bold; /* Make the text on the progress bars bold */
+}
+
+.about-me {
+  position: relative;
+  overflow: hidden; /* Ensure no overflow from the section */
+}
+
+.about-heading,
+.skills-heading {
+  font-weight: 700; /* Bold for emphasis */
+  font-size: 2.5rem; /* Larger heading size */
+  color: #ffffff; /* Ensure heading color is white */
+}
+
+.lead {
+  font-size: 1.2rem; /* Slightly larger text for the description */
+  line-height: 1.6;  /* Increase line height for readability */
+}
+
+/* Image Styles */
+img {
+  border: 5px solid #ffffff; /* White border around the image */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+  transition: transform 0.3s ease; /* Smooth scaling on hover */
+}
+
+img:hover {
+  transform: scale(1.05); /* Scale effect on hover */
+}
+
+/* Skills Bar Styles */
+.skills-bar .progress {
+  height: 30px; /* Customize the height of the progress bars */
+}
+
+.progress-bar {
+  font-weight: bold; /* Make the text on the progress bars bold */
+}
+
+
+
+</style>
 </head>
 
 <body>
   <header class="header">
-    <nav class="navbar">
-      <div class="navbar-container container">
-        <div>
-          <h1 class="navbar-brand">Samson Mainah</h1>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <a class="navbar-brand" href="#">Samson Mainah</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#my-works">Projects</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#contact-me">Contact</a>
+            </li>
+          </ul>
         </div>
-        <ul class="menu-items">
-          <li><a href="#about">About</a></li>
-          <li><a href="#my-works">Projects</a></li>
-          <li><a href="#contact-me">Contact</a></li>
-        </ul>
       </div>
     </nav>
-    <div class="home-content" id="home-page">
+  
+    <div class="home-content text-center" id="home-page">
       <div class="name">
         <h1>Hi, I'm Sam Mainah</h1>
-        <p>A Software and Machine Learning Developer</p>
+        <h3>A Software and Machine Learning Developer</h3>
       </div>
       <div class="angle-down-icon">
-        <a href="#about"><i class="fas fa-angle-down"></i></a>
+        <a href="#about"><i class="fas fa-angle-down fa-2x"></i></a>
       </div>
     </div>
   </header>
-  <section class="about-me" id="about">
+  
+<section class="about-me bg-dark text-light" id="about">
+    <div class="container py-5">
+        <div class="about-content row align-items-center">
+            <div class="left-content col-md-6 text-center text-md-left">
+                <h1 class="about-heading mb-4">About Me</h1>
+                <img src="assets/Avatar.jpg" alt="Sam Mainah" class="img-fluid rounded-circle shadow" style="max-width: 250px;"/>
+                <p class="lead mb-4">
+                    I am a seasoned Software Developer and Machine Learning Engineer with over 3 years of experience in building small and large-scale business solutions using my tech skills.
+                </p>
+                <div class="work-arrow mt-3">
+                    <a href="#my-works" class="btn btn-primary btn-lg">Check out my work <i class="fas fa-arrow-down"></i></a>
+                </div>
+            </div>
+
+            <div class="skills col-md-6">
+                <h1 class="skills-heading mb-4">My Skills</h1>
+                <div class="skills-bar">
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">Python</div>
+                    </div>
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">JavaScript</div>
+                    </div>
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">Django</div>
+                    </div>
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">ML (TensorFlow and Scikit-Learn)</div>
+                    </div>
+                </div>
+                <div class="work-arrow-2 mt-3 text-center">
+                    <a href="#my-works" class="btn btn-primary btn-lg">Check out my work <i class="fas fa-arrow-down"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+  
+  
+  <section id="my-works" class="my-works-section">
     <div class="container">
-      <div class="about-content">
-        <div class="left-content">
-          <div>
-            <h1 class="about-heading">About Me</h1>
-          </div>
-          <img src="assets/Avatar.jpg" alt="image" />
-          <p>
-            I am a seasoned Software Developer and  Machine Learning Engineer with over 3 years  Experience in building  Small and Large Scale  Business Solutions using my Tech Skills.
-          </p>
-          <div class="work-arrow">
-            <p>
-              <a href="#my-works">Check out my work <i class="fas fa-arrow-down"></i></a>
-            </p>
+      <!-- Projects Heading -->
+      <div class="proj-heading text-center mb-5">
+        <h1>Projects</h1>
+      </div>
+  
+      <!-- Projects Content -->
+      <div class="row">
+        <!-- Project 1 -->
+        <div class="col-md-6 mb-4">
+          <div class="project-card">
+            <img src="assets/Proj1.png" class="img-fluid" alt="We Writers Project">
+            <div class="project-details text-center mt-3">
+              <div class="tech-icons mb-2">
+                <i class="fab fa-html5"></i>
+                <i class="fab fa-css3-alt"></i>
+                <i class="fab fa-js"></i>
+              </div>
+              <h2>We Writers</h2>
+              <p>COMING SOON</p>
+              <a href="#" class="btn btn-primary mt-2" target="_blank">View Source <i class="fas fa-external-link-alt"></i></a>
+            </div>
           </div>
         </div>
-        <div class="skills">
-          <div class="right-content">
-            <div>
-              <h1 class="skills-heading">My Skills</h1>
+  
+        <!-- Project 2 -->
+        <div class="col-md-6 mb-4">
+          <div class="project-card">
+            <img src="assets/Proj2.png" class="img-fluid" alt="Mkulima Tech Project">
+            <div class="project-details text-center mt-3">
+              <div class="tech-icons mb-2">
+                <i class="fab fa-html5"></i>
+                <i class="fab fa-css3-alt"></i>
+                <i class="fab fa-js"></i>
+              </div>
+              <h2>Mkulima Tech</h2>
+              <p>COMING SOON</p>
+              <a href="#" class="btn btn-primary mt-2" target="_blank">View Source <i class="fas fa-external-link-alt"></i></a>
             </div>
-            <div class="skills-bar">
-              <div class="bar">
-                <div class="info">
-                  <span>Python</span>
-                </div>
-                <div class="progress-line"><span class="html"></span></div>
-                <div class="bar">
-                  <div class="info">
-                    <span>Javascript</span>
-                  </div>
-                  <div class="progress-line"><span class="css"></span></div>
-                  <div class="bar">
-                    <div class="info">
-                      <span>Java</span>
-                    </div>
-                    <div class="progress-line"><span class="bootstrap"></span></div>
-                    <div class="bar">
-                      <div class="info">
-                        <span>Django</span>
-                      </div>
-                      <div class="progress-line"><span class="javascript"></span></div>
-                      <div class="bar">
-                        <div class="info">
-                          <span>React and Nodejs</span>
-                        </div>
-                        <div class="progress-line"><span class="c"></span></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <div class="contact-section" id="contact">
+    <div class="container">
+      <!-- Contact Me and Form Combined -->
+      <div class="row">
+        <!-- Contact Information Section -->
+        <div class="col-md-6 contact-info text-center">
+          <h2>Contact Me</h2>
+          <p class="mail">
+            Get in touch with me <i class="fas fa-arrow-right"></i> 
+            sammainah98@gmail.com
+          </p>
+          <p class="mail">
+            Get in touch with me <i class="fas fa-arrow-right"></i> 
+           +254791848007
+          </p>
+          <p class="links">Or find me on:</p>
+          <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="d-block mb-2"><i class="fab fa-linkedin"></i> LinkedIn</a>
+          <a href="https://github.com/sammainahkinya1404" target="_blank" class="d-block mb-2"><i class="fab fa-github"></i> GitHub</a>
+          <a href="https://x.com/MainahKinya" target="_blank" class="d-block mb-2"><i class="fab fa-twitter"></i> X</a>
+        </div>
+  
+        <!-- Contact Form Section -->
+        <div class="col-md-6 contact-form-container">
+          <h3 class="text-center mb-4">Send me a message</h3>
+          <form id="contact-form" action="https://example.com/submit" method="POST">
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="name">Your Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="email">Your Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
               </div>
             </div>
-            <div class="work-arrow-2">
-              <p>
-                <a href="#my-works">Check out my work <i class="fas fa-arrow-down"></i></a>
-              </p>
+  
+            <div class="form-group">
+              <label for="message">Your Message</label>
+              <textarea class="form-control" id="message" name="message" rows="5" placeholder="Type your message here" required></textarea>
             </div>
-          </div>
+  
+            <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+          </form>
         </div>
-      </div>
-    </div>
-  </section>
-  <section id="my-works">
-    <div class="portfolio">
-      <div class="proj-heading">
-        <h1>Portfolio</h1>
-      </div>
-      <div class="portfolio-content container">
-        <div class="proj-1">
-          <img src="assets/Avatar.jpg">
-          <div class="proj1-details">
-            <i class="fab fa-html5"></i>
-            <i class="fab fa-css3-alt"></i>
-            <i class="fab fa-js"></i>
-            <h2></h2>
-            <p>DESCRIPTION HERE</p>
-            <button><a href="" target="blank">View source <i
-                  class="fas fa-external-link-alt"></i></a>
-            </button>
-            <button><a href="" target="blank">Try it Live <i
-                  class="fas fa-external-link-alt"></i></a>
-            </button>
-          </div>
-        </div>
-
-        <div class="proj-2">
-          <img src="assets/Avatar.jpg">
-          <div class="proj2-details">
-            <i class="fab fa-html5"></i>
-            <i class="fab fa-css3-alt"></i>
-            <h2>NAME HERE</h2>
-            <p>DESCRIPTION HERE</p>
-            <button><a href="" target="blank">View source <i
-                  class="fas fa-external-link-alt"></i></a>
-            </button>
-            <button><a href="" target="blank">Try it Live <i
-                  class="fas fa-external-link-alt"></i></a>
-            </button>
-          </div>
-
-        </div>
-        <div class="more-work">
-          <p>
-            More
-          </p>
-          <a href="" target="blank">NAME HERE</a>
-        </div>
-      </div>
-    </div>
-  </section>
-  <div class="contact" id="contact-me">
-    <div class="container">
-      <div class="contact-content">
-        <h2>Contact Me</h2>
-        <p class="mail">
-          Get in touch with me <i class="fas fa-arrow-right"></i> MAIL HERE
-        </p>
-        <p class="links">Or find me on:</p>
-        <a href="" target="blank"><i class="fab fa-linkedin">
-            Linkedin</i></a>
-        <a href="" target="blank"><i class="fab fa-codepen"> CodePen</i></a>
-        <a href="" target="blank"><i class="fab fa-github"></i> Github</a>
-        <a href="" target="blank"><i class="fab fa-dev"></i> Dev Community</a>
-        <a href="" target="blank"><i class="fab fa-twitter"> Twitter</i></a>
-        <a href="" target="blank"><i class="fab fa-instagram"></i> Instagram</a>
       </div>
     </div>
   </div>
+  
+  
+  
+  
   <!-- JAVASCRIPT -->
   <script src="app.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
