@@ -283,6 +283,12 @@ img:hover {
                 <div class="work-arrow-2 mt-3 text-center">
                     <a href="#my-works" class="btn btn-primary btn-lg">Check out my work <i class="fas fa-arrow-down"></i></a>
                 </div>
+                <div class="work-arrow-2 mt-3 text-center">
+
+                <button id="download-btn" class="btn btn-primary">Download  My Resume</button>
+              </div>
+
+
             </div>
         </div>
     </div>
@@ -384,11 +390,16 @@ img:hover {
       </div>
     </div>
   </div>
-  
-  
-  
-  
-  <!-- JAVASCRIPT -->
+ 
+ <!-- JAVASCRIPT -->
+  <script>
+    document.getElementById('download-btn').addEventListener('click', function() {
+      const resumeLink = document.createElement('a');
+      resumeLink.href = 'assets/Samson_Kinyanjui.pdf';
+      resumeLink.download = 'My_Resume.pdf';
+      resumeLink.click(); 
+  });
+  </script>
   <script src="app.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </body>
