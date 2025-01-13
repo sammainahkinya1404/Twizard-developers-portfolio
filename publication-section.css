@@ -1,0 +1,66 @@
+.publications-section {
+    background-color: #0f2027; /* Matches Projects Section */
+    padding: 60px 0;
+    color: #ffffff;
+  }
+  
+  .section-heading h1 {
+    font-size: 2.5rem;
+    color: #00ffcc;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  
+  .publication-card {
+    background: #203a43; /* Dark card background */
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .publication-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.4);
+  }
+  
+  .publication-details h2 {
+    font-size: 1.5rem;
+    color: #00ffcc;
+    margin-bottom: 10px;
+  }
+  
+  .publication-details p {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #d1d1d1;
+  }
+  
+  .publication-details a {
+    color: #00e6b8;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .publication-details a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+  
+  .btn-download {
+    background: #00ffcc;
+    color: #203a43;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .btn-download:hover {
+    background: #00e6b8;
+    transform: scale(1.05);
+  }
+  

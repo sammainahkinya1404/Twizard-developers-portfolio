@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Samson Mainah Portfolio </title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="header.css" />
+  <link rel="stylesheet" href="about-me.css" />
+  <link rel="stylesheet" href="projects-section.css" />
+  <link rel="stylesheet" href="publication-section.css" />
+  <link rel="stylesheet" href="contact-section.css" />
+
   <link rel="icon" href="assets/favicon.png" />  
   <!-- Bootstrap 4 CSS -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -216,191 +222,280 @@ img:hover {
 </head>
 
 <body>
-  <header class="header">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container">
-        <a class="navbar-brand" href="#">Samson Mainah</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="#about">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#my-works">Projects</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#contact-me">Contact</a>
-            </li>
+  <header>
+    <!-- Navigation Bar Section -->
+    <div class="custom-navbar">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+          <a class="navbar-brand" href="#">Samson Mainah</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+              <li class="nav-item"><a class="nav-link" href="#my-works">Projects</a></li>
+              <li class="nav-item"><a class="nav-link" href="#my-works">Publications</a></li>
+              <li class="nav-item"><a class="nav-link" href="#my-works">Blog</a></li>
+              <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </div>
+  
+    <!-- "I Am" Section -->
+<div class="intro-section text-center">
+  <div class="container">
+    <h1 class="intro-title">Hi, I'm <span class="name-highlight">Sam Mainah</span></h1>
+    <h3 class="intro-subtitle"> <span class="role-highlight">Machine Learning Practitioner  and  Software Developer</span></h3>
+    <div class="angle-down-icon">
+      <a href="#about"><i class="fas fa-angle-down fa-2x"></i></a>
+    </div>
+  </div>
+</div>
+
+  </header>
+  
+  <section class="about-me-section bg-dark text-light" id="about">
+    <div class="container py-5">
+      <div class="row align-items-center">
+        <!-- Image Section -->
+        <div class="col-md-5 text-center">
+          <div class="profile-image-container">
+            <img src="assets/Avatar.jpg" alt="Sam Mainah" class="profile-image">
+          </div>
+        </div>
+        
+        <!-- Text Section -->
+        <div class="col-md-7">
+          <h1 class="about-heading">About Me</h1>
+         
+          <p class="about-text">
+            Beyond work, I enjoy exploring new technologies, solving complex problems, and collaborating with teams worldwide.
+          </p>
+          <p class="about-text">
+            In 2024, I presented my research, <strong>“Financial Health Assessment for Households in Kenya”</strong>, at the prestigious <strong>IEEE ICT4DA Conference</strong>. This study leverages data analysis techniques to assess financial health, offering insights into how Kenyan households can improve their economic stability.
+          </p>
+          <p class="about-text">
+            I’ve also worked on notable projects, including:
+          </p>
+          <ul class="project-list">
+            <li><strong>Kenyan Business Ideas & Investment Bot</strong>: A machine learning-powered chatbot built with React and Flask to assist entrepreneurs in identifying viable investments using Kenyan economic data.</li>
+            <li><strong>Smart Storage System</strong>: A cloud-based storage platform designed for seamless data organization and retrieval, featuring secure user authentication.</li>
           </ul>
         </div>
       </div>
-    </nav>
-  
-    <div class="home-content text-center" id="home-page">
-      <div class="name">
-        <h1>Hi, I'm Sam Mainah</h1>
-        <h3>I am a Software Developer</h3>
-      </div>
-      <div class="angle-down-icon">
-        <a href="#about"><i class="fas fa-angle-down fa-2x"></i></a>
-      </div>
-    </div>
-  </header>
-  
-<section class="about-me bg-dark text-light" id="about">
-    <div class="container py-5">
-        <div class="about-content row align-items-center">
-            <div class="left-content col-md-6 text-center text-md-left">
-                <h1 class="about-heading mb-4">About Me</h1>
-                <img src="assets/Avatar.jpg" alt="Sam Mainah" class="img-fluid rounded-circle shadow" style="max-width: 250px;"/>
-                <p class="lead mb-4">
-                    I am a seasoned Software Developer and Machine Learning Engineer with over 3 years of experience in building small and large-scale business solutions using my tech skills.
-                </p>
-                <div class="work-arrow mt-3">
-                    <a href="#my-works" class="btn btn-primary btn-lg">Check out my work <i class="fas fa-arrow-down"></i></a>
-                </div>
-            </div>
-
-            <div class="skills col-md-6">
-                <h1 class="skills-heading mb-4">My Skills</h1>
-                <div class="skills-bar">
-                    <div class="progress mb-3">
-                        <div class="progress-bar bg-primary" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">Python</div>
-                    </div>
-                    <div class="progress mb-3">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">JavaScript</div>
-                    </div>
-                    <div class="progress mb-3">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">Django</div>
-                    </div>
-                    <div class="progress mb-3">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">ML (TensorFlow and Scikit-Learn)</div>
-                    </div>
-                </div>
-                <div class="work-arrow-2 mt-3 text-center">
-                    <a href="#my-works" class="btn btn-primary btn-lg">Check out my work <i class="fas fa-arrow-down"></i></a>
-                </div>
-                <div class="work-arrow-2 mt-3 text-center">
-
-                <button id="download-btn" class="btn btn-primary">Download  My Resume</button>
-              </div>
-
-
-            </div>
+      
+      <!-- Skills Section -->
+      <div class="skills-container text-center mt-5">
+        <h2 class="skills-heading">My Skills</h2>
+        <div class="skills-grid mt-4">
+          <div class="skill-item">
+            <img src="assets/python-logo.PNG" alt="Python" class="skill-icon">
+            <p>Python</p>
+          </div>
+          <div class="skill-item">
+            <img src="assets/Javascript-logo.PNG" alt="JavaScript" class="skill-icon">
+            <p>JavaScript</p>
+          </div>
+          <div class="skill-item">
+            <img src="assets/django-logo.PNG" alt="Django" class="skill-icon">
+            <p>Django</p>
+          </div>
+          <div class="skill-item">
+            <img src="assets/Ml-logo.PNG" alt="Machine Learning" class="skill-icon">
+            <p>Machine Learning</p>
+          </div>
         </div>
+      </div>
     </div>
-</section>
-
-
-  
+  </section>
   
   <section id="my-works" class="my-works-section">
     <div class="container">
       <!-- Projects Heading -->
       <div class="proj-heading text-center mb-5">
-        <h1>Projects</h1>
+        <h1 class="section-title">My Projects</h1>
       </div>
   
       <!-- Projects Content -->
       <div class="row">
-        <!-- Project 0 -->
+        <!-- Project 1 -->
         <div class="col-md-6 mb-4">
           <div class="project-card">
-            <img src="assets/SS.PNG" class="img-fluid" alt="We Writers Project">
-            <div class="project-details text-center mt-3">
-              <!-- <div class="tech-icons mb-2">
-                <i class="fab fa5-react"></i>
-                <i class="fab fa-css3-alt"></i>
-                <i class="fab fa-js"></i>
-              </div> -->
+            <img src="assets/SS.PNG" class="img-fluid project-image" alt="Smart Storage">
+            <div class="project-details">
               <h2>Smart Storage</h2>
-              <a href="https://smart-storage-lime.vercel.app/login" class="btn btn-primary mt-2" target="_blank">Visit Project <i class="fas fa-external-link-alt"></i></a>
+              <p>A cloud-based storage platform designed for secure and seamless data management.</p>
+              <a href="https://smart-storage-lime.vercel.app/login" class="btn btn-primary mt-2" target="_blank">View Project</a>
             </div>
           </div>
         </div>
-         <!-- Project 1 -->
-         <div class="col-md-6 mb-4">
+        <!-- Project 2 -->
+        <div class="col-md-6 mb-4">
           <div class="project-card">
-            <img src="assets/ss3.PNG" class="img-fluid" alt="We Writers Project">
-            <div class="project-details text-center mt-3">
-            
+            <img src="assets/ss3.PNG" class="img-fluid project-image" alt="Investment Bot">
+            <div class="project-details">
               <h2>Kenyan Business Ideas & Investment Bot</h2>
-              <a href="https://chatbot-client-two.vercel.app/" class="btn btn-primary mt-2" target="_blank">Visit Project <i class="fas fa-external-link-alt"></i></a>
-            <h3>About This Project</h3>
-            <p>This is ML based bot that uses LLM fine-tuned with my own dataset on Kenyan economy, and  Invetiments data scraped online.</p>
-            <p>It Uses react to render the frontend and flask server for backend.</p>
+              <p>An ML-powered chatbot fine-tuned with Kenyan economic data to assist entrepreneurs.</p>
+              <a href="https://chatbot-client-two.vercel.app/" class="btn btn-primary mt-2" target="_blank">View Project</a>
             </div>
           </div>
         </div>
-       
-  
-      
       </div>
     </div>
   </section>
+ 
+  <section id="publications" class="publications-section">
+    <div class="container">
+      <!-- Publications Heading -->
+      <div class="section-heading text-center mb-5">
+        <h1>My Publications</h1>
+      </div>
   
+      <!-- Publications Content -->
+      <div class="row">
+        <!-- Publication 1 -->
+        <div class="col-md-6 mb-4">
+          <div class="publication-card">
+            <div class="publication-details">
+              <h2>Financial Health Assessment for Households in Kenya</h2>
+              <p>
+                <strong>Kinyanjui, Samson</strong>, Felix Lopuran, Peter Kimanga, Edna Mugoh, Dennis Kiprotich, and Patrick Gikunda.
+                Published in <em>2024 International Conference on Information and Communication Technology for Development for Africa (ICT4DA)</em>, IEEE, 2024.
+              </p>
+              <p>DOI: <a href="https://doi.org/10.1109/ICT4DA62874.2024.10777274" target="_blank">https://doi.org/10.1109/ICT4DA62874.2024.10777274</a></p>
+              <button class="btn btn-download" onclick="downloadPaper()">Download Paper</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <div class="contact-section" id="contact">
     <div class="container">
-      <!-- Contact Me and Form Combined -->
-      <div class="row">
-        <!-- Contact Information Section -->
-        <div class="col-md-6 contact-info text-center">
-          <h2>Contact Me</h2>
-          <p class="mail">
-            Get in touch with me <i class="fas fa-arrow-right"></i> 
-            sammainah98@gmail.com
-          </p>
-          <p class="mail">
-            Get in touch with me <i class="fas fa-arrow-right"></i> 
-           +254791848007
-          </p>
-          <p class="links">Or find me on:</p>
-          <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="d-block mb-2"><i class="fab fa-linkedin"></i> LinkedIn</a>
-          <a href="https://github.com/sammainahkinya1404" target="_blank" class="d-block mb-2"><i class="fab fa-github"></i> GitHub</a>
-          <a href="https://x.com/MainahKinya" target="_blank" class="d-block mb-2"><i class="fab fa-twitter"></i> X</a>
+      <!-- Section Heading -->
+      <div class="section-heading text-center mb-5">
+        <h1>Contact Me</h1>
+      </div>
+  
+      <div class="row align-items-center">
+        <!-- Contact Info -->
+        <div class="col-md-5 contact-info">
+          <h2>Get in Touch</h2>
+          <p>Email: <a href="mailto:sammainah98@gmail.com">sammainah98@gmail.com</a></p>
+          <p>Phone: <a href="tel:+254791848007">+254791848007</a></p>
+          <div class="social-links mt-3">
+            <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" aria-label="LinkedIn">
+              <i class="fab fa-linkedin">Linkedin</i>
+            </a>
+            <a href="https://github.com/sammainahkinya1404" target="_blank" aria-label="GitHub">
+              <i class="fab fa-github">Github</i>
+            </a>
+            <a href="https://x.com/MainahKinya" target="_blank" aria-label="X">
+              <i class="fab fa-twitter">X</i>
+            </a>
+          </div>
         </div>
   
-        <!-- Contact Form Section -->
-        <div class="col-md-6 contact-form-container">
-          <h3 class="text-center mb-4">Send me a message</h3>
-          <form id="contact-form" action="https://example.com/submit" method="POST">
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <label for="name">Your Name</label>
+        <!-- Contact Form -->
+        <div class="col-md-7">
+          <div class="contact-form-container">
+            <h3>Send Me a Message</h3>
+            <form id="contact-form">
+              <div class="form-group">
+                <label for="name">Name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
               </div>
-              <div class="form-group col-md-6">
-                <label for="email">Your Email</label>
+              <div class="form-group">
+                <label for="email">Email</label>
                 <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
               </div>
-            </div>
-  
-            <div class="form-group">
-              <label for="message">Your Message</label>
-              <textarea class="form-control" id="message" name="message" rows="5" placeholder="Type your message here" required></textarea>
-            </div>
-  
-            <button type="submit" class="btn btn-primary btn-block">Send Message</button>
-          </form>
+              <div class="form-group">
+                <label for="message">Message</label>
+                <textarea class="form-control" id="message" name="message" rows="5" placeholder="Type your message here" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+            <p id="status-message"></p>
+          </div>
         </div>
       </div>
     </div>
   </div>
- 
+  
+  <footer class="footer">
+    <p>&copy; 2025 Samson Mainah. All rights reserved.</p>
+  </footer>
+  
  <!-- JAVASCRIPT -->
-  <script>
-    document.getElementById('download-btn').addEventListener('click', function() {
-      const resumeLink = document.createElement('a');
-      resumeLink.href = 'assets/Samson_Kinyanjui.pdf';
-      resumeLink.download = 'My_Resume.pdf';
-      resumeLink.click(); 
+ <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="app.js"></script>
+
+<script>
+  // Initialize EmailJS with your Public Key
+  emailjs.init("Z4B3nwKCllSXMlbQ0"); // Replace with your actual EmailJS Public Key
+
+  // Resume Download Functionality
+  document.getElementById("download-btn").addEventListener("click", function () {
+    const resumeLink = document.createElement("a");
+    resumeLink.href = "assets/Samson_Kinyanjui.pdf";
+    resumeLink.download = "My_Resume.pdf";
+    resumeLink.click();
   });
-  </script>
-  <script src="app.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  // Paper Download Functionality
+  function downloadPaper() {
+    const paperLink = document.createElement("a");
+    paperLink.href = "assets/Financial_Health_Assesment_for_Households_in_Kenya.pdf"; // Path to your paper
+    paperLink.download = "Financial_Health_Assessment_Households_Kenya.pdf";
+    paperLink.click();
+  }
+
+  // Contact Form Submission Handling
+  document
+    .getElementById("contact-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      // Collect form data
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const message = document.getElementById("message").value;
+
+      // EmailJS parameters
+      const templateParams = {
+        from_name: name,
+        from_email: email,
+        message: message,
+      };
+
+      // Send email using EmailJS
+      emailjs
+        .send("service_mog516l", "template_56jqgsh", templateParams)
+        .then(
+          function (response) {
+            // Display success message
+            document.getElementById("status-message").textContent =
+              "Message sent successfully!";
+            document.getElementById("status-message").style.color = "#00ffcc";
+
+            // Clear the form fields
+            document.getElementById("contact-form").reset();
+          },
+          function (error) {
+            // Display error message
+            document.getElementById("status-message").textContent =
+              "Failed to send the message. Please try again.";
+            document.getElementById("status-message").style.color = "#ff4d4d";
+            console.error("Error:", error);
+          }
+        );
+    });
+</script>
+
 </body>
 
 </html>

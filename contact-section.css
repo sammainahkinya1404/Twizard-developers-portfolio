@@ -1,0 +1,155 @@
+.contact-section {
+    padding: 80px 0; /* Adjusted to match Publications Section */
+    background: #0f2027; /* Matches Publications Section */
+    color: #ffffff;
+  }
+  
+  .section-heading h1 {
+    font-size: 2.5rem;
+    color: #00ffcc;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 40px; /* Increased for better spacing */
+    text-align: center; /* Centered to match Publications Section */
+  }
+  
+  /* Contact Info Styling */
+  .contact-info {
+    text-align: left; /* Align text to the left */
+    padding: 20px; /* Added padding for alignment */
+  }
+  
+  .contact-info h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #00ffcc;
+  }
+  
+  .contact-info p,
+  .contact-info a {
+    font-size: 1.2rem;
+    color: #ffffff;
+    margin-bottom: 15px; /* Increased spacing between elements */
+    text-decoration: none;
+  }
+  
+  .contact-info a:hover {
+    color: #00e6b8;
+  }
+  
+  /* Social Links */
+  .social-links {
+    display: flex;
+    margin-top: 20px;
+    gap: 20px; /* Ensures equal spacing between icons */
+  }
+  
+  .social-links a {
+    font-size: 2.5rem; /* Larger icons for better visibility */
+    color: #00ffcc; /* Matches the theme */
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .social-links a:hover {
+    color: #00e6b8;
+    transform: scale(1.1); /* Slight zoom on hover */
+  }
+  
+  /* Contact Form */
+  .contact-form-container {
+    background: #203a43; /* Matches Publications Section card style */
+    padding: 40px; /* Increased padding for spacing */
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .contact-form-container h3 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #00ffcc;
+  }
+  
+  .contact-form-container .form-control {
+    background: #2c3e50; /* Matches card background */
+    border: 1px solid #00ffcc;
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 10px;
+  }
+  
+  .contact-form-container .form-control::placeholder {
+    color: #cccccc;
+  }
+  
+  .contact-form-container .btn {
+    background: #00ffcc;
+    color: #203a43;
+    border: none;
+    padding: 12px 20px; /* Slightly increased button size */
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .contact-form-container .btn:hover {
+    background: #00e6b8;
+    transform: scale(1.05);
+  }
+  
+  /* Status Message */
+  #status-message {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #00ffcc;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .contact-info {
+      text-align: center;
+    }
+  
+    .contact-info h2 {
+      font-size: 1.8rem;
+    }
+  
+    .contact-info p,
+    .contact-info a {
+      font-size: 1rem;
+    }
+  
+    .contact-form-container {
+      padding: 30px; /* Reduced padding for smaller screens */
+    }
+  
+    .contact-form-container h3 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  /* Footer Styling */
+  .footer {
+    background: #0f2027; /* Matches Contact Section */
+    color: #ffffff;
+    padding: 20px 0;
+    text-align: center;
+  }
+  
+  .footer p {
+    margin: 0;
+    font-size: 1rem;
+    color: #a0a0a0;
+  }
+  
+  .footer p a {
+    color: #00ffcc;
+    text-decoration: none;
+  }
+  
+  .footer p a:hover {
+    color: #00e6b8;
+  }
+  
