@@ -435,8 +435,7 @@ img:hover {
 <script src="app.js"></script>
 
 <script>
-  // Initialize EmailJS with your Public Key
-  emailjs.init("Z4B3nwKCllSXMlbQ0"); // Replace with your actual EmailJS Public Key
+ 
 
   // Resume Download Functionality
   document.getElementById("download-btn").addEventListener("click", function () {
@@ -454,46 +453,34 @@ img:hover {
     paperLink.click();
   }
 
+   // Initialize EmailJS with your Public Key
+   emailjs.init("Z4B3nwKCllSXMlbQ0"); 
+
   // Contact Form Submission Handling
-  document
-    .getElementById("contact-form")
-    .addEventListener("submit", function (event) {
-      event.preventDefault(); // Prevent the default form submission
+  document.getElementById("contact-form").addEventListener("submit", function (event) {
+      event.preventDefault(); 
 
-      // Collect form data
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const message = document.getElementById("message").value;
-
-      // EmailJS parameters
-      const templateParams = {
-        from_name: name,
-        from_email: email,
-        message: message,
-      };
+       // Collect form data
+  const templateParams = {
+    from_name: document.getElementById("name").value,
+    from_email: document.getElementById("email").value,
+    message: document.getElementById("message").value,
+  };
 
       // Send email using EmailJS
       emailjs
-        .send("service_mog516l", "template_56jqgsh", templateParams)
-        .then(
-          function (response) {
-            // Display success message
-            document.getElementById("status-message").textContent =
-              "Message sent successfully!";
-            document.getElementById("status-message").style.color = "#00ffcc";
-
-            // Clear the form fields
-            document.getElementById("contact-form").reset();
-          },
-          function (error) {
-            // Display error message
-            document.getElementById("status-message").textContent =
-              "Failed to send the message. Please try again.";
-            document.getElementById("status-message").style.color = "#ff4d4d";
-            console.error("Error:", error);
-          }
-        );
-    });
+    .send("service_mog516l", "template_56jqgsh", templateParams)
+    .then(
+      function () {
+        alert("Message sent successfully!");
+        document.getElementById("contact-form").reset(); // Clear the form
+      },
+      function (error) {
+        alert("Failed to send the message. Please try again.");
+        console.error("Error:", error);
+      }
+    );
+});
 </script>
 
 </body>
