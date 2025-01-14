@@ -403,7 +403,7 @@ img:hover {
         <div class="col-md-7">
           <div class="contact-form-container">
             <h3>Send Me a Message</h3>
-            <form id="contact-form">
+            <form id="contact-form" action="https://formbold.com/s/oPbaa" method="POST">
               <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
@@ -453,34 +453,7 @@ img:hover {
     paperLink.click();
   }
 
-   // Initialize EmailJS with your Public Key
-   emailjs.init("Z4B3nwKCllSXMlbQ0"); 
-
-  // Contact Form Submission Handling
-  document.getElementById("contact-form").addEventListener("submit", function (event) {
-      event.preventDefault(); 
-
-       // Collect form data
-  const templateParams = {
-    from_name: document.getElementById("name").value,
-    from_email: document.getElementById("email").value,
-    message: document.getElementById("message").value,
-  };
-
-      // Send email using EmailJS
-      emailjs
-    .send("service_mog516l", "template_56jqgsh", templateParams)
-    .then(
-      function () {
-        alert("Message sent successfully!");
-        document.getElementById("contact-form").reset(); // Clear the form
-      },
-      function (error) {
-        alert("Failed to send the message. Please try again.");
-        console.error("Error:", error);
-      }
-    );
-});
+ 
 </script>
 
 </body>
