@@ -4,431 +4,282 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Samson Mainah Portfolio </title>
+  <title>Samson Kinyanjui Portfolio </title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="header.css" />
-  <link rel="stylesheet" href="about-me.css" />
-  <link rel="stylesheet" href="projects-section.css" />
-  <link rel="stylesheet" href="publication-section.css" />
-  <link rel="stylesheet" href="contact-section.css" />
-
-  <link rel="icon" href="assets/favicon.png" />  
-  <!-- Bootstrap 4 CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" ... />
+<link rel="icon" href="assets/favicon.png" />  
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Optional Bootstrap 4 JavaScript (if needed) -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
 
-  <script src="https://kit.fontawesome.com/66aa7c98b3.js" crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
-    <style>
-/* Main contact section styling */
-.contact-section {
-  padding: 50px 0;
-  background-color: #f9f9f9;
-}
-
-/* Contact info styles */
-.contact-info h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
-
-.contact-info p,
-.contact-info a {
-  font-size: 1.2rem;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.contact-info i {
-  margin-right: 5px;
-}
-
-/* Contact form container */
-.contact-form-container {
-  background-color: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.contact-form-container h3 {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-}
-
-.contact-form-container .form-control {
-  border-radius: 5px;
-}
-
-.contact-form-container .btn {
-  background-color: #007bff;
-  border: none;
-  padding: 10px 20px;
-}
-
-/* Main section padding */
-.my-works-section {
-  padding: 50px 0;
-}
-
-/* Project card container */
-.project-card {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-/* Project card hover effect */
-.project-card:hover {
-  transform: scale(1.05);
-}
-
-/* Project details styling */
-.project-details h2 {
-  font-size: 1.8rem;
-  margin-top: 15px;
-}
-
-.project-details p {
-  font-size: 1.1rem;
-  color: #666;
-}
-
-.project-details .btn {
-  margin-top: 10px;
-  background-color: #007bff;
-  border: none;
-  padding: 10px 20px;
-  color: white;
-}
-
-/* Tech icon styling */
-.tech-icons i {
-  font-size: 1.8rem;
-  color: #333;
-  margin-right: 10px;
-}
-
-.tech-icons i:hover {
-  color: #007bff;
-}
-/* Header background and padding */
-.header {
-  background-color: #f8f9fa; /* Light background for the header */
-  padding: 20px 0;
-}
-
-/* Home content styling */
-.home-content {
-  padding: 100px 0; /* Padding for the home content */
-  color: #333; /* Text color */
-}
-
-/* Name section styling */
-.name h1 {
-  font-size: 2.5rem; /* Adjust font size for prominence */
-}
-
-.name p {
-  font-size: 1.2rem; /* Adjust font size for the description */
-}
-
-/* Angle down icon */
-.angle-down-icon {
-  margin-top: 20px;
-}
-
-.angle-down-icon a {
-  color: #007bff; /* Bootstrap primary color */
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .name h1 {
-    font-size: 2rem; /* Smaller font size for mobile */
-  }
-
-  .name p {
-    font-size: 1rem; /* Smaller font size for mobile */
-  }
-}
-
-.about-heading,
-.skills-heading {
-  font-weight: 700; /* Bold for emphasis */
-  font-size: 2rem;  /* Larger heading size */
-  color: #ffffff; /* Ensure heading color is white */
-}
-
-.lead {
-  font-size: 1.2rem; /* Slightly larger text for the description */
-  line-height: 1.5;  /* Increase line height for readability */
-}
-
-.skills-bar .progress {
-  height: 30px; /* Customize the height of the progress bars */
-}
-
-.progress-bar {
-  font-weight: bold; /* Make the text on the progress bars bold */
-}
-
-.about-me {
-  position: relative;
-  overflow: hidden; /* Ensure no overflow from the section */
-}
-
-.about-heading,
-.skills-heading {
-  font-weight: 700; /* Bold for emphasis */
-  font-size: 2.5rem; /* Larger heading size */
-  color: #ffffff; /* Ensure heading color is white */
-}
-
-.lead {
-  font-size: 1.2rem; /* Slightly larger text for the description */
-  line-height: 1.6;  /* Increase line height for readability */
-}
-
-/* Image Styles */
-img {
-  border: 5px solid #ffffff; /* White border around the image */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
-  transition: transform 0.3s ease; /* Smooth scaling on hover */
-}
-
-img:hover {
-  transform: scale(1.05); /* Scale effect on hover */
-}
-
-/* Skills Bar Styles */
-.skills-bar .progress {
-  height: 30px; /* Customize the height of the progress bars */
-}
-
-.progress-bar {
-  font-weight: bold; /* Make the text on the progress bars bold */
-}
-
-
-
-</style>
 </head>
-
 <body>
   <header>
     <!-- Navigation Bar Section -->
     <div class="custom-navbar">
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-          <a class="navbar-brand" href="#">Samson Maina</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-              <li class="nav-item"><a class="nav-link" href="#my-works">Projects</a></li>
-              <li class="nav-item"><a class="nav-link" href="#my-works">Publications</a></li>
-              <li class="nav-item"><a class="nav-link" href="#my-works">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+     <!-- Navigation Bar Section -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav" style="background-color: rgba(0,0,0,0.8); backdrop-filter: blur(6px);">
+  <div class="container">
+    <a class="navbar-brand font-weight-bold text-warning" href="#">Samson Kinyanjui</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto text-uppercase">
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#my-works">Projects</a></li>
+        <li class="nav-item"><a class="nav-link" href="#publications">Publications</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        <li class="nav-item">
+          <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">🌙</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
     </div>
   
     <!-- "I Am" Section -->
-<div class="intro-section text-center">
+<div class="intro-section text-center d-flex align-items-center justify-content-center" style="height: 100vh; background: #1e3c72; color: white; position: relative;">
   <div class="container">
-    <h1 class="intro-title">Hi, I'm <span class="name-highlight">Samson Maina</span></h1>
-    <h3 class="intro-subtitle"> <span class="role-highlight">Machine Learning Practitioner  and  Software Developer</span></h3>
-    <div class="angle-down-icon">
-      <a href="#about"><i class="fas fa-angle-down fa-2x"></i></a>
+    <h1 class="intro-title mb-3" style="font-size: 3rem; animation: fadeIn 2s ease-in-out;">Hi, I'm <span class="name-highlight" style="color: #ffc107;">Samson Kinyanjui</span></h1>
+    <h3 class="intro-subtitle mb-4" style="font-weight: 300; animation: fadeIn 3s ease-in-out;">Machine Learning Practitioner & Software Developer</h3>
+    <a href="#my-works" class="btn btn-warning btn-lg shadow" style="animation: fadeIn 4s ease-in-out;">View My Projects</a>
+
+    <div class="angle-down-icon mt-5">
+      <a href="#about"><i class="fas fa-angle-down fa-2x text-white"></i></a>
+    </div>
+  </div>
+</div>
+<section class="cli-terminal bg-dark text-light" id="terminal" style="font-family: monospace; padding: 40px 0;">
+  <div class="container">
+    <div id="terminal-output" style="min-height: 300px;"></div>
+    <div class="d-flex align-items-center mt-2">
+      <span style="color: #0f0;">Kinyanjui@portfolio:~$</span>&nbsp;
+      <input id="terminal-input" autofocus type="text" placeholder="type a command..." style="background: transparent; border: none; color: #0f0; width: 100%; outline: none;" />
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+  </header>
+  
+ <section class="about-me-section" id="about" style="background: linear-gradient(180deg, #1e3c72 0%, #1c1c1c 100%); color: white; padding: 60px 0;">
+  <div class="container">
+    <div class="row align-items-center">
+      <!-- Image Section -->
+      <div class="col-md-5 text-center mb-4 mb-md-0">
+        <img src="assets/IMG_20250529_132553_589.jpg" alt="Sam Mainah" class="img-fluid rounded-circle shadow-lg" style="max-width: 280px; border: 5px solid #fff;">
+      </div>
+
+      <!-- Text Section -->
+      <div class="col-md-7">
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 12px;">
+          <h1 class="display-4 font-weight-bold mb-4 text-light">About Me</h1>
+          <p class="lead text-light">
+            I’m passionate about leveraging data, code, and creativity to solve real-world challenges. I enjoy building impactful solutions and collaborating across borders.
+          </p>
+          <p>
+            In 2024, I presented my research, <strong>“Financial Health Assessment for Households in Kenya”</strong>, at the <strong>IEEE ICT4DA Conference</strong>, applying data science for real impact.
+          </p>
+          <p>
+            Notable projects include:
+          </p>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="fas fa-rocket text-warning mr-2"></i><strong>Kenyan Investment Bot</strong>: A React-Flask ML chatbot for economic opportunity analysis in Kenya.</li>
+          </ul>
+          <a href="assets/Samson_Kinyanjui_Resume.pdf" class="btn btn-outline-light btn-lg mt-3" download>Download My Resume</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Skills Section -->
+<div class="text-center mt-5">
+  <h2 class="text-light font-weight-bold mb-4">My Skills</h2>
+  <div class="row justify-content-center">
+    <div class="col-6 col-sm-3 mb-4">
+      <img src="assets/python-logo.PNG" alt="Python" class="img-fluid mb-2" style="height: 60px;">
+      <p class="text-light">Python</p>
+    </div>
+    <div class="col-6 col-sm-3 mb-4">
+      <img src="assets/Javascript-logo.PNG" alt="JavaScript" class="img-fluid mb-2" style="height: 60px;">
+      <p class="text-light">JavaScript</p>
+    </div>
+    <div class="col-6 col-sm-3 mb-4">
+      <img src="assets/django-logo.PNG" alt="Django" class="img-fluid mb-2" style="height: 60px;">
+      <p class="text-light">Django</p>
+    </div>
+    <div class="col-6 col-sm-3 mb-4">
+      <img src="assets/Ml-logo.PNG" alt="Machine Learning" class="img-fluid mb-2" style="height: 60px;">
+      <p class="text-light">Machine Learning</p>
     </div>
   </div>
 </div>
 
-  </header>
-  
-  <section class="about-me-section bg-dark text-light" id="about">
-    <div class="container py-5">
-      <div class="row align-items-center">
-        <!-- Image Section -->
-        <div class="col-md-5 text-center">
-          <div class="profile-image-container">
-            <img src="assets/IMG_20250529_132553_589.jpg" alt="Sam Mainah" class="profile-image">
-          </div>
-        </div>
-        
-        <!-- Text Section -->
-        <div class="col-md-7">
-          <h1 class="about-heading">About Me</h1>
-         
-          <p class="about-text">
-            Beyond work, I enjoy exploring new technologies, solving complex problems, and collaborating with teams worldwide.
-          </p>
-          <p class="about-text">
-            In 2024, I presented my research, <strong>“Financial Health Assessment for Households in Kenya”</strong>, at the prestigious <strong>IEEE ICT4DA Conference</strong>. This study leverages data analysis techniques to assess financial health, offering insights into how Kenyan households can improve their economic stability.
-          </p>
-          <p class="about-text">
-            I’ve also worked on notable projects, including:
-          </p>
-          <ul class="project-list">
-            <li><strong>Kenyan Business Ideas & Investment Bot</strong>: A machine learning-powered chatbot built with React and Flask to assist entrepreneurs in identifying viable investments using Kenyan economic data.</li>
-          </ul>
+</section>
 
-             <button class="btn btn-download" onclick="downloadReume()">Download My Resume</button>
-        </div>
-      </div>
-      
-      <!-- Skills Section -->
-      <div class="skills-container text-center mt-5">
-        <h2 class="skills-heading">My Skills</h2>
-        <div class="skills-grid mt-4">
-          <div class="skill-item">
-            <img src="assets/python-logo.PNG" alt="Python" class="skill-icon">
-            <p>Python</p>
-          </div>
-          <div class="skill-item">
-            <img src="assets/Javascript-logo.PNG" alt="JavaScript" class="skill-icon">
-            <p>JavaScript</p>
-          </div>
-          <div class="skill-item">
-            <img src="assets/django-logo.PNG" alt="Django" class="skill-icon">
-            <p>Django</p>
-          </div>
-          <div class="skill-item">
-            <img src="assets/Ml-logo.PNG" alt="Machine Learning" class="skill-icon">
-            <p>Machine Learning</p>
-          </div>
-        </div>
-      </div>
+
+  <section id="my-works" class="my-works-section" style="background: #f8f9fa; padding: 80px 0;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h1 class="section-title text-primary font-weight-bold">My Projects</h1>
+      <p class="text-muted">A showcase of practical work blending code, creativity, and data.</p>
     </div>
-  </section>
-  
-  <section id="my-works" class="my-works-section">
-    <div class="container">
-      <!-- Projects Heading -->
-      <div class="proj-heading text-center mb-5">
-        <h1 class="section-title">My Projects</h1>
-      </div>
-  
-      <!-- Projects Content -->
-      <div class="row">
-        <!-- Project 2 -->
-        <div class="col-md-6 mb-4">
-          <div class="project-card">
-            <img src="assets/ss3.PNG" class="img-fluid project-image" alt="Investment Bot">
-            <div class="project-details">
-              <h2>Kenyan Business Ideas & Investment Bot</h2>
-              <p>An ML-powered chatbot fine-tuned with Kenyan economic data to assist entrepreneurs.</p>
-              <a href="https://chatbot-client-two.vercel.app/" class="btn btn-primary mt-2" target="_blank">View Project</a>
+
+    <div class="row">
+      <!-- Project 1 -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-lg h-100 border-0 project-card-hover">
+          <img src="assets/ss3.PNG" class="card-img-top" alt="Investment Bot Project">
+          <div class="card-body">
+            <h4 class="card-title">Kenyan Business Ideas & Investment Bot</h4>
+            <p class="card-text">An ML-powered chatbot fine-tuned with Kenyan economic data to assist entrepreneurs in identifying viable business opportunities.</p>
+            <div class="mb-2">
+              <span class="badge badge-pill badge-primary">React</span>
+              <span class="badge badge-pill badge-success">Flask</span>
+              <span class="badge badge-pill badge-info">Machine Learning</span>
             </div>
+            <a href="https://chatbot-client-two.vercel.app/" target="_blank" class="btn btn-outline-primary mt-2">View Project</a>
           </div>
         </div>
-         <!-- Project 3 -->
-         <div class="col-md-6 mb-4">
-          <div class="project-card">
-            <img src="assets/Part_time.PNG" class="img-fluid project-image" alt="Investment Bot">
-            <div class="project-details">
-              <h2>University Part-time</Part-time></h2>
-              <p>This is a website where merchants post part-time jobs for students where they get market experience and competitive stories.</p>
-              <a href="https://part-time-1.onrender.com/" class="btn btn-primary mt-2" target="_blank">View Project</a>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-lg h-100 border-0 project-card-hover">
+          <img src="assets/Part_time.PNG" class="card-img-top" alt="University Part-time">
+          <div class="card-body">
+            <h4 class="card-title">University Part-time Job Portal</h4>
+            <p class="card-text">A web platform where merchants post part-time jobs for university students to gain market experience and build a competitive edge.</p>
+            <div class="mb-2">
+              <span class="badge badge-pill badge-warning">Node.js</span>
+              <span class="badge badge-pill badge-secondary">MongoDB</span>
+              <span class="badge badge-pill badge-dark">Bootstrap</span>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
- 
-  <section id="publications" class="publications-section">
-    <div class="container">
-      <!-- Publications Heading -->
-      <div class="section-heading text-center mb-5">
-        <h1>My Publications</h1>
-      </div>
-  
-      <!-- Publications Content -->
-      <div class="row">
-        <!-- Publication 1 -->
-        <div class="col-md-6 mb-4">
-          <div class="publication-card">
-            <div class="publication-details">
-              <h2>Financial Health Assessment for Households in Kenya</h2>
-              <p>
-                <strong>Kinyanjui, Samson</strong>, Felix Lopuran, Peter Kimanga, Edna Mugoh, Dennis Kiprotich, and Patrick Gikunda.
-                Published in <em>2024 International Conference on Information and Communication Technology for Development for Africa (ICT4DA)</em>, IEEE, 2024.
-              </p>
-              <p>DOI: <a href="https://doi.org/10.1109/ICT4DA62874.2024.10777274" target="_blank">https://doi.org/10.1109/ICT4DA62874.2024.10777274</a></p>
-              <button class="btn btn-download" onclick="downloadPaper()">Download Paper</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <div class="contact-section" id="contact">
-    <div class="container">
-      <!-- Section Heading -->
-      <div class="section-heading text-center mb-5">
-        <h1>Contact Me</h1>
-      </div>
-  
-      <div class="row align-items-center">
-        <!-- Contact Info -->
-        <div class="col-md-5 contact-info">
-          <h2>Get in Touch</h2>
-          <p>Email: <a href="mailto:sammainah98@gmail.com">sammainah98@gmail.com</a></p>
-          <p>Phone: <a href="tel:+254791848007">+254791848007</a></p>
-          <div class="social-links mt-3">
-            <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" aria-label="LinkedIn">
-              <i class="fab fa-linkedin">Linkedin</i>
-            </a>
-            <a href="https://github.com/sammainahkinya1404" target="_blank" aria-label="GitHub">
-              <i class="fab fa-github">Github</i>
-            </a>
-            <a href="https://x.com/MainahKinya" target="_blank" aria-label="X">
-              <i class="fab fa-twitter">X</i>
-            </a>
-          </div>
-        </div>
-  
-        <!-- Contact Form -->
-        <div class="col-md-7">
-          <div class="contact-form-container">
-            <h3>Send Me a Message</h3>
-            <form id="contact-form" action="https://formbold.com/s/oPbaa" method="POST">
-              <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
-              </div>
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
-              </div>
-              <div class="form-group">
-                <label for="message">Message</label>
-                <textarea class="form-control" id="message" name="message" rows="5" placeholder="Type your message here" required></textarea>
-              </div>
-              <button type="submit" class="btn btn-primary">Send Message</button>
-            </form>
-            <p id="status-message"></p>
+            <a href="https://part-time-1.onrender.com/" target="_blank" class="btn btn-outline-primary mt-2">View Project</a>
           </div>
         </div>
       </div>
     </div>
   </div>
+</section>
+
+ <section id="publications" class="publications-section" style="background: #ffffff; padding: 80px 0;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h1 class="section-title text-primary font-weight-bold">My Publications</h1>
+      <p class="text-muted">Selected research contributions in data science and technology for development.</p>
+    </div>
+
+    <div class="row justify-content-center">
+      <!-- Publication Card -->
+      <div class="col-md-10 mb-4">
+        <div class="card shadow-sm border-0 p-4">
+          <div class="d-flex flex-column flex-md-row align-items-start">
+            <div class="mr-md-4 mb-3 mb-md-0">
+              <i class="fas fa-file-alt fa-3x text-info"></i>
+            </div>
+            <div>
+              <h4 class="text-dark font-weight-bold">Financial Health Assessment for Households in Kenya</h4>
+              <p class="mb-2 text-muted">
+                <strong>Kinyanjui, Samson</strong>, Felix Lopuran, Peter Kimanga, Edna Mugoh, Dennis Kiprotich, and Patrick Gikunda.
+              </p>
+              <p class="mb-2"><em>IEEE International Conference on ICT4DA</em>, 2024.</p>
+              <p class="mb-2">
+                DOI: <a href="https://doi.org/10.1109/ICT4DA62874.2024.10777274" target="_blank">10.1109/ICT4DA62874.2024.10777274</a>
+              </p>
+              <a href="assets/Financial_Health_Assesment_for_Households_in_Kenya.pdf" download class="btn btn-outline-success btn-sm mt-2">
+                <i class="fas fa-download"></i> Download PDF
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
   
-  <footer class="footer">
-    <p>&copy; 2025 Samson Mainah. All rights reserved.</p>
-  </footer>
+<section id="contact" class="contact-section" style="background: #f0f2f5; padding: 80px 0;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h1 class="section-title text-primary font-weight-bold">Contact Me</h1>
+      <p class="text-muted">Let’s connect and build something great. I’d love to hear from you!</p>
+    </div>
+
+    <div class="row">
+      <!-- Contact Info -->
+      <div class="col-md-5 mb-4">
+        <div class="p-4 bg-white shadow rounded h-100">
+          <h4 class="mb-4 text-dark"><i class="fas fa-address-card mr-2 text-primary"></i> Get in Touch</h4>
+          <p><i class="fas fa-envelope text-info mr-2"></i> <a href="mailto:sammainah98@gmail.com">sammainah98@gmail.com</a></p>
+          <p><i class="fas fa-phone text-success mr-2"></i> <a href="tel:+254791848007">+254 791 848007</a></p>
+
+          <div class="mt-4">
+            <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" class="btn btn-outline-primary btn-sm mr-2" target="_blank">
+              <i class="fab fa-linkedin mr-1"></i> LinkedIn
+            </a>
+            <a href="https://github.com/sammainahkinya1404" class="btn btn-outline-dark btn-sm mr-2" target="_blank">
+              <i class="fab fa-github mr-1"></i> GitHub
+            </a>
+            <a href="https://x.com/MainahKinya" class="btn btn-outline-secondary btn-sm" target="_blank">
+              <i class="fab fa-twitter mr-1"></i> X (Twitter)
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="col-md-7">
+        <div class="p-4 bg-white shadow rounded">
+          <h4 class="mb-4 text-dark"><i class="fas fa-paper-plane text-primary mr-2"></i> Send a Message</h4>
+          <form action="https://formbold.com/s/oPbaa" method="POST">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" name="name" class="form-control" required placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" name="email" class="form-control" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea name="message" rows="5" class="form-control" required placeholder="Write your message here..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  
+<footer class="footer bg-dark text-white pt-4 pb-3">
+  <div class="container text-center">
+    <p class="mb-2">&copy; 2025 <strong>Samson Mainah</strong>. All rights reserved.</p>
+    <div class="mb-3">
+      <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2">
+        <i class="fab fa-linkedin fa-lg"></i>
+      </a>
+      <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2">
+        <i class="fab fa-twitter fa-lg"></i>
+      </a>
+    </div>
+    <p class="small mb-0">Designed & built with ❤️ by Samson using HTML, CSS & Bootstrap.</p>
+  </div>
+</footer>
+
   
  <!-- JAVASCRIPT -->
  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
@@ -453,8 +304,126 @@ img:hover {
     paperLink.click();
   }
 
- 
+  document.getElementById('darkToggle').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+  });
+
+  window.onload = () => {
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+    }
+  };
+
+ const terminalInput = document.getElementById("terminal-input");
+  const terminalOutput = document.getElementById("terminal-output");
+
+  const responses = {
+    help: [
+      "Available commands:",
+      "about       - Learn about me",
+      "projects    - View my projects",
+      "skills      - See my technical skills",
+      "experience  - My work experience",
+      "contact     - How to reach me",
+      "education   - My educational background",
+      "leadership  - Leadership and community involvement",
+      "clear       - Clear the terminal"
+    ],
+    about: [
+      "Hello, I'm Samson Kinyanjui!",
+      "I'm a Machine Learning practitioner and software developer.",
+      "Part-Time , Graduate Research Assistant at Deden Kimathi University of Technology (2023-present)",
+      "Currently Working, on My Msc Computer Science. Thesis:Detection and Classification Of GI Pathological Findings in Endoscopic Images using  Hybrid ResNet50-CNN",
+      "In 2025, I presented my Thesis Results at IST-Africa Conference 2025",
+      "In 2024, I presented my research at the IEEE ICT4DA Conference,",
+      "and I’ve built several impactful platforms for Kenya’s digital economy."
+    ],
+    projects: [
+      "1. Investment Bot - ML-powered chatbot for Kenyan entrepreneurs.",
+      "   Tech: React, Flask, Python, OpenAI",
+      "   Link: https://chatbot-client-two.vercel.app",
+      "",
+      "2. University Part-time Portal",
+      "   Tech: Node.js, Bootstrap, MongoDB",
+      "   Link: https://part-time-1.onrender.com"
+    ],
+    contact: [
+      "Email: sammmainah98@gmail.com",
+      "WhatsApp: +254 791 848007",
+      "LinkedIn: https://linkedin.com/in/samson-kinyanjui-49051b23a",
+      "GitHub: https://github.com/sammainahkinya1404"
+    ],
+    education: [
+      "1. Msc. Computer Science",
+      "- Specialization in Machine Learning : Classical ML algorithms, Deep Learning algorithms, and Working with LLMs",
+      "2. Bachelor's of Science in  Information Technology",
+      "- Strong foundation in systems design, software engineering, machine learning, and programming."
+    ],
+    skills: [
+      "Languages: Python ██████████ 90%",
+      "JavaScript ██████████ 90%",
+      "Java ██████████ 60%",
+      "SQL ████████ 50%",
+      "Frameworks: Django, Flask, React, Nextjs, Nodejs",
+      "Tools: Git, Linux, TensorFlow, Scikit-Learn"
+    ],
+    experience: [
+      "Software Developer | Freelance (2023–present)",
+      "- Built real-time dashboards and ML-powered platforms.",
+      "- Collaborated with NGOs and startups to optimize tech workflows."
+    ],
+    leadership: [
+      "- Tech Lead, IEEE Student Chapter",
+      "- Organizer: Python for Africa workshops",
+      "- Speaker: ML in Healthcare at DevCon Nairobi 2024"
+    ],
+    clear: () => {
+      terminalOutput.innerHTML = '';
+    },
+    sudo: [
+      "Hi, I'm Samson Kinyanjui, and I see you're trying to be sneaky 😄"
+    ]
+  };
+
+  function printToTerminal(text, isCmd = false) {
+    const div = document.createElement("div");
+    div.textContent = (isCmd ? "Kinyanjui@portfolio:~$ " : "") + text;
+    terminalOutput.appendChild(div);
+    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+  }
+
+  terminalInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const cmd = terminalInput.value.trim().toLowerCase();
+      if (!cmd) return;
+      printToTerminal(cmd, true);
+      terminalInput.value = "";
+
+      if (responses[cmd]) {
+        const result = typeof responses[cmd] === "function" ? responses[cmd]() : responses[cmd];
+        if (Array.isArray(result)) result.forEach(line => printToTerminal(line));
+      } else {
+        printToTerminal(`bash: ${cmd}: command not found`);
+      }
+    }
+  });
+
+  // Initial greeting
+  [
+    "welcome",
+    "Hi, I'm Samson Kinyanjui, a Machine Learning Practitioner & Software Developer.",
+    "Welcome to my interactive portfolio terminal!",
+    "Type 'help' to see available commands."
+  ].forEach(line => printToTerminal(line));
+
 </script>
+<a href="https://wa.me/254791848007?text=Hi%20Samson%2C%20I'd%20like%20to%20book%20a%20consultation." target="_blank" class="whatsapp-float">
+  <i class="fab fa-whatsapp whatsapp-icon"></i>
+  <span class="whatsapp-text d-none d-md-inline"> Book a Consultation</span>
+</a>
+
+
 
 </body>
 

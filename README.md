@@ -1,14 +1,48 @@
-<a href = "https://zemerik.is-a.dev/Portfolio-Template"><h1 align = "center">Portfolio-Template</h1></a>
+# 🧑‍💻 Samson Kinyanjui – Portfolio Website
 
-<p align = "center"><img src = "https://zemerik.is-a.dev/assests/resume.png" style = "height:250px;width:200px"></p>
+Welcome to the source code of my personal portfolio website:  
+🌐 [https://sammainah.com](https://sammainah.com)
 
-## Clone
+This site highlights my background, skills, projects, publications, and ways to connect. It’s designed to be elegant, fast, and easy to explore across all devices.
 
-To make a copy of this Repository, run the following git command in your terminal:
+---
 
-```git clone https://github.com/Zemerik/Portfolio-Template```
+## 🚀 Features
 
-## Progress Bars
+- Sleek hero section with CTA
+- Dynamic project showcase with tech tags
+- Smooth transitions and hover effects
+- Dark mode toggle 🌙
+- Floating WhatsApp icon for direct contact
+- Integrated contact form powered by FormBold
+- Fully responsive & mobile-ready
 
-To correctly customize the progress bars, look at line 200 on the [style.css](https://github.com/Zemerik/Portfolio-Template/blob/main/style.css). 
+---
 
+## 📸 Live Preview
+
+Visit the site:  
+👉 **[https://sammainah.com](https://sammainah.com)**
+
+You’ll find:
+- 💼 Projects like ML-powered chatbots and job portals
+- 📄 My IEEE publication
+- 📬 Easy ways to reach out
+
+---
+
+## 🛠 Tech Stack
+
+- **Frontend:** HTML5, CSS3, Bootstrap 4
+- **Icons:** Font Awesome 6
+- **Forms:** [FormBold](https://formbold.com)
+- **Hosting:** [GitHub Pages](https://pages.github.com) or Vercel
+
+---
+
+## 📂 How to Use This Code Locally
+
+```bash
+git clone https://github.com/sammainahkinya1404/Twizard-developers-portfolio.git
+cd Twizard-developers-portfolio
+start index.html  # or open index.html
