@@ -199,6 +199,19 @@
                 <i class="fas fa-download"></i> Download PDF
               </a>
             </div>
+            <div>
+              <h4 class="text-dark font-weight-bold">Automatic Detection and Classification of Gastrointestinal Pathological Findings using a Hybrid ResNet50-CNN from Endoscopic Images</h4>
+              <p class="mb-2 text-muted">
+                <strong>Kinyanjui, Samson</strong>, Juliet Moso and Patrick Gikunda.
+              </p>
+              <p class="mb-2"><em>2025 IST-Africa Conference (IST-Africa)</em>, 2025.</p>
+              <p class="mb-2">
+                DOI: <a href="http://dx.doi.org/10.23919/IST-Africa67297.2025.11060502" target="_blank">10.23919/IST-Africa67297.2025.11060502</a>
+              </p>
+              <a href="#" download class="btn btn-outline-success btn-sm mt-2">
+                <i class="fas fa-download"></i> Download PDF
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -298,6 +311,14 @@
 
   // Paper Download Functionality
   function downloadPaper() {
+    const paperLink = document.createElement("a");
+    paperLink.href = "assets/Financial_Health_Assesment_for_Households_in_Kenya.pdf"; // Path to your paper
+    paperLink.download = "Financial_Health_Assessment_Households_Kenya.pdf";
+    paperLink.click();
+  }
+
+  //second paper
+    function downloadPaper() {
     const paperLink = document.createElement("a");
     paperLink.href = "assets/Financial_Health_Assesment_for_Households_in_Kenya.pdf"; // Path to your paper
     paperLink.download = "Financial_Health_Assessment_Households_Kenya.pdf";
