@@ -1,19 +1,134 @@
+/* ===================================
+   Modern Portfolio Styles
+   Enhanced with glassmorphism, smooth animations, and better dark mode
+=================================== */
+
+/* Import Modern Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ===================================
+   Loading Screen
+=================================== */
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#loading-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-content {
+  text-align: center;
+  color: white;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #667eea;
+  border-right: 4px solid #03dac6;
+  border-radius: 50%;
+  margin: 0 auto 30px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loader-text {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.loader-subtitle {
+  font-size: 1rem;
+  font-weight: 400;
+  opacity: 0.9;
+  animation: fadeInUp 1s ease-out;
+}
+
+/* ===================================
+   CSS Variables for Easy Theming
+=================================== */
+:root {
+  /* Light Mode Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b7280;
+  --accent-primary: #667eea;
+  --accent-secondary: #764ba2;
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+
+  /* Gradient Colors */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-hero: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+}
+
+/* Dark Mode Variables */
+body.dark-mode {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --text-primary: #e5e5e5;
+  --text-secondary: #a1a1a1;
+  --accent-primary: #bb86fc;
+  --accent-secondary: #03dac6;
+  --card-bg: #1e1e1e;
+  --card-border: rgba(255, 255, 255, 0.1);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --glass-bg: rgba(30, 30, 30, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --gradient-primary: linear-gradient(135deg, #bb86fc 0%, #03dac6 100%);
+}
 
 /* ===================================
    Base & Reset
 =================================== */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   margin: 0;
   padding: 0;
   scroll-behavior: smooth;
-  background-color: #ffffff;
-  color: #333;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
 }
 
 a {
   text-decoration: none;
-  transition: 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 a:hover {
@@ -21,227 +136,686 @@ a:hover {
 }
 
 /* ===================================
-   Navbar
+   Typography
+=================================== */
+h1 {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 600;
+}
+
+h4 {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 600;
+}
+
+p {
+  line-height: 1.7;
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+}
+
+/* ===================================
+   Navbar - Glassmorphism Style
 =================================== */
 .navbar {
-  transition: all 0.4s ease;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--glass-border);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-brand {
-  font-weight: bold;
-  font-size: 1.4rem;
+  font-weight: 800;
+  font-size: 1.5rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .navbar-nav .nav-link {
   font-weight: 500;
   margin-left: 1rem;
+  position: relative;
+  color: var(--text-primary) !important;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
 }
 
 .navbar-nav .nav-link:hover {
-  color: #ffc107 !important;
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--accent-primary) !important;
+}
+
+.navbar-nav .nav-link:hover::after {
+  width: 80%;
+}
+
+/* Dark Mode Toggle Button */
+#darkToggle {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+}
+
+#darkToggle:hover {
+  transform: rotate(20deg) scale(1.1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+#theme-icon {
+  transition: transform 0.3s ease;
 }
 
 /* ===================================
-   Hero Section
+   Hero Section - Animated Gradient
 =================================== */
 .intro-section {
   height: 100vh;
-  background: #1e3c72;
+  background: var(--gradient-hero);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Hero floating elements */
+.intro-section::before {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  top: -250px;
+  right: -250px;
+  animation: float 20s ease-in-out infinite;
+}
+
+.intro-section::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  bottom: -150px;
+  left: -150px;
+  animation: float 15s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-40px); }
 }
 
 .intro-title {
-  font-size: 3rem;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  animation: fadeInUp 1s ease-out;
+  position: relative;
+  z-index: 1;
 }
 
 .intro-subtitle {
-  font-size: 1.5rem;
-  font-weight: 300;
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-weight: 400;
+  animation: fadeInUp 1.2s ease-out;
+  opacity: 0.95;
+  position: relative;
+  z-index: 1;
+}
+
+.name-highlight {
+  background: linear-gradient(120deg, #ffd700, #ffed4e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 900;
+  position: relative;
+  display: inline-block;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modern CTA Button */
+.btn-warning {
+  background: linear-gradient(135deg, #ffd700, #ffed4e) !important;
+  border: none !important;
+  color: #1a1a1a !important;
+  font-weight: 700;
+  padding: 14px 32px !important;
+  border-radius: 50px !important;
+  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn-warning:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(255, 215, 0, 0.5);
 }
 
 .angle-down-icon a {
-  color: #ffc107;
+  color: rgba(255, 255, 255, 0.8);
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+/* ===================================
+   Terminal Section - MacOS Style
+=================================== */
+.cli-terminal {
+  background: var(--card-bg);
+  color: #0f0;
+  border-radius: 12px;
+  margin-top: -30px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--card-border);
+  overflow: hidden;
+}
+
+.terminal-header {
+  background: #2d2d2d;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.terminal-dot.red { background: #ff5f56; }
+.terminal-dot.yellow { background: #ffbd2e; }
+.terminal-dot.green { background: #27c93f; }
+
+.terminal-body {
+  background: #1a1a1a;
+  padding: 20px;
+  min-height: 300px;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+}
+
+#terminal-output {
+  padding: 10px 0;
+  color: #0f0;
+}
+
+#terminal-input {
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 1rem;
+  background: transparent;
+  border: none;
+  color: #0f0;
+  outline: none;
+  width: 100%;
+}
+
+#terminal-input::placeholder {
+  color: rgba(0, 255, 0, 0.3);
 }
 
 /* ===================================
    About Section
 =================================== */
 .about-me-section {
-  background: linear-gradient(180deg, #1e3c72, #1c1c1c);
-  color: white;
-  padding: 60px 0;
+  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  color: var(--text-primary);
+  padding: 80px 0;
 }
 
 .about-me-section img {
   border-radius: 50%;
   max-width: 280px;
-  border: 5px solid #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  border: 5px solid var(--accent-primary);
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.about-me-section img:hover {
+  transform: scale(1.05) rotate(3deg);
+  box-shadow: 0 16px 48px rgba(102, 126, 234, 0.4);
+}
+
+.about-me-section .card-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 40px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
 }
 
 .about-me-section .btn {
-  border-radius: 8px;
+  border-radius: 50px;
+  padding: 12px 28px;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
-/* ===================================
-   Skills Section
-=================================== */
-.skills-container h2 {
-  font-weight: bold;
-}
-
+/* Skills Section */
 .skills-container img {
-  height: 60px;
+  height: 70px;
+  filter: grayscale(30%);
+  transition: all 0.3s ease;
+  padding: 15px;
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.skills-container img:hover {
+  filter: grayscale(0%);
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
 }
 
 /* ===================================
-   Projects Section
+   Projects Section - Modern Cards
 =================================== */
+.my-works-section {
+  background: var(--bg-secondary);
+  padding: 100px 0;
+}
+
+.section-title {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+
 .project-card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-radius: 12px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  overflow: hidden;
+  position: relative;
+}
+
+.project-card-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+}
+
+.project-card-hover:hover::before {
+  opacity: 0.05;
 }
 
 .project-card-hover:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+  border-color: var(--accent-primary);
 }
 
 .card-img-top {
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
   object-fit: cover;
-  height: 220px;
+  height: 240px;
+  filter: grayscale(10%);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-card-hover:hover .card-img-top {
+  filter: grayscale(0%);
+  transform: scale(1.08);
+}
+
+.card-body {
+  position: relative;
+  z-index: 1;
+  padding: 24px;
+}
+
+.card-title {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.card-text {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .badge {
-  font-size: 0.8rem;
-  margin-right: 5px;
+  font-size: 0.85rem;
+  margin-right: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+}
+
+.badge-pill {
+  border-radius: 20px;
+}
+
+/* Modern Button Styles */
+.btn {
+  border-radius: 50px;
+  padding: 10px 24px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-outline-primary {
+  border: 2px solid var(--accent-primary);
+  color: var(--accent-primary);
+  background: transparent;
+}
+
+.btn-outline-primary:hover {
+  background: var(--accent-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-outline-light {
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  color: white;
+}
+
+.btn-outline-light:hover {
+  background: white;
+  color: #1a1a1a;
+  border-color: white;
+  transform: translateY(-2px);
 }
 
 /* ===================================
    Publications Section
 =================================== */
+.publications-section {
+  background: var(--bg-primary);
+  padding: 100px 0;
+}
+
 .publications-section .card {
-  border-radius: 12px;
-  transition: box-shadow 0.3s ease;
+  border-radius: 20px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
 }
 
 .publications-section .card:hover {
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-5px);
+  border-color: var(--accent-primary);
+}
+
+.publications-section .fa-file-alt {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* ===================================
    Contact Section
 =================================== */
+.contact-section {
+  background: var(--bg-secondary);
+  padding: 100px 0;
+}
+
 .contact-section .form-control {
-  border-radius: 8px;
-  border: 1px solid #ddd;
+  border-radius: 12px;
+  border: 2px solid var(--card-border);
+  padding: 12px 16px;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.contact-section .form-control:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  outline: none;
 }
 
 .contact-section .btn {
-  border-radius: 8px;
-  padding: 10px 20px;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-weight: 600;
 }
 
 .contact-section .bg-white {
-  border-radius: 12px;
+  background: var(--card-bg) !important;
+  border-radius: 20px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.contact-section .bg-white:hover {
+  box-shadow: var(--shadow-md);
 }
 
 /* ===================================
    Footer
 =================================== */
 .footer {
-  background-color: #121212;
-  color: white;
-  padding: 20px 0;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--card-border);
+  color: var(--text-primary);
+  padding: 30px 0;
+}
+
+.footer i {
+  transition: all 0.3s ease;
 }
 
 .footer i:hover {
-  color: #ffc107;
-  transition: color 0.3s ease;
+  color: var(--accent-primary) !important;
+  transform: translateY(-3px);
 }
 
 /* ===================================
-   WhatsApp Floating Button
+   WhatsApp Floating Button - Enhanced
 =================================== */
 .whatsapp-float {
   position: fixed;
-  bottom: 25px;
-  right: 25px;
+  bottom: 30px;
+  right: 30px;
   z-index: 9999;
-  background: #25D366;
+  background: linear-gradient(135deg, #25D366, #128C7E);
   color: white;
   border-radius: 50px;
-  padding: 12px 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  padding: 14px 24px;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
   display: flex;
   align-items: center;
-  font-weight: 500;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .whatsapp-float:hover {
-  transform: scale(1.05);
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(37, 211, 102, 0.5);
+  color: white;
 }
 
 .whatsapp-icon {
-  font-size: 22px;
-  margin-right: 8px;
+  font-size: 24px;
+  margin-right: 10px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 .whatsapp-text {
   font-size: 16px;
 }
 
+/* ===================================
+   Dark Mode Specific Adjustments
+=================================== */
+body.dark-mode .intro-section {
+  background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #533483);
+  background-size: 400% 400%;
+}
+
+body.dark-mode .card {
+  background-color: var(--card-bg) !important;
+  color: var(--text-primary);
+  border-color: var(--card-border) !important;
+}
+
+body.dark-mode .text-dark {
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .text-muted {
+  color: var(--text-secondary) !important;
+}
+
+body.dark-mode .bg-dark {
+  background-color: var(--bg-secondary) !important;
+}
+
+body.dark-mode .bg-white {
+  background-color: var(--card-bg) !important;
+}
 
 /* ===================================
-   Dark Mode
+   Responsive Design
 =================================== */
-body.dark-mode {
-  background-color: #121212;
-  color: #f0f0f0;
+@media (max-width: 768px) {
+  .intro-title {
+    font-size: 2.5rem;
+  }
+
+  .intro-subtitle {
+    font-size: 1.2rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+
+  .whatsapp-text {
+    display: none;
+  }
+
+  .whatsapp-float {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .whatsapp-icon {
+    margin-right: 0;
+  }
 }
 
-body.dark-mode a,
-body.dark-mode .btn,
-body.dark-mode .nav-link {
-  color: #f0f0f0 !important;
+/* ===================================
+   Utility Classes
+=================================== */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-body.dark-mode .card,
-body.dark-mode .navbar {
-  background-color: #1e1e1e !important;
-  color: white;
-}
-
-.cli-section {
-  background: #111;
-  color: #0f0;
-  font-size: 1.1rem;
-  border-radius: 8px;
-  margin-top: -40px;
-}
-.cli-terminal {
-  background: #111;
-  color: #0f0;
-  border-radius: 8px;
-  margin-top: -30px;
-}
-
-#terminal-output {
-  padding: 10px 0;
-}
-
-#terminal-input {
-  font-family: monospace;
-  font-size: 1rem;
-}
-
-#terminal-input::placeholder {
-  color: #0f05;
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
 }

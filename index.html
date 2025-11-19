@@ -14,6 +14,15 @@
 
 </head>
 <body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loader-content">
+      <div class="spinner"></div>
+      <h2 class="loader-text">Samson Kinyanjui</h2>
+      <p class="loader-subtitle">Loading Portfolio...</p>
+    </div>
+  </div>
+
   <header>
     <!-- Navigation Bar Section -->
     <div class="custom-navbar">
@@ -33,7 +42,9 @@
         <li class="nav-item"><a class="nav-link" href="#publications">Publications</a></li>
         <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
         <li class="nav-item">
-          <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">🌙</button>
+          <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+            <i class="fas fa-moon" id="theme-icon"></i>
+          </button>
         </li>
       </ul>
     </div>
@@ -46,7 +57,9 @@
 <div class="intro-section text-center d-flex align-items-center justify-content-center" style="height: 100vh; background: #1e3c72; color: white; position: relative;">
   <div class="container">
     <h1 class="intro-title mb-3" style="font-size: 3rem; animation: fadeIn 2s ease-in-out;">Hi, I'm <span class="name-highlight" style="color: #ffc107;">Samson Kinyanjui</span></h1>
-    <h3 class="intro-subtitle mb-4" style="font-weight: 300; animation: fadeIn 3s ease-in-out;">Machine Learning Practitioner & Software Developer</h3>
+    <h3 class="intro-subtitle mb-4" style="font-weight: 300; animation: fadeIn 3s ease-in-out; min-height: 60px;">
+      <span id="typed-text"></span>
+    </h3>
     <a href="#my-works" class="btn btn-warning btn-lg shadow" style="animation: fadeIn 4s ease-in-out;">View My Projects</a>
 
     <div class="angle-down-icon mt-5">
@@ -54,12 +67,23 @@
     </div>
   </div>
 </div>
-<section class="cli-terminal bg-dark text-light" id="terminal" style="font-family: monospace; padding: 40px 0;">
+<section class="cli-terminal bg-dark text-light" id="terminal" style="padding: 40px 0;">
   <div class="container">
-    <div id="terminal-output" style="min-height: 300px;"></div>
-    <div class="d-flex align-items-center mt-2">
-      <span style="color: #0f0;">Kinyanjui@portfolio:~$</span>&nbsp;
-      <input id="terminal-input" autofocus type="text" placeholder="type a command..." style="background: transparent; border: none; color: #0f0; width: 100%; outline: none;" />
+    <div style="max-width: 900px; margin: 0 auto;">
+      <!-- MacOS-style Terminal Header -->
+      <div class="terminal-header">
+        <div class="terminal-dot red"></div>
+        <div class="terminal-dot yellow"></div>
+        <div class="terminal-dot green"></div>
+      </div>
+      <!-- Terminal Body -->
+      <div class="terminal-body">
+        <div id="terminal-output"></div>
+        <div class="d-flex align-items-center mt-2">
+          <span style="color: #0f0;">Kinyanjui@portfolio:~$</span>&nbsp;
+          <input id="terminal-input" autofocus type="text" placeholder="type a command..." />
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -76,13 +100,13 @@
     <div class="row align-items-center">
       <!-- Image Section -->
       <div class="col-md-5 text-center mb-4 mb-md-0">
-        <img src="assets/Prof.png" alt="Sam Mainah" class="img-fluid rounded-circle shadow-lg" style="max-width: 280px; border: 5px solid #fff;">
+        <img src="assets/Prof.png" alt="Sam Mainah" class="img-fluid rounded-circle shadow-lg" style="max-width: 280px;">
       </div>
 
       <!-- Text Section -->
       <div class="col-md-7">
-        <div style="background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 12px;">
-          <h1 class="display-4 font-weight-bold mb-4 text-light">About Me</h1>
+        <div class="card-glass">
+          <h1 class="display-4 font-weight-bold mb-4">About Me</h1>
           <p class="lead text-light">
             I’m passionate about leveraging data, code, and creativity to solve real-world challenges. I enjoy building impactful solutions and collaborating across borders.
           </p>
@@ -98,24 +122,24 @@
     </div>
   </div>
   <!-- Skills Section -->
-<div class="text-center mt-5">
-  <h2 class="text-light font-weight-bold mb-4">My Skills</h2>
+<div class="text-center mt-5 skills-container">
+  <h2 class="font-weight-bold mb-4">My Skills</h2>
   <div class="row justify-content-center">
     <div class="col-6 col-sm-3 mb-4">
-      <img src="assets/python-logo.PNG" alt="Python" class="img-fluid mb-2" style="height: 60px;">
-      <p class="text-light">Python</p>
+      <img src="assets/python-logo.PNG" alt="Python" class="img-fluid mb-2">
+      <p>Python</p>
     </div>
     <div class="col-6 col-sm-3 mb-4">
-      <img src="assets/Javascript-logo.PNG" alt="JavaScript" class="img-fluid mb-2" style="height: 60px;">
-      <p class="text-light">JavaScript</p>
+      <img src="assets/Javascript-logo.PNG" alt="JavaScript" class="img-fluid mb-2">
+      <p>JavaScript</p>
     </div>
     <div class="col-6 col-sm-3 mb-4">
-      <img src="assets/django-logo.PNG" alt="Django" class="img-fluid mb-2" style="height: 60px;">
-      <p class="text-light">Django</p>
+      <img src="assets/django-logo.PNG" alt="Django" class="img-fluid mb-2">
+      <p>Django</p>
     </div>
     <div class="col-6 col-sm-3 mb-4">
-      <img src="assets/Ml-logo.PNG" alt="Machine Learning" class="img-fluid mb-2" style="height: 60px;">
-      <p class="text-light">Machine Learning</p>
+      <img src="assets/Ml-logo.PNG" alt="Machine Learning" class="img-fluid mb-2">
+      <p>Machine Learning</p>
     </div>
   </div>
 </div>
@@ -333,7 +357,7 @@
  <!-- JAVASCRIPT -->
  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
 
 <script>
  //Function to download Resume
@@ -361,15 +385,69 @@
     paperLink.click();
   }
 
-  document.getElementById('darkToggle').addEventListener('click', () => {
+  const darkToggle = document.getElementById('darkToggle');
+  const themeIcon = document.getElementById('theme-icon');
+
+  // Dark mode toggle with icon animation
+  darkToggle.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    const isDark = document.body.classList.contains('dark-mode');
+
+    // Update icon with smooth transition
+    themeIcon.style.transform = 'rotate(360deg)';
+    setTimeout(() => {
+      themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+      themeIcon.style.transform = 'rotate(0deg)';
+    }, 150);
+
+    localStorage.setItem('darkMode', isDark);
   });
 
+  // Load dark mode preference
   window.onload = () => {
-    if (localStorage.getItem('darkMode') === 'true') {
+    // Hide loading screen
+    const loadingScreen = document.getElementById('loading-screen');
+    setTimeout(() => {
+      loadingScreen.classList.add('hidden');
+      // Remove from DOM after transition
+      setTimeout(() => {
+        loadingScreen.remove();
+      }, 600);
+    }, 1500); // Show loader for 1.5 seconds
+
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    if (isDark) {
       document.body.classList.add('dark-mode');
+      themeIcon.className = 'fas fa-sun';
     }
+
+    // Initialize Typed.js for typing animation
+    new Typed('#typed-text', {
+      strings: [
+        'Machine Learning Practitioner',
+        'Software Developer',
+        'Data Scientist',
+        'ML Engineer'
+      ],
+      typeSpeed: 60,
+      backSpeed: 40,
+      backDelay: 2000,
+      startDelay: 500,
+      loop: true,
+      showCursor: true,
+      cursorChar: '|',
+      autoInsertCss: true
+    });
+
+    // Initialize 3D tilt effect on project cards
+    const projectCards = document.querySelectorAll('.project-card-hover');
+    VanillaTilt.init(projectCards, {
+      max: 8,
+      speed: 400,
+      glare: true,
+      'max-glare': 0.2,
+      scale: 1.02
+    });
   };
 
  const terminalInput = document.getElementById("terminal-input");
