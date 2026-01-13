@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:chatbot-client-two.vercel.app)"
+      "WebFetch(domain:chatbot-client-two.vercel.app)",
+      "WebSearch",
+      "WebFetch(domain:colorlib.com)",
+      "WebFetch(domain:www.index.dev)",
+      "WebFetch(domain:ai.cgtbrain.com.au)"
     ]
   }
 }

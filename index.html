@@ -75,7 +75,7 @@
 
   </header>
   
- <section class="about-me-section" id="about" style="background: linear-gradient(180deg, #1e3c72 0%, #1c1c1c 100%); color: white; padding: 60px 0;">
+ <section class="about-me-section" id="about" style="background: #f8f9fa; padding: 80px 0;">
   <div class="container">
     <div class="row align-items-center">
       <!-- Image Section -->
@@ -87,7 +87,7 @@
       <div class="col-md-7">
         <div class="card-glass">
           <h1 class="display-4 font-weight-bold mb-4">About Me</h1>
-          <p class="lead text-light">
+          <p class="lead text-muted">
             Machine Learning Engineer and Full-Stack Developer based in Kenya, specializing in <strong>Python</strong> and <strong>React</strong>.
           </p>
           <p>
@@ -96,7 +96,7 @@
           <p>
             Currently pursuing my <strong>MSc in Computer Science</strong>, I've published 3 IEEE papers on topics ranging from medical image classification to financial health assessment and NLP-based topic clustering. I thrive at the intersection of research and practical implementation.
           </p>
-          <a href="assets/Samson_Kinyanjui_Resume.pdf" class="btn btn-outline-light btn-lg mt-3" download>Download My Resume</a>
+          <a href="assets/Samson_Kinyanjui_Resume.pdf" class="btn btn-primary btn-lg mt-3" download>Download My Resume</a>
         </div>
       </div>
     </div>
@@ -127,7 +127,7 @@
 </section>
 
 
-  <section id="my-works" class="my-works-section" style="background: #f8f9fa; padding: 80px 0;">
+  <section id="my-works" class="my-works-section">
   <div class="container">
     <div class="text-center mb-5">
       <h1 class="section-title text-primary font-weight-bold">My Projects</h1>
@@ -137,6 +137,23 @@
     <div class="row">
 
       <!-- Project 1 -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-lg h-100 border-0 project-card-hover">
+          <img src="assets/CGT.png" class="card-img-top" alt="CGT Brain">
+          <div class="card-body">
+            <h4 class="card-title">CGT Brain</h4>
+            <p class="card-text">An AI system that does what lawyers and accountants do for Capital Gains Tax. Feed it any property timeline and it applies ATO rules, performs full CGT analysis, and generates detailed reports—work that traditionally takes professionals hours, done in seconds.</p>
+            <div class="mb-2">
+              <span class="badge badge-pill badge-primary">Next.js</span>
+              <span class="badge badge-pill badge-success">FastAPI</span>
+              <span class="badge badge-pill badge-info">Gen AI</span>
+            </div>
+            <a href="https://ai.cgtbrain.com.au/" target="_blank" class="btn btn-outline-primary mt-2">View Project</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
       <div class="col-md-6 mb-4">
         <div class="card shadow-lg h-100 border-0 project-card-hover">
           <img src="assets/ss3.PNG" class="card-img-top" alt="Biashara Buddy">
@@ -157,7 +174,7 @@
   </div>
 </section>
 
- <section id="publications" class="publications-section" style="background: #ffffff; padding: 80px 0;">
+ <section id="publications" class="publications-section">
   <div class="container">
     <div class="text-center mb-5">
       <h1 class="section-title text-primary font-weight-bold">My Publications</h1>
@@ -249,7 +266,7 @@
 </section>
 
   
-<section id="contact" class="contact-section" style="background: #f0f2f5; padding: 80px 0;">
+<section id="contact" class="contact-section">
   <div class="container">
     <div class="text-center mb-5">
       <h1 class="section-title text-primary font-weight-bold">Contact Me</h1>
@@ -326,7 +343,6 @@
  <!-- JAVASCRIPT -->
  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
 
 <script>
  //Function to download Resume
@@ -408,15 +424,6 @@
       autoInsertCss: true
     });
 
-    // Initialize 3D tilt effect on project cards
-    const projectCards = document.querySelectorAll('.project-card-hover');
-    VanillaTilt.init(projectCards, {
-      max: 8,
-      speed: 400,
-      glare: true,
-      'max-glare': 0.2,
-      scale: 1.02
-    });
   };
 
 </script>
