@@ -27,9 +27,9 @@
     <!-- Navigation Bar Section -->
     <div class="custom-navbar">
      <!-- Navigation Bar Section -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav" style="background-color: rgba(0,0,0,0.8); backdrop-filter: blur(6px);">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
   <div class="container">
-    <a class="navbar-brand font-weight-bold text-warning" href="#">Samson Kinyanjui</a>
+    <a class="navbar-brand" href="#">Samson Kinyanjui</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
       aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -53,18 +53,13 @@
 
     </div>
   
-    <!-- "I Am" Section -->
-<div class="intro-section text-center d-flex align-items-center justify-content-center" style="height: 100vh; background: #1e3c72; color: white; position: relative;">
+    <!-- Hero Section -->
+<div class="intro-section">
   <div class="container">
-    <h1 class="intro-title mb-3" style="font-size: 3rem; animation: fadeIn 2s ease-in-out;">Hi, I'm <span class="name-highlight" style="color: #ffc107;">Samson Kinyanjui</span></h1>
-    <h3 class="intro-subtitle mb-4" style="font-weight: 300; animation: fadeIn 3s ease-in-out; min-height: 60px;">
-      <span id="typed-text"></span>
-    </h3>
-    <a href="#my-works" class="btn btn-warning btn-lg shadow" style="animation: fadeIn 4s ease-in-out;">View My Projects</a>
-
-    <div class="angle-down-icon mt-5">
-      <a href="#about"><i class="fas fa-angle-down fa-2x text-white"></i></a>
-    </div>
+    <p class="hero-greeting">Hi, I'm</p>
+    <h1 class="hero-name">Samson Kinyanjui</h1>
+    <p class="hero-role"><span id="typed-text"></span></p>
+    <a href="#my-works" class="btn btn-primary mt-4">View My Projects</a>
   </div>
 </div>
 
@@ -75,102 +70,79 @@
 
   </header>
   
- <section class="about-me-section" id="about" style="background: #f8f9fa; padding: 80px 0;">
+ <section class="about-me-section" id="about">
   <div class="container">
     <div class="row align-items-center">
-      <!-- Image Section -->
-      <div class="col-md-5 text-center mb-4 mb-md-0">
-        <img src="assets/Prof.png" alt="Sam Mainah" class="img-fluid rounded-circle shadow-lg" style="max-width: 280px;">
+      <div class="col-lg-4 text-center mb-4 mb-lg-0">
+        <img src="assets/Prof.png" alt="Samson Kinyanjui" class="profile-img">
       </div>
+      <div class="col-lg-8">
+        <h2 class="section-heading">About Me</h2>
+        <p class="about-text">
+          Machine Learning Engineer and Full-Stack Developer based in Kenya. I build AI systems that solve real problems—from tax automation tools for professionals to chatbots helping entrepreneurs.
+        </p>
+        <p class="about-text">
+          MSc Computer Science candidate with 3 IEEE publications in medical imaging, NLP, and financial assessment. I ship production ML systems using Python, React, Next.js, and FastAPI.
+        </p>
 
-      <!-- Text Section -->
-      <div class="col-md-7">
-        <div class="card-glass">
-          <h1 class="display-4 font-weight-bold mb-4">About Me</h1>
-          <p class="lead text-muted">
-            Machine Learning Engineer and Full-Stack Developer based in Kenya, specializing in <strong>Python</strong> and <strong>React</strong>.
-          </p>
-          <p>
-            I build intelligent systems that solve real-world problems—from ML-powered chatbots helping Kenyan entrepreneurs to deep learning models detecting gastrointestinal diseases. My stack combines Python (TensorFlow, Flask, Django) on the backend with React and Next.js on the frontend.
-          </p>
-          <p>
-            Currently pursuing my <strong>MSc in Computer Science</strong>, I've published 3 IEEE papers on topics ranging from medical image classification to financial health assessment and NLP-based topic clustering. I thrive at the intersection of research and practical implementation.
-          </p>
-          <a href="assets/Samson_Kinyanjui_Resume.pdf" class="btn btn-primary btn-lg mt-3" download>Download My Resume</a>
+        <div class="skills-list">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">React</span>
+          <span class="skill-tag">Next.js</span>
+          <span class="skill-tag">FastAPI</span>
+          <span class="skill-tag">Flask</span>
+          <span class="skill-tag">TensorFlow</span>
+          <span class="skill-tag">LLMs</span>
+          <span class="skill-tag">PostgreSQL</span>
+          <span class="skill-tag">Docker</span>
         </div>
+
+        <a href="assets/Samson_Kinyanjui_Resume.pdf" class="btn btn-outline-light mt-4" download>Download Resume</a>
       </div>
     </div>
   </div>
-  <!-- Skills Section -->
-<div class="text-center mt-5 skills-container">
-  <h2 class="font-weight-bold mb-4">My Skills</h2>
-  <div class="row justify-content-center">
-    <div class="col-6 col-sm-3 mb-4">
-      <img src="assets/python-logo.PNG" alt="Python" class="img-fluid mb-2">
-      <p>Python</p>
-    </div>
-    <div class="col-6 col-sm-3 mb-4">
-      <img src="assets/Javascript-logo.PNG" alt="JavaScript" class="img-fluid mb-2">
-      <p>JavaScript</p>
-    </div>
-    <div class="col-6 col-sm-3 mb-4">
-      <img src="assets/django-logo.PNG" alt="Django" class="img-fluid mb-2">
-      <p>Django</p>
-    </div>
-    <div class="col-6 col-sm-3 mb-4">
-      <img src="assets/Ml-logo.PNG" alt="Machine Learning" class="img-fluid mb-2">
-      <p>Machine Learning</p>
-    </div>
-  </div>
-</div>
-
 </section>
 
 
-  <section id="my-works" class="my-works-section">
+  <section id="my-works" class="projects-section">
   <div class="container">
-    <div class="text-center mb-5">
-      <h1 class="section-title text-primary font-weight-bold">My Projects</h1>
-      <p class="text-muted">A showcase of practical work blending code, creativity, and data.</p>
+    <h2 class="section-heading text-center mb-5">Projects</h2>
+
+    <!-- Project 1: Image Left -->
+    <div class="project-row">
+      <div class="project-image">
+        <img src="assets/CGT.png" alt="CGT Brain">
+      </div>
+      <div class="project-content">
+        <h3 class="project-title">CGT Brain</h3>
+        <p class="project-description">An AI system that does what lawyers and accountants do for Capital Gains Tax. Feed it any property timeline and it applies ATO rules, performs full CGT analysis, and generates detailed reports—work that traditionally takes professionals hours, done in seconds.</p>
+        <div class="project-tags">
+          <span class="tag">Next.js</span>
+          <span class="tag">FastAPI</span>
+          <span class="tag">Gen AI</span>
+        </div>
+        <a href="https://ai.cgtbrain.com.au/" target="_blank" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+      </div>
     </div>
 
-    <div class="row">
-
-      <!-- Project 1 -->
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-lg h-100 border-0 project-card-hover">
-          <img src="assets/CGT.png" class="card-img-top" alt="CGT Brain">
-          <div class="card-body">
-            <h4 class="card-title">CGT Brain</h4>
-            <p class="card-text">An AI system that does what lawyers and accountants do for Capital Gains Tax. Feed it any property timeline and it applies ATO rules, performs full CGT analysis, and generates detailed reports—work that traditionally takes professionals hours, done in seconds.</p>
-            <div class="mb-2">
-              <span class="badge badge-pill badge-primary">Next.js</span>
-              <span class="badge badge-pill badge-success">FastAPI</span>
-              <span class="badge badge-pill badge-info">Gen AI</span>
-            </div>
-            <a href="https://ai.cgtbrain.com.au/" target="_blank" class="btn btn-outline-primary mt-2">View Project</a>
-          </div>
-        </div>
+    <!-- Project 2: Image Right -->
+    <div class="project-row reverse">
+      <div class="project-image">
+        <img src="assets/ss3.PNG" alt="Biashara Buddy">
       </div>
-
-      <!-- Project 2 -->
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-lg h-100 border-0 project-card-hover">
-          <img src="assets/ss3.PNG" class="card-img-top" alt="Biashara Buddy">
-          <div class="card-body">
-            <h4 class="card-title">Biashara Buddy</h4>
-            <p class="card-text">An AI-powered business consultant that helps Kenyan entrepreneurs with budgeting, licensing requirements, business ideas, and location selection—everything a qualified business advisor can do.</p>
-            <div class="mb-2">
-              <span class="badge badge-pill badge-primary">React</span>
-              <span class="badge badge-pill badge-success">Flask</span>
-              <span class="badge badge-pill badge-info">Machine Learning</span>
-            </div>
-            <a href="https://chatbot-client-two.vercel.app/" target="_blank" class="btn btn-outline-primary mt-2">View Project</a>
-          </div>
+      <div class="project-content">
+        <h3 class="project-title">Biashara Buddy</h3>
+        <p class="project-description">An AI-powered business consultant that helps Kenyan entrepreneurs with budgeting, licensing requirements, business ideas, and location selection—everything a qualified business advisor can do.</p>
+        <div class="project-tags">
+          <span class="tag">React</span>
+          <span class="tag">Flask</span>
+          <span class="tag">Machine Learning</span>
         </div>
+        <a href="https://chatbot-client-two.vercel.app/" target="_blank" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
       </div>
-
     </div>
+
   </div>
 </section>
 
@@ -373,40 +345,41 @@
   const darkToggle = document.getElementById('darkToggle');
   const themeIcon = document.getElementById('theme-icon');
 
-  // Dark mode toggle with icon animation
+  // Theme toggle (dark is default, toggle to light)
   darkToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
 
-    // Update icon with smooth transition
     themeIcon.style.transform = 'rotate(360deg)';
     setTimeout(() => {
-      themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+      themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
       themeIcon.style.transform = 'rotate(0deg)';
     }, 150);
 
-    localStorage.setItem('darkMode', isDark);
+    localStorage.setItem('lightMode', isLight);
   });
 
-  // Load dark mode preference
+  // Load theme preference
   window.onload = () => {
     // Hide loading screen
     const loadingScreen = document.getElementById('loading-screen');
     setTimeout(() => {
       loadingScreen.classList.add('hidden');
-      // Remove from DOM after transition
       setTimeout(() => {
         loadingScreen.remove();
       }, 600);
-    }, 1500); // Show loader for 1.5 seconds
+    }, 1500);
 
-    const isDark = localStorage.getItem('darkMode') === 'true';
-    if (isDark) {
-      document.body.classList.add('dark-mode');
+    // Check if user prefers light mode
+    const isLight = localStorage.getItem('lightMode') === 'true';
+    if (isLight) {
+      document.body.classList.add('light-mode');
+      themeIcon.className = 'fas fa-moon';
+    } else {
       themeIcon.className = 'fas fa-sun';
     }
 
-    // Initialize Typed.js for typing animation
+    // Initialize Typed.js
     new Typed('#typed-text', {
       strings: [
         'Machine Learning Practitioner',
