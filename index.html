@@ -67,26 +67,6 @@
     </div>
   </div>
 </div>
-<section class="cli-terminal bg-dark text-light" id="terminal" style="padding: 40px 0;">
-  <div class="container">
-    <div style="max-width: 900px; margin: 0 auto;">
-      <!-- MacOS-style Terminal Header -->
-      <div class="terminal-header">
-        <div class="terminal-dot red"></div>
-        <div class="terminal-dot yellow"></div>
-        <div class="terminal-dot green"></div>
-      </div>
-      <!-- Terminal Body -->
-      <div class="terminal-body">
-        <div id="terminal-output"></div>
-        <div class="d-flex align-items-center mt-2">
-          <span style="color: #0f0;">Kinyanjui@portfolio:~$</span>&nbsp;
-          <input id="terminal-input" autofocus type="text" placeholder="type a command..." />
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 
 
@@ -156,31 +136,13 @@
 
     <div class="row">
 
-       <!-- Project o -->
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-lg h-100 border-0 project-card-hover">
-          <img src="assets/shee.png" class="card-img-top" alt="Investment Bot Project">
-          <div class="card-body">
-            <h4 class="card-title">Shee Clothing Online Store</h4>
-            <p class="card-text">Shee Clothing offers beautifully handcrafted Kenyan fashion for women and children, seamlessly blending traditional aesthetics with modern style—each piece is sustainably produced by local artisans using premium materials.
-               With guaranteed quality and eco-friendly practices, it's a celebration of authentic Kenyan craftsmanship.</p>
-            <div class="mb-2">
-              <span class="badge badge-pill badge-primary">NextJS</span>
-              <!-- <span class="badge badge-pill badge-success">Flask</span> -->
-              <!-- <span class="badge badge-pill badge-info">Machine Learning</span> -->
-            </div>
-            <a href=" https://ecommerce-clothing-dx5o.vercel.app/" target="_blank" class="btn btn-outline-primary mt-2">View Project</a>
-          </div>
-        </div>
-       
-      </div>
       <!-- Project 1 -->
       <div class="col-md-6 mb-4">
         <div class="card shadow-lg h-100 border-0 project-card-hover">
-          <img src="assets/ss3.PNG" class="card-img-top" alt="Investment Bot Project">
+          <img src="assets/ss3.PNG" class="card-img-top" alt="Biashara Buddy">
           <div class="card-body">
-            <h4 class="card-title">Kenyan Business Ideas & Investment Bot</h4>
-            <p class="card-text">An ML-powered chatbot fine-tuned with Kenyan economic data to assist entrepreneurs in identifying viable business opportunities.</p>
+            <h4 class="card-title">Biashara Buddy</h4>
+            <p class="card-text">An AI-powered business consultant that helps Kenyan entrepreneurs with budgeting, licensing requirements, business ideas, and location selection—everything a qualified business advisor can do.</p>
             <div class="mb-2">
               <span class="badge badge-pill badge-primary">React</span>
               <span class="badge badge-pill badge-success">Flask</span>
@@ -191,22 +153,6 @@
         </div>
       </div>
 
-      <!-- Project 2 -->
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-lg h-100 border-0 project-card-hover">
-          <img src="assets/Part_time.PNG" class="card-img-top" alt="University Part-time">
-          <div class="card-body">
-            <h4 class="card-title">University Part-time Job Portal</h4>
-            <p class="card-text">A web platform where merchants post part-time jobs for university students to gain market experience and build a competitive edge.</p>
-            <div class="mb-2">
-              <span class="badge badge-pill badge-warning">Node.js</span>
-              <span class="badge badge-pill badge-secondary">MongoDB</span>
-              <span class="badge badge-pill badge-dark">Bootstrap</span>
-            </div>
-            <a href="https://part-time-1.onrender.com/" target="_blank" class="btn btn-outline-primary mt-2">View Project</a>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -360,7 +306,7 @@
   
 <footer class="footer bg-dark text-white pt-4 pb-3">
   <div class="container text-center">
-    <p class="mb-2">&copy; 2025 <strong>Samson Mainah</strong>. All rights reserved.</p>
+    <p class="mb-2">&copy; 2026 <strong>Samson Mainah</strong>. All rights reserved.</p>
     <div class="mb-3">
       <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2">
         <i class="fab fa-linkedin fa-lg"></i>
@@ -472,108 +418,6 @@
       scale: 1.02
     });
   };
-
- const terminalInput = document.getElementById("terminal-input");
-  const terminalOutput = document.getElementById("terminal-output");
-
-  const responses = {
-    help: [
-      "Available commands:",
-      "about       - Learn about me",
-      "projects    - View my projects",
-      "skills      - See my technical skills",
-      "experience  - My work experience",
-      "contact     - How to reach me",
-      "education   - My educational background",
-      "leadership  - Leadership and community involvement",
-      "clear       - Clear the terminal"
-    ],
-    about: [
-      "Hello, I'm Samson Kinyanjui!",
-      "I'm a Machine Learning practitioner and software developer.",
-      "Part-Time , Graduate Research Assistant at Deden Kimathi University of Technology (2023-present)",
-      "Currently Working, on My Msc Computer Science. Thesis:Detection and Classification Of GI Pathological Findings in Endoscopic Images using  Hybrid ResNet50-CNN",
-      "In 2025, I presented my Thesis Results at IST-Africa Conference 2025",
-      "In 2024, I presented my research at the IEEE ICT4DA Conference,",
-      "and I’ve built several impactful platforms for Kenya’s digital economy."
-    ],
-    projects: [
-      "1. Investment Bot - ML-powered chatbot for Kenyan entrepreneurs.",
-      "   Tech: React, Flask, Python, OpenAI",
-      "   Link: https://chatbot-client-two.vercel.app",
-      "",
-      "2. University Part-time Portal",
-      "   Tech: Node.js, Bootstrap, MongoDB",
-      "   Link: https://part-time-1.onrender.com"
-    ],
-    contact: [
-      "Email: sammmainah98@gmail.com",
-      "WhatsApp: +254 791 848007",
-      "LinkedIn: https://linkedin.com/in/samson-kinyanjui-49051b23a",
-      "GitHub: https://github.com/sammainahkinya1404"
-    ],
-    education: [
-      "1. Msc. Computer Science",
-      "- Specialization in Machine Learning : Classical ML algorithms, Deep Learning algorithms, and Working with LLMs",
-      "2. Bachelor's of Science in  Information Technology",
-      "- Strong foundation in systems design, software engineering, machine learning, and programming."
-    ],
-    skills: [
-      "Languages: Python ██████████ 90%",
-      "JavaScript ██████████ 90%",
-      "Java ██████████ 60%",
-      "SQL ████████ 50%",
-      "Frameworks: Django, Flask, React, Nextjs, Nodejs",
-      "Tools: Git, Linux, TensorFlow, Scikit-Learn"
-    ],
-    experience: [
-      "Software Developer | Freelance (2023–present)",
-      "- Built real-time dashboards and ML-powered platforms.",
-      "- Collaborated with NGOs and startups to optimize tech workflows."
-    ],
-    leadership: [
-      "- Tech Lead, IEEE Student Chapter",
-      "- Organizer: Python for Africa workshops",
-      "- Speaker: ML in Healthcare at DevCon Nairobi 2024"
-    ],
-    clear: () => {
-      terminalOutput.innerHTML = '';
-    },
-    sudo: [
-      "Hi, I'm Samson Kinyanjui, and I see you're trying to be sneaky 😄"
-    ]
-  };
-
-  function printToTerminal(text, isCmd = false) {
-    const div = document.createElement("div");
-    div.textContent = (isCmd ? "Kinyanjui@portfolio:~$ " : "") + text;
-    terminalOutput.appendChild(div);
-    terminalOutput.scrollTop = terminalOutput.scrollHeight;
-  }
-
-  terminalInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      const cmd = terminalInput.value.trim().toLowerCase();
-      if (!cmd) return;
-      printToTerminal(cmd, true);
-      terminalInput.value = "";
-
-      if (responses[cmd]) {
-        const result = typeof responses[cmd] === "function" ? responses[cmd]() : responses[cmd];
-        if (Array.isArray(result)) result.forEach(line => printToTerminal(line));
-      } else {
-        printToTerminal(`bash: ${cmd}: command not found`);
-      }
-    }
-  });
-
-  // Initial greeting
-  [
-    "welcome",
-    "Hi, I'm Samson Kinyanjui, a Machine Learning Practitioner & Software Developer.",
-    "Welcome to my interactive portfolio terminal!",
-    "Type 'help' to see available commands."
-  ].forEach(line => printToTerminal(line));
 
 </script>
 <a href="https://wa.me/254791848007?text=Hi%20Samson%2C%20I'd%20like%20to%20book%20a%20consultation." target="_blank" class="whatsapp-float">
