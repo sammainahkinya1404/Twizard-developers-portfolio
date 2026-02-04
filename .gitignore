@@ -1,0 +1,4 @@
+./claude
+.env
+.env.local
+README.md

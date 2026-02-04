@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog | Samson Kinyanjui</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="./">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="../#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Hero Section -->
+  <section class="blog-hero">
+    <div class="container">
+      <h1 class="blog-hero-title">Blog</h1>
+      <p class="blog-hero-subtitle">AI/ML paper breakdowns, implementations, and research notes.</p>
+    </div>
+  </section>
+
+  <!-- Blog Filters -->
+  <section class="blog-filters-section">
+    <div class="container">
+      <div class="blog-filters">
+        <button class="blog-filter-btn active" data-filter="all">All Posts</button>
+        <button class="blog-filter-btn" data-filter="paper-breakdown">Paper Breakdown</button>
+        <button class="blog-filter-btn" data-filter="implementation">Implementation</button>
+        <button class="blog-filter-btn" data-filter="research">Research</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog Posts Grid -->
+  <section class="blog-listing">
+    <div class="container">
+      <div class="blog-grid">
+        <!-- Blog Card 1 -->
+        <a href="posts/sample-post.html" class="blog-card" data-category="paper-breakdown">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Jan 15, 2026</span>
+              <span class="blog-category">Paper Breakdown</span>
+            </div>
+            <h3 class="blog-card-title">Understanding Attention Is All You Need</h3>
+            <p class="blog-card-excerpt">A deep dive into the Transformer architecture that revolutionized NLP and became the foundation for modern LLMs.</p>
+            <div class="blog-card-tags">
+              <span class="blog-tag">Transformers</span>
+              <span class="blog-tag">NLP</span>
+              <span class="blog-tag">Deep Learning</span>
+            </div>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 12 min read</span>
+              <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Blog Card 2 - Placeholder -->
+        <div class="blog-card blog-card-placeholder" data-category="implementation">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Coming Soon</span>
+              <span class="blog-category">Implementation</span>
+            </div>
+            <h3 class="blog-card-title">Building a RAG System from Scratch</h3>
+            <p class="blog-card-excerpt">Step-by-step guide to implementing Retrieval-Augmented Generation using Python and open-source tools.</p>
+            <div class="blog-card-tags">
+              <span class="blog-tag">RAG</span>
+              <span class="blog-tag">LLMs</span>
+              <span class="blog-tag">Python</span>
+            </div>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 15 min read</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Card 3 - Placeholder -->
+        <div class="blog-card blog-card-placeholder" data-category="research">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Coming Soon</span>
+              <span class="blog-category">Research</span>
+            </div>
+            <h3 class="blog-card-title">Fine-tuning LLMs for Domain Tasks</h3>
+            <p class="blog-card-excerpt">Exploring techniques for adapting large language models to specific domains with limited data.</p>
+            <div class="blog-card-tags">
+              <span class="blog-tag">Fine-tuning</span>
+              <span class="blog-tag">LLMs</span>
+              <span class="blog-tag">ML Ops</span>
+            </div>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 10 min read</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Card 4 - Placeholder -->
+        <div class="blog-card blog-card-placeholder" data-category="paper-breakdown">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Coming Soon</span>
+              <span class="blog-category">Paper Breakdown</span>
+            </div>
+            <h3 class="blog-card-title">BERT: Pre-training Deep Bidirectional Transformers</h3>
+            <p class="blog-card-excerpt">Understanding how BERT changed the NLP landscape with bidirectional context and masked language modeling.</p>
+            <div class="blog-card-tags">
+              <span class="blog-tag">BERT</span>
+              <span class="blog-tag">NLP</span>
+              <span class="blog-tag">Pre-training</span>
+            </div>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 14 min read</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Card 5 - Placeholder -->
+        <div class="blog-card blog-card-placeholder" data-category="implementation">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Coming Soon</span>
+              <span class="blog-category">Implementation</span>
+            </div>
+            <h3 class="blog-card-title">Building a Neural Network from NumPy</h3>
+            <p class="blog-card-excerpt">Implementing backpropagation and gradient descent without frameworks to understand the fundamentals.</p>
+            <div class="blog-card-tags">
+              <span class="blog-tag">Neural Networks</span>
+              <span class="blog-tag">NumPy</span>
+              <span class="blog-tag">From Scratch</span>
+            </div>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 18 min read</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Card 6 - Placeholder -->
+        <div class="blog-card blog-card-placeholder" data-category="research">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Coming Soon</span>
+              <span class="blog-category">Research</span>
+            </div>
+            <h3 class="blog-card-title">Scaling Laws in Large Language Models</h3>
+            <p class="blog-card-excerpt">Analyzing how model size, data, and compute affect performance and what it means for AI development.</p>
+            <div class="blog-card-tags">
+              <span class="blog-tag">Scaling</span>
+              <span class="blog-tag">LLMs</span>
+              <span class="blog-tag">Research</span>
+            </div>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 11 min read</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Mainah</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2">
+          <i class="fab fa-linkedin fa-lg"></i>
+        </a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2">
+          <i class="fab fa-github fa-lg"></i>
+        </a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2">
+          <i class="fab fa-twitter fa-lg"></i>
+        </a>
+      </div>
+      <p class="small mb-0">Designed & built with love by Samson.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    // Theme toggle
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+
+      localStorage.setItem('lightMode', isLight);
+    });
+
+    // Load theme preference
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) {
+        document.body.classList.add('light-mode');
+        themeIcon.className = 'fas fa-moon';
+      } else {
+        themeIcon.className = 'fas fa-sun';
+      }
+    };
+
+    // Blog filter functionality
+    const filterBtns = document.querySelectorAll('.blog-filter-btn');
+    const blogCards = document.querySelectorAll('.blog-card');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update active button
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.dataset.filter;
+
+        // Filter cards
+        blogCards.forEach(card => {
+          if (filter === 'all' || card.dataset.category === filter) {
+            card.style.display = 'block';
+            card.style.animation = 'fadeInUp 0.4s ease';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
