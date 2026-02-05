@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Understanding Attention Is All You Need | Samson Kinyanjui</title>
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+  <!-- Math Notation (KaTeX) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Post -->
+  <article class="blog-post">
+    <div class="container">
+      <!-- Back to Blog -->
+      <a href="../" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+      <!-- Post Header -->
+      <header class="post-header">
+        <div class="post-category">Paper Breakdown</div>
+        <h1 class="post-title">Understanding Attention Is All You Need</h1>
+        <p class="post-subtitle">A deep dive into the Transformer architecture that revolutionized NLP and became the foundation for modern LLMs.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item">
+            <i class="fas fa-user"></i>
+            <span>Samson Kinyanjui</span>
+          </div>
+          <div class="post-meta-item">
+            <i class="fas fa-calendar"></i>
+            <span>January 26, 2026</span>
+          </div>
+          <div class="post-meta-item">
+            <i class="fas fa-clock"></i>
+            <span>15 min read</span>
+          </div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">Transformers</span>
+          <span class="post-tag">NLP</span>
+          <span class="post-tag">Deep Learning</span>
+          <span class="post-tag">Attention</span>
+        </div>
+      </header>
+
+      <!-- Post Content -->
+      <div class="post-content">
+        <h2>Introduction</h2>
+        <p>
+          The 2017 paper "Attention Is All You Need" by Vaswani et al. introduced the Transformer architecture,
+          which has since become the foundation for nearly every major advancement in natural language processing.
+          From BERT to GPT-4, understanding Transformers is essential for anyone working in AI/ML.
+        </p>
+
+        <blockquote>
+          <p>"The Transformer is the first transduction model relying entirely on self-attention to compute
+          representations of its input and output without using sequence-aligned RNNs or convolution."</p>
+          <cite>- Vaswani et al., 2017</cite>
+        </blockquote>
+
+        <h2>The Problem with RNNs</h2>
+        <p>
+          Before Transformers, recurrent neural networks (RNNs) and their variants (LSTMs, GRUs) dominated
+          sequence modeling tasks. However, they had significant limitations:
+        </p>
+
+        <ul>
+          <li><strong>Sequential computation:</strong> RNNs process tokens one at a time, making parallelization difficult</li>
+          <li><strong>Long-range dependencies:</strong> Information gets lost over long sequences despite gating mechanisms</li>
+          <li><strong>Training instability:</strong> Vanishing and exploding gradients remain challenging</li>
+        </ul>
+
+        <h2>The Attention Mechanism</h2>
+        <p>
+          The core innovation of the Transformer is the <strong>self-attention mechanism</strong>, which allows
+          the model to weigh the importance of different parts of the input when producing each part of the output.
+        </p>
+
+        <h3>Scaled Dot-Product Attention</h3>
+        <p>The attention function can be described as mapping a query and a set of key-value pairs to an output:</p>
+
+        <div class="math-block">
+          $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+        </div>
+
+        <p>Where:</p>
+        <ul>
+          <li><span class="math-inline">$Q$</span> (Query): What we're looking for</li>
+          <li><span class="math-inline">$K$</span> (Key): What we have to match against</li>
+          <li><span class="math-inline">$V$</span> (Value): The actual information we retrieve</li>
+          <li><span class="math-inline">$d_k$</span>: The dimension of the keys (for scaling)</li>
+        </ul>
+
+        <h3>Multi-Head Attention</h3>
+        <p>
+          Instead of performing a single attention function, the Transformer uses multiple attention heads
+          to capture different types of relationships:
+        </p>
+
+        <div class="math-block">
+          $$\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O$$
+        </div>
+
+        <p>Where each head is computed as:</p>
+
+        <div class="math-block">
+          $$\text{head}_i = \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)$$
+        </div>
+
+        <h2>Implementation in PyTorch</h2>
+        <p>Let's implement the core attention mechanism in PyTorch:</p>
+
+<pre><code class="language-python">import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import math
+
+class ScaledDotProductAttention(nn.Module):
+    """Scaled Dot-Product Attention mechanism."""
+
+    def __init__(self, dropout=0.1):
+        super().__init__()
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, query, key, value, mask=None):
+        # query, key, value: (batch, heads, seq_len, d_k)
+        d_k = query.size(-1)
+
+        # Compute attention scores
+        scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(d_k)
+
+        # Apply mask if provided (for decoder self-attention)
+        if mask is not None:
+            scores = scores.masked_fill(mask == 0, float('-inf'))
+
+        # Softmax and dropout
+        attention_weights = F.softmax(scores, dim=-1)
+        attention_weights = self.dropout(attention_weights)
+
+        # Apply attention to values
+        output = torch.matmul(attention_weights, value)
+
+        return output, attention_weights
+
+
+class MultiHeadAttention(nn.Module):
+    """Multi-Head Attention module."""
+
+    def __init__(self, d_model, num_heads, dropout=0.1):
+        super().__init__()
+        assert d_model % num_heads == 0
+
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
+
+        # Linear projections
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
+        self.W_o = nn.Linear(d_model, d_model)
+
+        self.attention = ScaledDotProductAttention(dropout)
+
+    def forward(self, query, key, value, mask=None):
+        batch_size = query.size(0)
+
+        # Linear projections and reshape for multi-head
+        Q = self.W_q(query).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        K = self.W_k(key).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        V = self.W_v(value).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+
+        # Apply attention
+        attn_output, attn_weights = self.attention(Q, K, V, mask)
+
+        # Concatenate heads and apply final linear
+        attn_output = attn_output.transpose(1, 2).contiguous().view(batch_size, -1, self.d_model)
+        output = self.W_o(attn_output)
+
+        return output, attn_weights</code></pre>
+
+        <h2>Positional Encoding</h2>
+        <p>
+          Since attention has no inherent notion of position, the Transformer adds positional encodings
+          to the input embeddings. The original paper uses sinusoidal functions:
+        </p>
+
+        <div class="math-block">
+          $$PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d_{model}}}\right)$$
+        </div>
+
+        <div class="math-block">
+          $$PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)$$
+        </div>
+
+<pre><code class="language-python">class PositionalEncoding(nn.Module):
+    """Positional encoding using sinusoidal functions."""
+
+    def __init__(self, d_model, max_len=5000, dropout=0.1):
+        super().__init__()
+        self.dropout = nn.Dropout(dropout)
+
+        # Create positional encoding matrix
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        pe = pe.unsqueeze(0)  # (1, max_len, d_model)
+
+        self.register_buffer('pe', pe)
+
+    def forward(self, x):
+        # x: (batch, seq_len, d_model)
+        x = x + self.pe[:, :x.size(1), :]
+        return self.dropout(x)</code></pre>
+
+        <h2>The Complete Architecture</h2>
+        <p>
+          The Transformer consists of an encoder and decoder, each made up of stacked identical layers:
+        </p>
+
+        <figure class="post-figure">
+          <img src="../../assets/blog/attention.png" alt="Transformer Architecture Diagram" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <div class="figure-placeholder" style="display:none;">
+            <i class="fas fa-image"></i>
+            <p>Transformer Architecture Diagram</p>
+          </div>
+          <figcaption>The Transformer model architecture (Vaswani et al., 2017)</figcaption>
+        </figure>
+
+        <h3>Encoder Layer</h3>
+        <ol>
+          <li>Multi-head self-attention</li>
+          <li>Add & Normalize (residual connection + layer norm)</li>
+          <li>Position-wise feed-forward network</li>
+          <li>Add & Normalize</li>
+        </ol>
+
+        <h3>Decoder Layer</h3>
+        <ol>
+          <li>Masked multi-head self-attention</li>
+          <li>Add & Normalize</li>
+          <li>Multi-head cross-attention (attending to encoder output)</li>
+          <li>Add & Normalize</li>
+          <li>Position-wise feed-forward network</li>
+          <li>Add & Normalize</li>
+        </ol>
+
+        <h2>Why It Matters</h2>
+        <p>
+          The Transformer architecture solved the parallelization problem of RNNs while handling long-range
+          dependencies more effectively. This enabled training on much larger datasets, leading to the
+          foundation models we see today.
+        </p>
+
+        <h3>Key Takeaways</h3>
+        <ul>
+          <li>Self-attention allows every position to attend to every other position in constant time</li>
+          <li>Multi-head attention captures different types of relationships simultaneously</li>
+          <li>Positional encodings preserve sequence order information</li>
+          <li>Residual connections and layer normalization enable training of deep networks</li>
+        </ul>
+
+        <h2>Further Reading</h2>
+        <ul>
+          <li><a href="https://arxiv.org/abs/1706.03762" target="_blank">Original Paper: Attention Is All You Need</a></li>
+          <li><a href="https://jalammar.github.io/illustrated-transformer/" target="_blank">The Illustrated Transformer by Jay Alammar</a></li>
+          <li><a href="https://nlp.seas.harvard.edu/2018/04/03/attention.html" target="_blank">The Annotated Transformer</a></li>
+        </ul>
+      </div>
+
+      <!-- Post Footer -->
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" onclick="shareOnTwitter()"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="share-btn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <!-- Related Posts -->
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <div class="related-post-card">
+            <span class="related-post-category">Paper Breakdown</span>
+            <h4>BERT: Pre-training Deep Bidirectional Transformers</h4>
+            <span class="related-post-date">Coming Soon</span>
+          </div>
+          <div class="related-post-card">
+            <span class="related-post-category">Implementation</span>
+            <h4>Building a RAG System from Scratch</h4>
+            <span class="related-post-date">Coming Soon</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Back to Blog -->
+      <div class="text-center mt-5 mb-4">
+        <a href="../" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Mainah</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2">
+          <i class="fab fa-linkedin fa-lg"></i>
+        </a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2">
+          <i class="fab fa-github fa-lg"></i>
+        </a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2">
+          <i class="fab fa-twitter fa-lg"></i>
+        </a>
+      </div>
+      <p class="small mb-0">Designed & built with love by Samson.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    // Initialize syntax highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+      hljs.highlightAll();
+
+      // Initialize KaTeX for math rendering
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+
+    // Theme toggle
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+
+      localStorage.setItem('lightMode', isLight);
+    });
+
+    // Load theme preference
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) {
+        document.body.classList.add('light-mode');
+        themeIcon.className = 'fas fa-moon';
+      } else {
+        themeIcon.className = 'fas fa-sun';
+      }
+    };
+
+    // Share functions
+    function shareOnTwitter() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+    }
+
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  </script>
+</body>
+
+</html>
