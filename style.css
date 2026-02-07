@@ -824,7 +824,43 @@ body.dark-mode .bg-white {
 /* ===================================
    Responsive Design
 =================================== */
+
+/* Prevent horizontal overflow on mobile */
+html {
+  overflow-x: hidden;
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+  .about-me-section,
+  .projects-section,
+  .publications-section,
+  .blog-section,
+  .contact-section {
+    padding: 70px 0;
+  }
+
+  .project-row {
+    gap: 40px;
+    margin-bottom: 60px;
+  }
+
+  .profile-img {
+    width: 240px;
+  }
+}
+
+/* Small tablet / Large phone */
 @media (max-width: 768px) {
+  .intro-section {
+    padding: 100px 16px 60px;
+    min-height: auto;
+  }
+
+  .hero-greeting {
+    font-size: 1rem;
+  }
+
   .intro-title {
     font-size: 2.5rem;
   }
@@ -837,20 +873,183 @@ body.dark-mode .bg-white {
     font-size: 1.2rem;
   }
 
+  .navbar-collapse {
+    background: var(--bg-primary);
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .navbar-nav .nav-link {
+    margin-left: 0;
+    padding: 10px 16px;
+  }
+
+  .about-me-section,
+  .projects-section,
+  .publications-section,
+  .blog-section,
+  .contact-section {
+    padding: 60px 0;
+  }
+
+  .profile-img {
+    width: 200px;
+  }
+
+  .section-heading {
+    font-size: 1.75rem;
+  }
+
+  .about-text {
+    font-size: 1rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+
+  .project-title {
+    font-size: 1.5rem;
+  }
+
+  .project-description {
+    font-size: 1rem;
+  }
+
+  .publications-section .card {
+    padding: 16px !important;
+  }
+
+  .publications-section h4 {
+    font-size: 1.1rem;
+  }
+
+  .publications-section h1.section-title,
+  .contact-section h1.section-title {
+    font-size: 1.75rem;
+  }
+
+  .contact-section .btn-sm {
+    margin-bottom: 8px;
+  }
+
+  .terminal-body {
+    min-height: 200px;
+    padding: 16px;
+  }
+
   .whatsapp-text {
     display: none;
   }
 
   .whatsapp-float {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     padding: 0;
     justify-content: center;
+    bottom: 20px;
+    right: 20px;
   }
 
   .whatsapp-icon {
     margin-right: 0;
+  }
+
+  .footer {
+    padding: 30px 0;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  .intro-section {
+    padding: 90px 12px 50px;
+  }
+
+  .hero-name {
+    font-size: 2rem;
+  }
+
+  .hero-role {
+    font-size: 0.95rem;
+  }
+
+  .btn-warning {
+    padding: 12px 24px !important;
+    font-size: 0.9rem;
+  }
+
+  .about-me-section,
+  .projects-section,
+  .publications-section,
+  .blog-section,
+  .contact-section {
+    padding: 50px 0;
+  }
+
+  .profile-img {
+    width: 160px;
+  }
+
+  .section-heading {
+    font-size: 1.5rem;
+  }
+
+  .skill-tag {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+
+  .project-row {
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .project-title {
+    font-size: 1.3rem;
+  }
+
+  .blog-card-content {
+    padding: 20px;
+  }
+
+  .blog-card-title {
+    font-size: 1.1rem;
+  }
+
+  .blog-card-excerpt {
+    font-size: 0.9rem;
+  }
+
+  .contact-section .p-4 {
+    padding: 20px !important;
+  }
+
+  .contact-section h4 {
+    font-size: 1.1rem;
+  }
+
+  .whatsapp-float {
+    width: 50px;
+    height: 50px;
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .whatsapp-icon {
+    font-size: 20px;
+  }
+
+  .publications-section h1.section-title,
+  .contact-section h1.section-title {
+    font-size: 1.5rem;
+  }
+
+  .footer .small {
+    font-size: 0.75rem;
   }
 }
 
@@ -1527,11 +1726,15 @@ body.light-mode .hljs-title.class_ {
   }
 
   .blog-hero {
-    padding: 140px 0 60px;
+    padding: 120px 0 50px;
   }
 
   .blog-hero-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
+  }
+
+  .blog-hero-subtitle {
+    font-size: 1rem;
   }
 
   .blog-filters {
@@ -1551,6 +1754,14 @@ body.light-mode .hljs-title.class_ {
     text-align: left;
   }
 
+  .post-title {
+    font-size: 1.75rem;
+  }
+
+  .post-subtitle {
+    font-size: 1.05rem;
+  }
+
   .post-meta {
     justify-content: flex-start;
     gap: 16px;
@@ -1562,10 +1773,21 @@ body.light-mode .hljs-title.class_ {
 
   .post-content h2 {
     font-size: 1.5rem;
+    margin: 32px 0 16px;
+    padding-top: 16px;
   }
 
   .post-content h3 {
     font-size: 1.2rem;
+  }
+
+  .post-content p {
+    font-size: 1rem;
+  }
+
+  .post-content pre {
+    margin: 20px -16px;
+    border-radius: 0;
   }
 
   .post-content pre code {
@@ -1573,7 +1795,62 @@ body.light-mode .hljs-title.class_ {
     padding: 16px;
   }
 
+  .post-content blockquote {
+    padding: 16px 20px;
+    margin: 24px 0;
+  }
+
   .related-posts-grid {
     grid-template-columns: 1fr;
+  }
+
+  .post-share {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .related-posts {
+    margin-top: 40px;
+    padding-top: 32px;
+  }
+
+  .post-footer {
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .blog-hero {
+    padding: 100px 0 40px;
+  }
+
+  .blog-hero-title {
+    font-size: 1.75rem;
+  }
+
+  .blog-post {
+    padding: 80px 0 30px;
+  }
+
+  .post-title {
+    font-size: 1.5rem;
+  }
+
+  .post-content p,
+  .post-content li {
+    font-size: 0.95rem;
+  }
+
+  .blog-card-content {
+    padding: 16px;
+  }
+
+  .blog-filters-section {
+    padding: 0 0 24px;
+  }
+
+  .math-block {
+    padding: 12px;
+    margin: 16px -8px;
   }
 }
