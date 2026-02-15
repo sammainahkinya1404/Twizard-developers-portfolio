@@ -5,7 +5,8 @@
       "WebSearch",
       "WebFetch(domain:colorlib.com)",
       "WebFetch(domain:www.index.dev)",
-      "WebFetch(domain:ai.cgtbrain.com.au)"
+      "WebFetch(domain:ai.cgtbrain.com.au)",
+      "Bash(find:*)"
     ]
   }
 }

@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Automating Financial Statement Audits of Kenyan Companies with LLMs | Samson Kinyanjui</title>
+  <meta name="description" content="From research paper to production app — building an LLM-powered auditor for Kenyan company financial statements with RAG, FastAPI, and Next.js." />
+
+  <!-- Open Graph (LinkedIn, WhatsApp, Facebook) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Automating Financial Statement Audits of Kenyan Companies with LLMs" />
+  <meta property="og:description" content="From research paper to production app — building an LLM-powered auditor for Kenyan company financial statements with RAG, FastAPI, and Next.js." />
+  <meta property="og:image" content="https://sammainah.com/assets/blog/auditor.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/Automating-Financial-Statement-Audits-with-LLMs.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <!-- X / Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Automating Financial Statement Audits of Kenyan Companies with LLMs" />
+  <meta name="twitter:description" content="From research paper to production app — building an LLM-powered auditor for Kenyan company financial statements with RAG, FastAPI, and Next.js." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/blog/auditor.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/jinja2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+  <!-- Math Notation (KaTeX) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Post -->
+  <article class="blog-post">
+    <div class="container">
+      <!-- Back to Blog -->
+      <a href="../" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+      <!-- Post Header -->
+      <header class="post-header">
+        <div class="post-category">Implementation</div>
+        <h1 class="post-title">Automating Financial Statement Audits of Kenyan Companies with LLMs</h1>
+        <p class="post-subtitle">From research paper to production app &mdash; building an LLM-powered auditor for Kenyan company financial statements with RAG, FastAPI, and Next.js.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item">
+            <i class="fas fa-user"></i>
+            <span>Samson Kinyanjui</span>
+          </div>
+          <div class="post-meta-item">
+            <i class="fas fa-calendar"></i>
+            <span>February 15, 2026</span>
+          </div>
+          <div class="post-meta-item">
+            <i class="fas fa-clock"></i>
+            <span>20 min read</span>
+          </div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">LLMs</span>
+          <span class="post-tag">RAG</span>
+          <span class="post-tag">FastAPI</span>
+          <span class="post-tag">IFRS</span>
+          <span class="post-tag">Financial Auditing</span>
+        </div>
+      </header>
+
+      <!-- Post Content -->
+      <div class="post-content">
+
+        <!-- Section 1: Introduction -->
+        <h2>Introduction</h2>
+        <p>
+          Financial statement auditing in Kenya is a painstaking, manual process. Auditors at firms registered with
+          ICPAK (Institute of Certified Public Accountants of Kenya) spend weeks poring over balance sheets,
+          income statements, and transaction ledgers for companies listed on the Nairobi Securities Exchange.
+          They cross-reference every line item against IFRS standards as adopted in Kenya, hunting for
+          misclassifications, numerical errors, missing rows, and redundant entries.
+        </p>
+        <p>
+          When I came across the paper <em>"Automating Financial Statement Audits with LLMs"</em> by Wang et al.
+          (arXiv:2506.17282v1, 2025), I knew I had to build it. The paper proposes a five-stage framework where
+          an LLM acts as a financial auditor: it reads a financial statement, compares it against transaction data,
+          retrieves relevant accounting standards via RAG, identifies errors, and outputs a corrected statement &mdash;
+          all in structured JSON.
+        </p>
+        <p>
+          This post walks through how I turned that paper into <strong>TechStore</strong>, a full-stack application
+          with a FastAPI backend, Next.js frontend, and a RAG pipeline grounded in IFRS standards. I'll cover the
+          system architecture, the core auditor agent, prompt engineering with Jinja2 templates, the evaluation
+          framework, and how it all comes together in a streaming web interface.
+        </p>
+
+        <blockquote>
+          <p>"We propose a comprehensive five-stage evaluation framework to assess LLM performance across
+          the complete audit workflow, from initial judgment to final statement revision."</p>
+          <cite>&mdash; Wang et al., 2025</cite>
+        </blockquote>
+
+        <!-- Section 2: The Paper's Core Idea -->
+        <h2>The Paper's Core Idea</h2>
+        <p>
+          The paper introduces a structured pipeline for LLM-based auditing that mirrors what a human auditor does,
+          broken into five evaluation stages:
+        </p>
+        <ol>
+          <li><strong>General Judgment</strong> &mdash; Is the financial statement correct or incorrect?</li>
+          <li><strong>Error Identification</strong> &mdash; What type of error is it (Missing Row, Numerical Error, Redundant Row, Misclassification) and which entry is affected?</li>
+          <li><strong>Error Resolution</strong> &mdash; A natural-language explanation of the error and how to fix it.</li>
+          <li><strong>Standards Citation</strong> &mdash; Which IFRS/IAS standard is relevant?</li>
+          <li><strong>Financial Statement Revision</strong> &mdash; The full corrected table.</li>
+        </ol>
+
+        <figure class="post-figure">
+          <img src="../../assets/blog/auditor.png" alt="Five-stage LLM Audit Framework" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <div class="figure-placeholder" style="display:none;">
+            <i class="fas fa-image"></i>
+            <p>Five-stage LLM Audit Framework</p>
+          </div>
+          <figcaption>The five-stage audit framework: from general judgment to full statement revision (adapted from Wang et al., 2025)</figcaption>
+        </figure>
+
+        <p>
+          The key insight is that auditing isn't a single yes/no task. Each stage builds on the previous one,
+          and the evaluation metrics differ per stage: Exact Match for judgment and error identification,
+          BERTScore for natural-language resolution, and BLEU for table revision. The paper also introduces
+          a "Retrieved Memory" component &mdash; essentially RAG over accounting standards &mdash; which
+          significantly improves citation accuracy.
+        </p>
+
+        <!-- Section 3: System Architecture -->
+        <h2>System Architecture</h2>
+        <p>
+          TechStore is structured as a three-layer application:
+        </p>
+        <ul>
+          <li><strong>Core Engine</strong> (Python) &mdash; The auditor agent, LLM client, RAG knowledge base, evaluator, and prompt templates. This is framework-agnostic and can run standalone via CLI.</li>
+          <li><strong>Backend API</strong> (FastAPI) &mdash; Exposes the auditor as REST endpoints with SSE (Server-Sent Events) streaming for real-time progress updates.</li>
+          <li><strong>Frontend</strong> (Next.js) &mdash; A web UI where users paste financial statements, trigger audits, and see results rendered in real time.</li>
+        </ul>
+        <p>
+          The core engine handles all the heavy lifting: it orchestrates the LLM call, manages the RAG pipeline
+          with FAISS vector search, parses structured JSON output, and runs the five-stage evaluation. The backend
+          wraps this in an async service layer and streams progress events to the frontend.
+        </p>
+
+        <!-- Section 4: Building the LLM Client -->
+        <h2>Building the LLM Client</h2>
+        <p>
+          The first piece I built was a unified LLM client that abstracts away provider differences. The auditor
+          needs to work with DeepSeek (for cost-effective development), OpenAI (for benchmarking), and Anthropic
+          (for comparison). Rather than scattering provider logic throughout the codebase, everything goes through
+          a single <code>call_llm()</code> function:
+        </p>
+
+<pre><code class="language-python">def call_llm(
+    user_prompt: str,
+    system: str = "",
+    provider: Optional[str] = None,
+    model: Optional[str] = None,
+    temperature: float = 0.0,
+    max_tokens: int = 4096,
+    json_mode: bool = False,
+) -> str:
+    """
+    Call an LLM with the given prompt. Supports DeepSeek, OpenAI, and Anthropic.
+    """
+    from config import (
+        LLM_PROVIDER,
+        DEEPSEEK_API_KEY, DEEPSEEK_MODEL, DEEPSEEK_BASE_URL,
+        OPENAI_API_KEY, OPENAI_MODEL,
+        ANTHROPIC_API_KEY, ANTHROPIC_MODEL,
+    )
+
+    provider = provider or LLM_PROVIDER
+
+    if provider == "deepseek":
+        return _call_openai(
+            user_prompt=user_prompt, system=system,
+            api_key=DEEPSEEK_API_KEY, model=model or DEEPSEEK_MODEL,
+            temperature=temperature, max_tokens=max_tokens,
+            json_mode=json_mode, base_url=DEEPSEEK_BASE_URL,
+        )
+    elif provider == "openai":
+        return _call_openai(
+            user_prompt=user_prompt, system=system,
+            api_key=OPENAI_API_KEY, model=model or OPENAI_MODEL,
+            temperature=temperature, max_tokens=max_tokens,
+            json_mode=json_mode,
+        )
+    elif provider == "anthropic":
+        return _call_anthropic(
+            user_prompt=user_prompt, system=system,
+            api_key=ANTHROPIC_API_KEY, model=model or ANTHROPIC_MODEL,
+            temperature=temperature, max_tokens=max_tokens,
+        )
+    else:
+        raise ValueError(f"Unsupported LLM provider: {provider}")</code></pre>
+
+        <p>
+          DeepSeek uses an OpenAI-compatible API, so both DeepSeek and OpenAI route through the same
+          <code>_call_openai()</code> helper. Anthropic has its own message format (system prompt is a
+          top-level parameter, not a message), so it gets a separate <code>_call_anthropic()</code> path.
+          Temperature is set to <code>0.0</code> by default for deterministic auditing output.
+        </p>
+        <p>
+          The client also includes a <code>parse_json_response()</code> utility that handles LLMs wrapping
+          JSON in markdown code blocks &mdash; a common quirk when requesting structured output.
+        </p>
+
+        <!-- Section 5: RAG: Retrieving IFRS Standards -->
+        <h2>RAG: Retrieving IFRS Standards</h2>
+        <p>
+          The paper's "Retrieved Memory" component is what makes the auditor actually useful. Without it,
+          the LLM hallucinates standard references. With it, the model can ground its citations in real IFRS text.
+        </p>
+        <p>
+          I implemented this as the <code>IFRSKnowledgeBase</code> class using FAISS for vector search
+          and HuggingFace's <code>all-MiniLM-L6-v2</code> for embeddings:
+        </p>
+
+<pre><code class="language-python">class IFRSKnowledgeBase:
+    """
+    Vector-based retrieval over IFRS accounting standards
+    (as adopted in Kenya).
+    """
+
+    def __init__(self, standards_path: str,
+                 embedding_model: str = "all-MiniLM-L6-v2"):
+        with open(standards_path, "r") as f:
+            self.standards = json.load(f)
+        self.embedding_model_name = embedding_model
+        self.vectorstore: Optional[FAISS] = None
+        self._built = False
+
+    def build_index(self):
+        """Build FAISS vectorstore from standard texts."""
+        if not HAS_EMBEDDINGS:
+            print("[KnowledgeBase] langchain/faiss not installed. "
+                  "Using keyword fallback.")
+            return
+
+        embeddings = HuggingFaceEmbeddings(
+            model_name=self.embedding_model_name
+        )
+
+        documents = []
+        for s in self.standards:
+            page_content = (
+                f"{s['title']}. {s['full_text']} {s['summary']}"
+            )
+            metadata = {
+                "id": s["id"], "standard": s["standard"],
+                "title": s["title"], "summary": s["summary"],
+                "full_text": s["full_text"],
+            }
+            documents.append(
+                Document(page_content=page_content, metadata=metadata)
+            )
+
+        self.vectorstore = FAISS.from_documents(documents, embeddings)
+        self._built = True
+
+    def retrieve(self, query: str, top_k: int = 5) -> list[dict]:
+        """Retrieve the top-k most relevant IFRS standards."""
+        if self._built and self.vectorstore is not None:
+            return self._semantic_retrieve(query, top_k)
+        else:
+            return self._keyword_retrieve(query, top_k)</code></pre>
+
+        <p>
+          The knowledge base loads IFRS standards from a JSON file where each entry has an <code>id</code>,
+          <code>standard</code> reference (e.g., "IAS 1"), <code>title</code>, <code>summary</code>, and
+          <code>full_text</code>. Each standard becomes a LangChain <code>Document</code> with the full text
+          concatenated for embedding.
+        </p>
+        <p>
+          The <code>retrieve()</code> method falls back to keyword matching if FAISS or HuggingFace embeddings
+          aren't available &mdash; useful for lightweight deployments or CI environments where you don't want
+          to download a 90MB embedding model.
+        </p>
+
+        <!-- Section 6: The Auditor Agent -->
+        <h2>The Auditor Agent</h2>
+        <p>
+          The <code>FinancialAuditor</code> class is the heart of the system. Its <code>audit()</code>
+          method implements the full pipeline from the paper:
+        </p>
+
+<pre><code class="language-python">class FinancialAuditor:
+    """LLM-based financial statement auditor for Kenyan companies."""
+
+    def __init__(
+        self,
+        knowledge_base: Optional[IFRSKnowledgeBase] = None,
+        provider: Optional[str] = None,
+        model: Optional[str] = None,
+        top_k_standards: int = 5,
+    ):
+        self.kb = knowledge_base
+        self.provider = provider
+        self.model = model
+        self.top_k = top_k_standards
+
+    def audit(
+        self,
+        table_text: str,
+        transactions: str,
+        use_rag: bool = True,
+    ) -> AuditResult:
+        """Run the complete audit pipeline."""
+
+        # Step 1: Retrieve relevant standards (RAG)
+        standards_context = ""
+        retrieved_standards = []
+
+        if use_rag and self.kb:
+            query = self._build_retrieval_query(
+                table_text, transactions
+            )
+            retrieved_standards = self.kb.retrieve(
+                query, top_k=self.top_k
+            )
+            standards_context = self.kb.format_context(
+                retrieved_standards, use_summary=False
+            )
+
+        if not standards_context:
+            standards_context = (
+                "Use your knowledge of IFRS accounting standards "
+                "as adopted in Kenya. Cite specific standards "
+                "(e.g., IAS 1.66, IAS 2.9, IFRS 15) when applicable."
+            )
+
+        # Step 2: Call the LLM auditor
+        user_prompt = render_auditor_user(
+            standards_context=standards_context,
+            table_text=table_text,
+            transactions=transactions,
+        )
+        raw_response = call_llm(
+            user_prompt=user_prompt,
+            system=render_auditor_system(),
+            provider=self.provider,
+            model=self.model,
+            temperature=0.0,
+        )
+
+        # Step 3: Parse the response
+        result = self._parse_audit_response(raw_response)
+        result.raw_response = raw_response
+        result.retrieved_standards = retrieved_standards
+
+        # Step 4: Enhance citations via RAG
+        if use_rag and self.kb and result.errors:
+            self._enhance_citations(result)
+
+        return result</code></pre>
+
+        <p>
+          The pipeline has four steps: (1) build a retrieval query from the financial statement's row labels
+          and search the FAISS index for relevant IFRS standards, (2) render the system and user prompts
+          with the retrieved context and call the LLM, (3) parse the JSON response into an <code>AuditResult</code>
+          dataclass, and (4) optionally enhance weak citations by running a second RAG lookup per error.
+        </p>
+        <p>
+          The <code>AuditResult</code> dataclass mirrors the paper's five stages: <code>general_judgment</code>
+          (Stage 1), a list of <code>AuditError</code> objects each with <code>error_type</code>,
+          <code>problematic_entry</code>, <code>error_resolution</code>, and <code>standards_citation</code>
+          (Stages 2&ndash;4), and a <code>corrected_table</code> (Stage 5).
+        </p>
+
+        <!-- Section 7: Prompt Engineering -->
+        <h2>Prompt Engineering</h2>
+        <p>
+          Getting the LLM to output structured, accurate audit results required careful prompt design.
+          I used Jinja2 templates to keep prompts maintainable and separate from code.
+        </p>
+
+        <h3>System Prompt</h3>
+        <p>
+          The system prompt establishes the auditor persona and defines the four error types from the paper:
+        </p>
+
+<pre><code class="language-jinja2">You are an expert financial statement auditor specialising in
+Kenyan companies listed on the Nairobi Securities Exchange (NSE).
+Your role is to identify, explain, and correct errors in financial
+statements by cross-referencing them with historical transaction
+data and accounting standards.
+
+You understand IFRS (International Financial Reporting Standards)
+as adopted in Kenya and can cite them accurately (e.g., IAS 1,
+IAS 2, IFRS 9, IFRS 15, etc.). You will be provided with:
+1. A financial statement that may or may not contain errors
+2. The corresponding historical transaction data
+3. Relevant accounting standards from your knowledge base
+
+Currency values are in Kenya Shillings (KSh), typically expressed
+in millions (KSh' Million) or thousands (KSh' 000).
+
+Error types you should look for:
+&lt;1&gt; Missing Row: A row containing a specific account is missing.
+&lt;2&gt; Numerical Error: The value of a specific account is incorrect.
+&lt;3&gt; Redundant Row: A row that should not exist based on the data.
+&lt;4&gt; Misclassification: A row placed in the wrong category.</code></pre>
+
+        <h3>User Prompt</h3>
+        <p>
+          The user prompt injects the retrieved IFRS standards, the financial statement table, and the
+          transaction data, then specifies the exact JSON output format:
+        </p>
+
+<pre><code class="language-jinja2">Audit the following financial statement by comparing it against
+the transaction data.
+
+For your analysis, you also have access to these relevant
+accounting standards:
+{{ standards_context }}
+
+Provide your output in the following JSON format:
+{
+  "general_judgment": "Correct" or "Incorrect",
+  "errors": [
+    {
+      "error_type": "&lt;Missing Row | Numerical Error | ...&gt;",
+      "problematic_entry": "Row N",
+      "error_resolution": "&lt;detailed explanation&gt;",
+      "standards_citation": "&lt;IFRS/IAS standard reference&gt;"
+    }
+  ],
+  "corrected_table": "&lt;the full corrected table&gt;"
+}
+
+Input Table:
+{{ table_text }}
+
+Transaction Data:
+{{ transactions }}
+
+Now analyze and output ONLY the JSON result.</code></pre>
+
+        <p>
+          The explicit JSON schema in the prompt is critical. Without it, LLMs tend to produce
+          free-form text that's impossible to evaluate programmatically. The <code>{% raw %}...{% endraw %}</code>
+          blocks in the actual template prevent Jinja2 from interpreting the JSON braces as template variables.
+        </p>
+
+        <!-- Section 8: Data Pipeline & Benchmarking -->
+        <h2>Data Pipeline &amp; Benchmarking</h2>
+        <p>
+          The paper uses financial statements from Chinese companies, but I adapted the system for <strong>Kenyan
+          companies listed on the NSE</strong>. Financial statements are represented in a structured text format
+          where each row is labeled:
+        </p>
+
+<pre><code class="language-json">[row 1]: Revenue | KSh' Million | 12,450
+[row 2]: Cost of Sales | KSh' Million | (8,200)
+[row 3]: Gross Profit | KSh' Million | 4,250
+[row 4]: Administrative Expenses | KSh' Million | (1,100)
+...</code></pre>
+
+        <p>
+          For benchmarking, I built a data pipeline that:
+        </p>
+        <ul>
+          <li><strong>Injects errors</strong> into clean financial statements &mdash; each of the four error types (Missing Row, Numerical Error, Redundant Row, Misclassification) with known ground truth.</li>
+          <li><strong>Generates transaction data</strong> that corresponds to the correct version of the statement, so the auditor has a reference to compare against.</li>
+          <li><strong>Records ground truth</strong> for each sample: the correct judgment, error type, affected row, resolution explanation, relevant IFRS standard, and the corrected table.</li>
+        </ul>
+        <p>
+          This gives us a structured benchmark dataset where every sample has a known answer for all five
+          evaluation stages.
+        </p>
+
+        <!-- Section 9: The Five-Stage Evaluation Framework -->
+        <h2>The Five-Stage Evaluation Framework</h2>
+        <p>
+          The paper's evaluation framework uses different metrics for different stages, reflecting the
+          nature of each output. I implemented this in the <code>AuditEvaluator</code> class:
+        </p>
+
+<pre><code class="language-python">@dataclass
+class StageScores:
+    """Scores for a single audit sample across all five stages."""
+    # Stage 1: General Judgment
+    general_judgment_em: float = 0.0
+    # Stage 2: Error Identification
+    error_type_em: float = 0.0
+    error_entry_em: float = 0.0
+    # Stage 3: Error Resolution
+    error_resolution_bertscore: float = 0.0
+    # Stage 4: Standards Citation
+    standards_citation_top1_em: float = 0.0
+    standards_citation_top5_em: float = 0.0
+    # Stage 5: Table Revision
+    table_revision_bleu: float = 0.0
+    # Overall
+    success: bool = False</code></pre>
+
+        <p>The <code>evaluate_sample()</code> method computes each metric:</p>
+
+<pre><code class="language-python">def evaluate_sample(
+    self,
+    prediction: "AuditResult",
+    ground_truth: dict,
+    retrieved_standard_ids: Optional[list[str]] = None,
+) -> StageScores:
+    """Evaluate a single audit prediction against ground truth."""
+    scores = StageScores()
+
+    # Stage 1: General Judgment (Exact Match)
+    gt_judgment = ground_truth.get(
+        "general_judgment", ""
+    ).strip().lower()
+    pred_judgment = prediction.general_judgment.strip().lower()
+    scores.general_judgment_em = (
+        1.0 if pred_judgment == gt_judgment else 0.0
+    )
+
+    # Stage 2: Error Identification (Exact Match)
+    if prediction.errors:
+        pred_error = prediction.errors[0]
+        gt_type = ground_truth.get("error_type", "").strip().lower()
+        pred_type = pred_error.error_type.strip().lower()
+        scores.error_type_em = (
+            1.0 if pred_type == gt_type else 0.0
+        )
+
+        gt_entry = self._normalize_entry(
+            ground_truth.get("problematic_entry", "")
+        )
+        pred_entry = self._normalize_entry(
+            pred_error.problematic_entry
+        )
+        scores.error_entry_em = (
+            1.0 if pred_entry == gt_entry else 0.0
+        )
+
+    # Stage 3: Error Resolution (BERTScore)
+    gt_resolution = ground_truth.get("error_resolution", "")
+    pred_resolution = (
+        prediction.errors[0].error_resolution
+        if prediction.errors else ""
+    )
+    scores.error_resolution_bertscore = (
+        self._compute_bertscore(pred_resolution, gt_resolution)
+    )
+
+    # Stage 4: Standards Citation (Top-K EM)
+    gt_citation_id = ground_truth.get("standards_citation", "")
+    if retrieved_standard_ids:
+        scores.standards_citation_top1_em = (
+            1.0 if gt_citation_id
+            in retrieved_standard_ids[:1] else 0.0
+        )
+        scores.standards_citation_top5_em = (
+            1.0 if gt_citation_id
+            in retrieved_standard_ids[:5] else 0.0
+        )
+
+    # Stage 5: Table Revision (BLEU)
+    gt_table = ground_truth.get("corrected_table", "")
+    pred_table = prediction.corrected_table
+    scores.table_revision_bleu = (
+        self._compute_bleu(pred_table, gt_table)
+    )
+
+    # Overall Success Rate
+    scores.success = (
+        scores.general_judgment_em == 1.0
+        and scores.error_type_em == 1.0
+        and scores.error_entry_em == 1.0
+        and scores.error_resolution_bertscore
+            >= self.bertscore_threshold
+        and scores.table_revision_bleu
+            >= self.bleu_threshold
+    )
+    return scores</code></pre>
+
+        <p>The metrics break down as follows:</p>
+        <ul>
+          <li><strong>Exact Match (EM)</strong> for Stages 1, 2, and 4 &mdash; binary correctness. The judgment is either right or wrong, the error type matches or it doesn't.</li>
+          <li><strong>BERTScore</strong> for Stage 3 &mdash; semantic similarity between the predicted and ground-truth error resolution. This captures meaning rather than exact wording, with a threshold of 0.85.</li>
+          <li><strong>BLEU</strong> for Stage 5 &mdash; n-gram overlap between the predicted corrected table and the ground truth. Tables are highly structured, so BLEU works well here with a threshold of 0.99.</li>
+        </ul>
+        <p>
+          The overall <strong>Success Rate</strong> requires <em>all</em> stages to pass their respective thresholds.
+          This is deliberately strict &mdash; a real audit that gets the judgment right but cites the wrong standard
+          isn't actually useful.
+        </p>
+
+        <!-- Section 10: Bringing It to the Web -->
+        <h2>Bringing It to the Web</h2>
+        <p>
+          The core engine runs as a standalone Python module, but to make it accessible I wrapped it in a
+          FastAPI backend with SSE streaming. Audits can take 10&ndash;30 seconds depending on the LLM provider,
+          so streaming progress events keeps the UI responsive.
+        </p>
+
+<pre><code class="language-python">class AuditService:
+    """Wraps FinancialAuditor with async support and SSE streaming."""
+
+    async def audit_stream(
+        self,
+        table_text: str,
+        transactions: str,
+        use_rag: bool = True,
+    ) -> AsyncGenerator[AuditProgressEvent, None]:
+        """Yield SSE progress events during the audit."""
+
+        yield AuditProgressEvent(
+            stage="started",
+            message="Audit started", progress=0.0,
+        )
+        yield AuditProgressEvent(
+            stage="retrieving",
+            message="Retrieving relevant IFRS standards...",
+            progress=0.15,
+        )
+        yield AuditProgressEvent(
+            stage="analyzing",
+            message="Analyzing financial statement with LLM...",
+            progress=0.30,
+        )
+
+        try:
+            result = await self.audit(
+                table_text, transactions, use_rag
+            )
+
+            yield AuditProgressEvent(
+                stage="parsing",
+                message="Parsing audit results...",
+                progress=0.70,
+            )
+            yield AuditProgressEvent(
+                stage="completed",
+                message="Audit complete", progress=1.0,
+                data=result.model_dump(),
+            )
+        except Exception as e:
+            yield AuditProgressEvent(
+                stage="error", message=str(e), progress=0.0,
+            )</code></pre>
+
+        <p>
+          The FastAPI route handler consumes this async generator and converts it to an SSE stream
+          using <code>sse-starlette</code>:
+        </p>
+
+<pre><code class="language-python">@router.post("/audit/stream")
+async def run_audit_stream(
+    request: AuditRequestModel,
+    service: AuditService = Depends(get_audit_service),
+):
+    """Run an audit with SSE progress streaming."""
+    async def event_generator():
+        async for event in service.audit_stream(
+            table_text=request.table_text,
+            transactions=request.transactions,
+            use_rag=request.use_rag,
+        ):
+            yield {
+                "event": event.stage,
+                "data": json.dumps(event.model_dump()),
+            }
+    return EventSourceResponse(event_generator())</code></pre>
+
+        <p>
+          On the frontend, Next.js connects to the SSE endpoint and updates a progress bar and status
+          messages in real time. When the <code>completed</code> event arrives with the full audit result,
+          the UI renders the judgment, error details, standards citations, and the corrected table in a
+          structured layout.
+        </p>
+
+        <!-- Section 11: Key Findings & Lessons Learned -->
+        <h2>Key Findings &amp; Lessons Learned</h2>
+        <p>
+          Building this system taught me several things about applying LLMs to structured financial tasks:
+        </p>
+
+        <h3>What LLMs Excel At</h3>
+        <ul>
+          <li><strong>General Judgment</strong> &mdash; LLMs are surprisingly good at detecting whether a financial statement contains errors. The binary correct/incorrect judgment achieves high accuracy across providers.</li>
+          <li><strong>Error Type Classification</strong> &mdash; Distinguishing between Missing Row, Numerical Error, Redundant Row, and Misclassification is a natural fit for LLMs that understand accounting semantics.</li>
+          <li><strong>Natural-Language Resolution</strong> &mdash; Explaining <em>why</em> something is wrong and <em>how</em> to fix it is where LLMs truly shine. The BERTScore results for Stage 3 are consistently strong.</li>
+        </ul>
+
+        <h3>Where LLMs Struggle</h3>
+        <ul>
+          <li><strong>Precise Numerical Computation</strong> &mdash; LLMs sometimes miscalculate totals or fail to propagate corrections through dependent rows. The corrected table (Stage 5) is the hardest stage.</li>
+          <li><strong>Standards Citation Without RAG</strong> &mdash; Without the FAISS knowledge base, models hallucinate IFRS references. RAG is not optional for this task &mdash; it's essential.</li>
+          <li><strong>Structured Output Consistency</strong> &mdash; Even with explicit JSON schemas in the prompt, models occasionally deviate from the format. The <code>parse_json_response()</code> utility with regex fallbacks handles most edge cases, but it's an ongoing battle.</li>
+        </ul>
+
+        <h3>Practical Takeaways</h3>
+        <ul>
+          <li><strong>Temperature 0.0 is non-negotiable for auditing.</strong> Any randomness in financial output is unacceptable.</li>
+          <li><strong>Jinja2 templates keep prompts maintainable.</strong> As prompts grow complex, having them in separate files with variable injection beats string concatenation.</li>
+          <li><strong>Keyword fallback in RAG matters.</strong> Not every deployment can run FAISS + HuggingFace embeddings. A simple keyword retriever as a fallback keeps the system functional in constrained environments.</li>
+          <li><strong>SSE streaming is worth the complexity.</strong> A 20-second audit that shows progress feels faster than a 20-second audit with a loading spinner.</li>
+        </ul>
+
+        <!-- Section 12: Further Reading -->
+        <h2>Further Reading</h2>
+        <ul>
+          <li><a href="https://arxiv.org/abs/2506.17282" target="_blank">Original Paper: Automating Financial Statement Audits with LLMs (Wang et al., 2025)</a></li>
+          <li><a href="https://www.ifrs.org/issued-standards/list-of-standards/" target="_blank">IFRS Standards List &mdash; IFRS Foundation</a></li>
+          <li><a href="https://www.icpak.com/" target="_blank">ICPAK &mdash; Institute of Certified Public Accountants of Kenya</a></li>
+          <li><a href="https://faiss.ai/" target="_blank">FAISS: A Library for Efficient Similarity Search</a></li>
+          <li><a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2" target="_blank">all-MiniLM-L6-v2 Embedding Model</a></li>
+          <li><a href="https://fastapi.tiangolo.com/" target="_blank">FastAPI Documentation</a></li>
+        </ul>
+      </div>
+
+      <!-- Post Footer -->
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <!-- Related Posts -->
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <div class="related-post-card">
+            <a href="attention-post.html">
+              <span class="related-post-category">Paper Breakdown</span>
+              <h4>Understanding Attention Is All You Need</h4>
+              <span class="related-post-date">February 5, 2026</span>
+            </a>
+          </div>
+          <div class="related-post-card">
+            <span class="related-post-category">Implementation</span>
+            <h4>Building a RAG System from Scratch</h4>
+            <span class="related-post-date">Coming Soon</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Back to Blog -->
+      <div class="text-center mt-5 mb-4">
+        <a href="../" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Mainah</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2">
+          <i class="fab fa-linkedin fa-lg"></i>
+        </a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2">
+          <i class="fab fa-github fa-lg"></i>
+        </a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2">
+          <i class="fab fa-twitter fa-lg"></i>
+        </a>
+      </div>
+      <p class="small mb-0">Designed & built with love by Samson.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    // Initialize syntax highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+      hljs.highlightAll();
+
+      // Initialize KaTeX for math rendering
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+
+    // Theme toggle
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+
+      localStorage.setItem('lightMode', isLight);
+    });
+
+    // Load theme preference
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) {
+        document.body.classList.add('light-mode');
+        themeIcon.className = 'fas fa-moon';
+      } else {
+        themeIcon.className = 'fas fa-sun';
+      }
+    };
+
+    // Share functions
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(
+        `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`,
+        'linkedin-share',
+        'width=600,height=600'
+      );
+    }
+
+    function shareOnWhatsApp() {
+      const url = window.location.href;
+      const title = document.title;
+      const text = encodeURIComponent(`${title}\n${url}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(
+        `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+        'x-share',
+        'width=600,height=300'
+      );
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+
+</html>

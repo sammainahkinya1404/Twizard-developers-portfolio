@@ -6,6 +6,22 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Understanding Attention Is All You Need | Samson Kinyanjui</title>
+  <meta name="description" content="A deep dive into the Transformer architecture that revolutionized NLP and became the foundation for modern LLMs." />
+
+  <!-- Open Graph (LinkedIn, WhatsApp, Facebook) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Understanding Attention Is All You Need" />
+  <meta property="og:description" content="A deep dive into the Transformer architecture that revolutionized NLP and became the foundation for modern LLMs." />
+  <meta property="og:image" content="https://sammainah.com/assets/blog/attention.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/attention-post.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <!-- X / Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Understanding Attention Is All You Need" />
+  <meta name="twitter:description" content="A deep dive into the Transformer architecture that revolutionized NLP and became the foundation for modern LLMs." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/blog/attention.png" />
+
   <link rel="stylesheet" href="../../style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="icon" href="../../assets/favicon.png" />
@@ -317,9 +333,10 @@ class MultiHeadAttention(nn.Module):
       <footer class="post-footer">
         <div class="post-share">
           <span>Share this post:</span>
-          <a href="#" class="share-btn" onclick="shareOnTwitter()"><i class="fab fa-twitter"></i></a>
-          <a href="#" class="share-btn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
-          <a href="#" class="share-btn" onclick="copyLink()"><i class="fas fa-link"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
         </div>
       </footer>
 
@@ -412,20 +429,39 @@ class MultiHeadAttention(nn.Module):
     };
 
     // Share functions
-    function shareOnTwitter() {
-      const url = encodeURIComponent(window.location.href);
-      const text = encodeURIComponent(document.title);
-      window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
-    }
-
     function shareOnLinkedIn() {
       const url = encodeURIComponent(window.location.href);
-      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+      const title = encodeURIComponent(document.title);
+      window.open(
+        `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`,
+        'linkedin-share',
+        'width=600,height=600'
+      );
+    }
+
+    function shareOnWhatsApp() {
+      const url = window.location.href;
+      const title = document.title;
+      const text = encodeURIComponent(`${title}\n${url}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(
+        `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+        'x-share',
+        'width=600,height=300'
+      );
     }
 
     function copyLink() {
-      navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
     }
   </script>
 </body>
