@@ -12,15 +12,15 @@
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Building a Multi-Agent Trading System for the NSE" />
   <meta property="og:description" content="From UCLA/MIT research paper to a working multi-agent LLM trading system for the Nairobi Securities Exchange with LangGraph, DeepSeek, and FastAPI." />
-  <meta property="og:image" content="https://sammainah.com/assets/blog/finarena.png" />
-  <meta property="og:url" content="https://sammainah.com/blog/posts/building-a-multi-agent-trading-system-for-the-nse.html" />
+  <meta property="og:image" content="https://sammainah.com/assets/blog/TradingAgents_Archtecture.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/building-tradingagents-for-the-nse.html" />
   <meta property="og:site_name" content="Samson Kinyanjui" />
 
   <!-- X / Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Building a Multi-Agent Trading System for the NSE" />
   <meta name="twitter:description" content="From UCLA/MIT research paper to a working multi-agent LLM trading system for the Nairobi Securities Exchange with LangGraph, DeepSeek, and FastAPI." />
-  <meta name="twitter:image" content="https://sammainah.com/assets/blog/finarena.png" />
+  <meta name="twitter:image" content="https://sammainah.com/assets/blog/TradingAgents_Archtecture.png" />
 
   <link rel="stylesheet" href="../../style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -129,7 +129,7 @@
           market-agnostic.
         </p>
         <p>
-          This post walks through how I built <strong>FinArena</strong> &mdash; an adaptation of
+          This post walks through how I built <strong>TradingAgents</strong> &mdash; an adaptation of
           TradingAgents for the NSE. I'll cover the system architecture, how I wired 13 agents in
           LangGraph, the Kenya-specific data challenges that nearly broke the project, the regulatory
           constraints I had to encode, and what I learned building a multi-agent system from a
@@ -171,12 +171,12 @@
         </p>
 
         <figure class="post-figure">
-          <img src="../../assets/blog/finarena.png" alt="FinArena Multi-Agent Architecture" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <img src="../../assets/blog/TradingAgents_Archtecture.png" alt="TradingAgents Multi-Agent Architecture" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <div class="figure-placeholder" style="display:none;">
             <i class="fas fa-image"></i>
-            <p>FinArena Multi-Agent Architecture Diagram</p>
+            <p>TradingAgents Multi-Agent Architecture Diagram</p>
           </div>
-          <figcaption>FinArena's agent topology: 4 parallel analysts feed into a bull/bear debate, then trader, risk debate, and fund manager make the final call.</figcaption>
+          <figcaption>TradingAgents's agent topology: 4 parallel analysts feed into a bull/bear debate, then trader, risk debate, and fund manager make the final call.</figcaption>
         </figure>
 
         <!-- Section 3: Why the NSE Needed Different Thinking -->
@@ -210,7 +210,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         <p>
           This means a stock needs to move at least 4.68% (buy + sell costs) just to break even.
           The original paper's agents don't account for this &mdash; they'll happily recommend
-          trades on 1-2% signals that would lose money after Kenyan fees. Every agent in FinArena
+          trades on 1-2% signals that would lose money after Kenyan fees. Every agent in TradingAgents
           has this cost structure baked into its reasoning prompts.
         </p>
 
@@ -225,7 +225,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         <h3>No Short Selling</h3>
         <p>
           The paper's bear researcher can recommend selling shares the portfolio doesn't hold. On
-          the NSE, that's illegal. FinArena's trader agent is hard-coded to only sell shares it
+          the NSE, that's illegal. TradingAgents's trader agent is hard-coded to only sell shares it
           actually owns. A bearish signal for a stock not in the portfolio simply maps to HOLD.
         </p>
 
@@ -241,7 +241,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         <!-- Section 4: System Architecture -->
         <h2>System Architecture</h2>
         <p>
-          FinArena follows a three-layer architecture, similar to my previous projects:
+          TradingAgents follows a three-layer architecture, similar to my previous projects:
         </p>
         <ul>
           <li><strong>Core Engine</strong> (Python) &mdash; The LangGraph multi-agent system, data
@@ -256,16 +256,16 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         </ul>
 
         <figure class="post-figure">
-          <img src="../../assets/blog/finaaren_dashboard.png" alt="FinArena Dashboard" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <img src="../../assets/blog/tradingagents_dashboard.png" alt="TradingAgents Dashboard" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <div class="figure-placeholder" style="display:none;">
             <i class="fas fa-image"></i>
-            <p>FinArena Dashboard</p>
+            <p>TradingAgents Dashboard</p>
           </div>
-          <figcaption>The FinArena dashboard showing live macro indicators (CBK Rate, KES/USD, Inflation) and top NSE tickers with sector tags.</figcaption>
+          <figcaption>The TradingAgents dashboard showing live macro indicators (CBK Rate, KES/USD, Inflation) and top NSE tickers with sector tags.</figcaption>
         </figure>
 
         <figure class="post-figure">
-          <img src="../../assets/blog/finarena_tickers.png" alt="NSE Tickers Page" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <img src="../../assets/blog/tradingagents_tickers.png" alt="NSE Tickers Page" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <div class="figure-placeholder" style="display:none;">
             <i class="fas fa-image"></i>
             <p>NSE Tickers Page</p>
@@ -350,7 +350,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         </p>
 
 <pre><code class="language-python">def build_trading_graph(config: dict | None = None) -> StateGraph:
-    """Build the FinArena trading graph.
+    """Build the TradingAgents trading graph.
 
     Topology:
     START -> parallel_analysts (4 concurrent) ->
@@ -533,7 +533,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         <!-- Section 8: Kenya-Contextualized Agent Prompts -->
         <h2>Making Agents Think Like Kenyan Analysts</h2>
         <p>
-          The paper's agents use generic prompts designed for US markets. For FinArena, every agent
+          The paper's agents use generic prompts designed for US markets. For TradingAgents, every agent
           prompt was rewritten with Kenya-specific context. This is where the real adaptation
           happens &mdash; not in the architecture, but in the domain knowledge encoded in the
           prompts.
@@ -589,12 +589,12 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         <!-- Section 9: The Entry Point -->
         <h2>Running the Pipeline</h2>
         <p>
-          The <code>FinArenaGraph</code> class is the main entry point. It builds the graph on
+          The <code>TradingAgentsGraph</code> class is the main entry point. It builds the graph on
           initialization, then exposes a single <code>propagate()</code> method that runs the
           full 13-agent pipeline:
         </p>
 
-<pre><code class="language-python">class FinArenaGraph:
+<pre><code class="language-python">class TradingAgentsGraph:
     """Multi-agent trading graph for NSE equities."""
 
     def __init__(self, config: dict | None = None):
@@ -667,7 +667,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         </p>
 
         <figure class="post-figure">
-          <img src="../../assets/blog/finarena_running.png" alt="FinArena Running Analysis" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <img src="../../assets/blog/tradingagents_running.png" alt="TradingAgents Running Analysis" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <div class="figure-placeholder" style="display:none;">
             <i class="fas fa-image"></i>
             <p>Analysis Running</p>
@@ -684,7 +684,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         </p>
 
         <figure class="post-figure">
-          <img src="../../assets/blog/finarena_results.png" alt="FinArena Decision Result" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <img src="../../assets/blog/tradingagents_results.png" alt="TradingAgents Decision Result" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <div class="figure-placeholder" style="display:none;">
             <i class="fas fa-image"></i>
             <p>Decision Result</p>
@@ -700,7 +700,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         </p>
 
         <figure class="post-figure">
-          <img src="../../assets/blog/finarena_results_2.png" alt="Market Analysis Report" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <img src="../../assets/blog/tradingagents_results_2.png" alt="Market Analysis Report" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <div class="figure-placeholder" style="display:none;">
             <i class="fas fa-image"></i>
             <p>Market Analysis Report</p>
@@ -717,7 +717,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         </p>
 
         <figure class="post-figure">
-          <img src="../../assets/blog/finarena_results_3.png" alt="Research Summary" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <img src="../../assets/blog/tradingagents_results_3.png" alt="Research Summary" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <div class="figure-placeholder" style="display:none;">
             <i class="fas fa-image"></i>
             <p>Research Summary</p>
@@ -733,7 +733,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         </p>
 
         <figure class="post-figure">
-          <img src="../../assets/blog/finarena_results_4_remaining%20results_uoppened.png" alt="All Agent Report Tabs" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <img src="../../assets/blog/tradingagents_results_4.png" alt="All Agent Report Tabs" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <div class="figure-placeholder" style="display:none;">
             <i class="fas fa-image"></i>
             <p>All Agent Report Tabs</p>
@@ -786,14 +786,6 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
           FX data, inflation numbers, and recent headlines. All of this is formatted as context
           strings and passed to the LLM in a single call.
         </p>
-        <figure class="post-figure">
-          <img src="../../assets/blog/finarena_adaptive_RAG.png" alt="Adaptive RAG Architecture" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-          <div class="figure-placeholder" style="display:none;">
-            <i class="fas fa-image"></i>
-            <p>Adaptive RAG Architecture</p>
-          </div>
-          <figcaption>Our news agent uses an adaptive RAG approach: a judgment module routes simple queries directly to the LLM while complex queries trigger retrieval &mdash; optimizing both efficiency and accuracy.</figcaption>
-        </figure>
 
         <p>
           This is a departure from the paper, but it's a pragmatic one. The LLM's job is
@@ -805,7 +797,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         <h2>Backtesting with NSE Constraints</h2>
         <p>
           The backtesting engine runs the full 13-agent pipeline for every trading day in a date
-          range. For each day, it fetches the current price, runs <code>FinArenaGraph.propagate()</code>
+          range. For each day, it fetches the current price, runs <code>TradingAgentsGraph.propagate()</code>
           with the portfolio context, and executes the decision. What makes it NSE-specific:
         </p>
         <ul>
@@ -825,7 +817,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
         <!-- Section 13: Problems We Faced -->
         <h2>Problems We Faced</h2>
         <p>
-          Building FinArena was not a clean paper-to-code translation. Here's what actually went wrong.
+          Building TradingAgents was not a clean paper-to-code translation. Here's what actually went wrong.
         </p>
 
         <h3>Data Providers Go Down Constantly</h3>
@@ -894,7 +886,7 @@ SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
 
         <h3>Domain Knowledge Lives in the Prompts</h3>
         <p>
-          The single most impactful change from the paper to FinArena wasn't architectural &mdash;
+          The single most impactful change from the paper to TradingAgents wasn't architectural &mdash;
           it was rewriting every prompt with NSE-specific knowledge. T+3 settlement, KES
           commissions, dividend-driven valuations, CBK policy impacts, T-bill opportunity costs,
           frontier market illiquidity. An LLM with a generic "analyze this stock" prompt makes
