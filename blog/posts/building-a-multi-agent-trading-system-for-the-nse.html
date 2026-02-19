@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building a Multi-Agent Trading System for the NSE | Samson Kinyanjui</title>
+  <meta name="description" content="From UCLA/MIT research paper to a working multi-agent LLM trading system for the Nairobi Securities Exchange &mdash; adapting TradingAgents for frontier market constraints with LangGraph, DeepSeek, and FastAPI." />
+
+  <!-- Open Graph (LinkedIn, WhatsApp, Facebook) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Building a Multi-Agent Trading System for the NSE" />
+  <meta property="og:description" content="From UCLA/MIT research paper to a working multi-agent LLM trading system for the Nairobi Securities Exchange with LangGraph, DeepSeek, and FastAPI." />
+  <meta property="og:image" content="https://sammainah.com/assets/blog/finarena.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/building-a-multi-agent-trading-system-for-the-nse.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <!-- X / Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Building a Multi-Agent Trading System for the NSE" />
+  <meta name="twitter:description" content="From UCLA/MIT research paper to a working multi-agent LLM trading system for the Nairobi Securities Exchange with LangGraph, DeepSeek, and FastAPI." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/blog/finarena.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+  <!-- Math Notation (KaTeX) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../#research">Research</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Post -->
+  <article class="blog-post">
+    <div class="container">
+      <!-- Back to Blog -->
+      <a href="../" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+      <!-- Post Header -->
+      <header class="post-header">
+        <div class="post-category">Implementation</div>
+        <h1 class="post-title">Building a Multi-Agent Trading System for the Nairobi Securities Exchange</h1>
+        <p class="post-subtitle">From UCLA/MIT research paper to a working multi-agent LLM system that debates, analyzes, and trades NSE equities &mdash; adapted for frontier market constraints with LangGraph, DeepSeek, and FastAPI.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item">
+            <i class="fas fa-user"></i>
+            <span>Samson Kinyanjui</span>
+          </div>
+          <div class="post-meta-item">
+            <i class="fas fa-calendar"></i>
+            <span>February 19, 2026</span>
+          </div>
+          <div class="post-meta-item">
+            <i class="fas fa-clock"></i>
+            <span>25 min read</span>
+          </div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">LangGraph</span>
+          <span class="post-tag">Multi-Agent</span>
+          <span class="post-tag">DeepSeek</span>
+          <span class="post-tag">NSE</span>
+          <span class="post-tag">FastAPI</span>
+        </div>
+      </header>
+
+      <!-- Post Content -->
+      <div class="post-content">
+
+        <!-- Section 1: Introduction -->
+        <h2>Introduction</h2>
+        <p>
+          The Nairobi Securities Exchange is a strange place for algorithmic trading. Daily volumes
+          are thin &mdash; some listed stocks go entire sessions without a single trade. Broker
+          commissions eat 2.3% per round trip. Settlement takes three business days. Short selling
+          doesn't exist. And the data infrastructure that US quants take for granted &mdash; clean
+          OHLCV feeds, real-time fundamentals APIs, structured sentiment data &mdash; simply isn't
+          there for Kenyan equities.
+        </p>
+        <p>
+          When I came across the <em>TradingAgents</em> paper from UCLA and MIT
+          (<a href="https://arxiv.org/abs/2412.20138" target="_blank">arXiv:2412.20138</a>), I saw
+          something that could work here. The paper proposes a multi-agent LLM system where
+          specialized AI analysts &mdash; market, fundamentals, news, and sentiment &mdash; feed
+          their reports into a structured debate between bull and bear researchers, moderated by a
+          research manager, before a trader and risk management team make the final call. It's
+          designed for US markets with Bloomberg-grade data, but the architecture itself is
+          market-agnostic.
+        </p>
+        <p>
+          This post walks through how I built <strong>FinArena</strong> &mdash; an adaptation of
+          TradingAgents for the NSE. I'll cover the system architecture, how I wired 13 agents in
+          LangGraph, the Kenya-specific data challenges that nearly broke the project, the regulatory
+          constraints I had to encode, and what I learned building a multi-agent system from a
+          research paper for a market that the paper's authors never considered.
+        </p>
+
+        <blockquote>
+          <p>"TradingAgents introduces a novel stock trading framework inspired by the dynamics of
+          a trading firm, using LLM-powered agents that collaboratively analyze data and make
+          informed decisions."</p>
+          <cite>&mdash; Xiao et al., TradingAgents (UCLA/MIT), 2024</cite>
+        </blockquote>
+
+        <!-- Section 2: The Paper's Core Idea -->
+        <h2>The Paper's Core Idea</h2>
+        <p>
+          TradingAgents models a trading firm as a collection of specialized agents. Instead of one
+          monolithic LLM making a BUY/SELL/HOLD decision, the paper breaks the process into the
+          same roles you'd find at a hedge fund:
+        </p>
+        <ol>
+          <li><strong>Analyst Team</strong> (4 agents) &mdash; Each agent specializes in one data
+          domain: technical/market data, company fundamentals, news &amp; macro, and social
+          sentiment. They produce independent reports.</li>
+          <li><strong>Research Debate</strong> (2 agents + 1 manager) &mdash; A bull researcher
+          makes the strongest case for buying, a bear researcher argues for selling, and they
+          debate for multiple rounds. A research manager synthesizes the debate outcome.</li>
+          <li><strong>Trader</strong> (1 agent) &mdash; Takes all analyst reports plus the debate
+          summary and produces a concrete BUY/SELL/HOLD signal with quantity and confidence.</li>
+          <li><strong>Risk Management</strong> (3 agents) &mdash; An aggressive, conservative, and
+          neutral risk manager debate position sizing and risk constraints.</li>
+          <li><strong>Fund Manager</strong> (1 agent) &mdash; The final authority. Reviews
+          everything and makes the execution decision.</li>
+        </ol>
+        <p>
+          The key insight is that debate improves decision quality. A single LLM tends to anchor on
+          its first impression. Forcing explicit bull/bear arguments surfaces edge cases and
+          counterarguments that a single-pass analysis misses.
+        </p>
+
+        <figure class="post-figure">
+          <img src="../../assets/blog/finarena.png" alt="FinArena Multi-Agent Architecture" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <div class="figure-placeholder" style="display:none;">
+            <i class="fas fa-image"></i>
+            <p>FinArena Multi-Agent Architecture Diagram</p>
+          </div>
+          <figcaption>FinArena's agent topology: 4 parallel analysts feed into a bull/bear debate, then trader, risk debate, and fund manager make the final call.</figcaption>
+        </figure>
+
+        <!-- Section 3: Why the NSE Needed Different Thinking -->
+        <h2>Why the NSE Needed Different Thinking</h2>
+        <p>
+          The original paper targets US equities &mdash; liquid markets with T+1 settlement,
+          near-zero commissions, short selling, and decades of clean historical data. The NSE is a
+          different world. Before writing any code, I had to understand what would break.
+        </p>
+
+        <h3>Transaction Costs Kill Small Moves</h3>
+        <p>
+          In the US, commission-free brokers like Robinhood mean a 2% price move is pure profit. On
+          the NSE, you pay approximately 2.34% in fees on every round trip:
+        </p>
+
+<pre><code class="language-python"># CMA and NSE regulatory constraints
+BROKER_COMMISSION_RATE = 0.018   # 1.8% of transaction value
+CDS_FEE_RATE = 0.0008            # 0.08% CDSC (Central Depository) fee
+NSE_TRANSACTION_LEVY = 0.0012    # 0.12% NSE levy
+CMA_LEVY = 0.0014                # 0.14% CMA levy
+
+TOTAL_TRANSACTION_COST = (
+    BROKER_COMMISSION_RATE + CDS_FEE_RATE
+    + NSE_TRANSACTION_LEVY + CMA_LEVY
+)  # ~2.34% per side
+
+SETTLEMENT_DAYS = 3              # T+3 (NOT T+1 like US)
+SHORT_SELLING_ALLOWED = False     # No shorting on NSE</code></pre>
+
+        <p>
+          This means a stock needs to move at least 4.68% (buy + sell costs) just to break even.
+          The original paper's agents don't account for this &mdash; they'll happily recommend
+          trades on 1-2% signals that would lose money after Kenyan fees. Every agent in FinArena
+          has this cost structure baked into its reasoning prompts.
+        </p>
+
+        <h3>T+3 Settlement Locks Capital</h3>
+        <p>
+          When you sell shares on the NSE, you don't get your money for three business days. In the
+          backtesting engine, I track settlement explicitly &mdash; funds from a Monday sale aren't
+          available until Thursday. This prevents the system from making rapid trades that assume
+          instant liquidity, which is exactly what the paper's agents would do in a US context.
+        </p>
+
+        <h3>No Short Selling</h3>
+        <p>
+          The paper's bear researcher can recommend selling shares the portfolio doesn't hold. On
+          the NSE, that's illegal. FinArena's trader agent is hard-coded to only sell shares it
+          actually owns. A bearish signal for a stock not in the portfolio simply maps to HOLD.
+        </p>
+
+        <h3>Illiquidity Is the Real Risk</h3>
+        <p>
+          Some NSE stocks trade less than KES 1 million per day. If the system decides to buy
+          100,000 shares of a small-cap stock, it could move the market by trying to fill that
+          order. The risk management agents explicitly check proposed trade sizes against average
+          daily volume &mdash; if the order exceeds 10% of ADV, the conservative risk manager
+          flags it.
+        </p>
+
+        <!-- Section 4: System Architecture -->
+        <h2>System Architecture</h2>
+        <p>
+          FinArena follows a three-layer architecture, similar to my previous projects:
+        </p>
+        <ul>
+          <li><strong>Core Engine</strong> (Python) &mdash; The LangGraph multi-agent system, data
+          layer with 8 providers, NSE domain module, backtesting engine, and LLM client factory.
+          This runs standalone via CLI or as a library.</li>
+          <li><strong>Backend API</strong> (FastAPI) &mdash; Exposes analysis and backtesting as
+          async job endpoints. Clients submit a ticker + date, poll for results, and receive the
+          full 13-agent decision breakdown.</li>
+          <li><strong>Frontend</strong> (Next.js) &mdash; Dashboard with ticker browser, analysis
+          form, backtest visualizations (equity curves, trade logs, Sharpe ratios), and tabbed
+          views of all agent reports.</li>
+        </ul>
+
+        <figure class="post-figure">
+          <img src="../../assets/blog/finaaren_dashboard.png" alt="FinArena Dashboard" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <div class="figure-placeholder" style="display:none;">
+            <i class="fas fa-image"></i>
+            <p>FinArena Dashboard</p>
+          </div>
+          <figcaption>The FinArena dashboard showing live macro indicators (CBK Rate, KES/USD, Inflation) and top NSE tickers with sector tags.</figcaption>
+        </figure>
+
+        <figure class="post-figure">
+          <img src="../../assets/blog/finarena_tickers.png" alt="NSE Tickers Page" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <div class="figure-placeholder" style="display:none;">
+            <i class="fas fa-image"></i>
+            <p>NSE Tickers Page</p>
+          </div>
+          <figcaption>The tickers page lists all 45+ NSE-listed equities with symbol, name, sector classification, and ISIN &mdash; filterable by sector.</figcaption>
+        </figure>
+
+        <p>
+          The core engine is where all the interesting work happens. The API and frontend are
+          relatively straightforward wrappers &mdash; the hard problems are in the agent
+          orchestration and the data layer.
+        </p>
+
+        <!-- Section 5: The LangGraph Pipeline -->
+        <h2>Wiring 13 Agents in LangGraph</h2>
+        <p>
+          LangGraph is a library for building stateful, multi-step LLM workflows as directed graphs.
+          Each node is an agent function that reads from and writes to a shared state object.
+          Edges define the flow between agents, and conditional edges enable loops (like debate
+          rounds).
+        </p>
+        <p>
+          Here's the core state that flows through the entire pipeline:
+        </p>
+
+<pre><code class="language-python">class AgentState(BaseModel):
+    """Main state passed through the trading graph."""
+    # Identifiers
+    ticker: str = ""
+    date: str = ""
+
+    # LLM message history
+    messages: Annotated[list[BaseMessage], add_messages] = Field(
+        default_factory=list
+    )
+
+    # Analyst reports (filled by each analyst agent)
+    market_report: str = ""
+    fundamentals_report: str = ""
+    news_report: str = ""
+    sentiment_report: str = ""
+
+    # Research debate
+    bull_case: str = ""
+    bear_case: str = ""
+    debate_history: list[str] = Field(default_factory=list)
+    debate_round: int = 0
+    research_summary: str = ""
+
+    # Trader decision
+    trader_signal: str = ""     # BUY / SELL / HOLD
+    trader_confidence: float = 0.0
+    trader_quantity: int = 0
+
+    # Risk management debate
+    risk_debate_history: list[str] = Field(default_factory=list)
+    risk_debate_round: int = 0
+
+    # Fund manager final decision
+    final_decision: str = ""    # BUY / SELL / HOLD
+    final_quantity: int = 0
+    final_reasoning: str = ""
+
+    # Portfolio context (from backtest engine or API)
+    portfolio_value: float = 1_000_000.0
+    cash_available: float = 1_000_000.0
+    current_position: int = 0
+
+    # Memory / reflection
+    memory_context: str = ""
+    reflection: str = ""</code></pre>
+
+        <p>
+          Each analyst writes to its own field (<code>market_report</code>,
+          <code>fundamentals_report</code>, etc.), so there are no write conflicts when running
+          them in parallel. The debate agents append to <code>debate_history</code> and
+          <code>risk_debate_history</code>. The trader and fund manager write to
+          <code>trader_signal</code> and <code>final_decision</code> respectively.
+        </p>
+        <p>
+          The graph wiring defines the full topology:
+        </p>
+
+<pre><code class="language-python">def build_trading_graph(config: dict | None = None) -> StateGraph:
+    """Build the FinArena trading graph.
+
+    Topology:
+    START -> parallel_analysts (4 concurrent) ->
+    research debate (2 rounds) -> trader ->
+    risk debate (2 rounds) -> fund manager ->
+    reflection -> END
+    """
+    graph = StateGraph(AgentState)
+
+    # Parallel analyst node (4 agents at once)
+    graph.add_node("parallel_analysts", parallel_analysts_node)
+
+    # Research debate nodes
+    graph.add_node("bull_researcher", bull_researcher_node)
+    graph.add_node("bear_researcher", bear_researcher_node)
+    graph.add_node("debate_round_inc", increment_debate_round)
+    graph.add_node("research_manager", research_manager_node)
+
+    # Trader
+    graph.add_node("trader", trader_node)
+
+    # Risk debate nodes
+    graph.add_node("aggressive_risk", aggressive_risk_node)
+    graph.add_node("conservative_risk", conservative_risk_node)
+    graph.add_node("neutral_risk", neutral_risk_node)
+    graph.add_node("risk_round_inc", increment_risk_debate_round)
+
+    # Fund manager + reflection
+    graph.add_node("fund_manager", fund_manager_node)
+    graph.add_node("reflection", reflection_node)
+
+    # === EDGES ===
+    graph.set_entry_point("parallel_analysts")
+    graph.add_edge("parallel_analysts", "bull_researcher")
+
+    # Research debate loop
+    graph.add_edge("bull_researcher", "bear_researcher")
+    graph.add_edge("bear_researcher", "debate_round_inc")
+    graph.add_conditional_edges(
+        "debate_round_inc",
+        should_continue_debate,
+        {
+            "continue_debate": "bull_researcher",
+            "end_debate": "research_manager",
+        },
+    )
+
+    graph.add_edge("research_manager", "trader")
+    graph.add_edge("trader", "aggressive_risk")
+
+    # Risk debate loop
+    graph.add_edge("aggressive_risk", "conservative_risk")
+    graph.add_edge("conservative_risk", "neutral_risk")
+    graph.add_edge("neutral_risk", "risk_round_inc")
+    graph.add_conditional_edges(
+        "risk_round_inc",
+        should_continue_risk_debate,
+        {
+            "continue_risk": "aggressive_risk",
+            "end_risk": "fund_manager",
+        },
+    )
+
+    graph.add_edge("fund_manager", "reflection")
+    graph.add_edge("reflection", END)
+
+    return graph</code></pre>
+
+        <p>
+          The conditional edges are what make the debate work. After each bull/bear exchange, a
+          counter increments and <code>should_continue_debate()</code> checks if we've hit the
+          maximum rounds (default: 2). The same pattern applies to the risk debate. This gives us
+          structured, bounded argumentation without infinite loops.
+        </p>
+
+        <!-- Section 6: Parallel Analysts -->
+        <h2>Running Analysts in Parallel</h2>
+        <p>
+          The original paper runs analysts sequentially. With four analysts each making an LLM call
+          (plus data fetching), that's 30&ndash;60 seconds of sequential waiting. I replaced this
+          with a parallel execution node using Python's <code>ThreadPoolExecutor</code>:
+        </p>
+
+<pre><code class="language-python">def parallel_analysts_node(state: AgentState) -> dict:
+    """Run all 4 analysts concurrently.
+
+    Each analyst writes to its own state key so there
+    are no write conflicts. Cuts ~30-60 seconds off
+    the pipeline compared to sequential execution.
+    """
+    analysts = [
+        market_analyst_node,
+        fundamentals_analyst_node,
+        news_analyst_node,
+        sentiment_analyst_node,
+    ]
+
+    merged: dict = {}
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = {
+            executor.submit(_run_analyst, fn, state): fn
+            for fn in analysts
+        }
+        for future in as_completed(futures):
+            try:
+                result = future.result(timeout=60)
+                if result:
+                    merged.update(result)
+            except Exception as e:
+                logger.warning("Analyst %s failed: %s",
+                               futures[future].__name__, e)
+
+    return merged</code></pre>
+
+        <p>
+          This is safe because each analyst writes to its own state key. The market analyst fills
+          <code>market_report</code>, the fundamentals analyst fills <code>fundamentals_report</code>,
+          and so on. No race conditions, no locks needed. In practice, this cuts the pipeline from
+          ~60 seconds to ~15&ndash;20 seconds &mdash; the longest single analyst call becomes the
+          bottleneck instead of the sum of all four.
+        </p>
+
+        <!-- Section 7: The Data Problem -->
+        <h2>The Data Problem: Scraping the NSE</h2>
+        <p>
+          This was the hardest part of the entire project. The paper assumes clean, API-accessible
+          data. For the NSE, that doesn't exist. There's no Bloomberg Terminal for Kenyan equities.
+          There's no free API that gives you OHLCV, fundamentals, news, and sentiment for NSE
+          stocks in one place.
+        </p>
+        <p>
+          I built a data layer with 8 providers and a vendor routing system that falls through a
+          priority chain until something works:
+        </p>
+
+<pre><code class="language-python">class DataInterface:
+    """Routes data requests to the best available provider.
+
+    Provider priority is configured per data type.
+    On failure, falls through to the next provider.
+    """
+
+    def get_ohlcv(self, symbol: str, start_date: str,
+                  end_date: str) -> pd.DataFrame:
+        """Fetch OHLCV using the priority chain."""
+        for provider_name in self.config["ohlcv_providers"]:
+            provider = self._providers.get(provider_name)
+            if provider is None:
+                continue
+            try:
+                df = provider.get_ohlcv(symbol, start_date, end_date)
+                if not df.empty:
+                    return df
+            except Exception as e:
+                logger.warning("Provider %s failed: %s",
+                               provider_name, e)
+        return pd.DataFrame()</code></pre>
+
+        <p>The priority chains look like this:</p>
+        <ul>
+          <li><strong>OHLCV</strong>: StockAnalysis &rarr; NSE Scraper (afx.kwayisi.org) &rarr; Yahoo Finance (.NR suffix) &rarr; EODHD</li>
+          <li><strong>News</strong>: Kenyan RSS feeds (Business Daily, Nation, Standard) &rarr; EODHD</li>
+          <li><strong>Sentiment</strong>: Twitter/X (Kenya geo-filter) &rarr; Reddit r/Kenya</li>
+          <li><strong>Macro</strong>: CBK website (Central Bank Rate, T-bills, FX) &rarr; World Bank API</li>
+          <li><strong>Fundamentals</strong>: EODHD (paid) &rarr; NSE scraper</li>
+        </ul>
+        <p>
+          The NSE scraper pulls from <code>afx.kwayisi.org</code>, which is the most reliable free
+          source for NSE daily prices. Yahoo Finance works for major tickers using the
+          <code>.NR</code> suffix (e.g., <code>SCOM.NR</code> for Safaricom), but it's incomplete
+          for smaller listings. EODHD has the best fundamentals data but requires a paid API key.
+        </p>
+        <p>
+          For macro data, I scrape the Central Bank of Kenya website directly &mdash; CBK publishes
+          the Central Bank Rate, T-bill rates (91-day, 182-day, 364-day), interbank rates, and
+          KES/USD exchange rates. This feeds into the news analyst's macro context, which is
+          critical for the Kenyan market where CBK MPC decisions move bank stocks significantly.
+        </p>
+
+        <!-- Section 8: Kenya-Contextualized Agent Prompts -->
+        <h2>Making Agents Think Like Kenyan Analysts</h2>
+        <p>
+          The paper's agents use generic prompts designed for US markets. For FinArena, every agent
+          prompt was rewritten with Kenya-specific context. This is where the real adaptation
+          happens &mdash; not in the architecture, but in the domain knowledge encoded in the
+          prompts.
+        </p>
+
+        <h3>Market Analyst</h3>
+        <p>
+          The market analyst uses shorter moving averages (20/50-day instead of 50/200-day) because
+          NSE stocks have thin liquidity and longer-term technicals are unreliable. ATR (Average
+          True Range) is used not just for volatility but as a proxy for liquidity &mdash; if ATR
+          is extremely low, the stock might be too illiquid to trade. The analyst also monitors
+          volume trends explicitly, since many NSE stocks trade less than KES 1 million per day.
+        </p>
+
+        <h3>Fundamentals Analyst</h3>
+        <p>
+          NSE valuations are very different from US markets. The average P/E ratio on the NSE sits
+          between 5&ndash;12x (compared to 15&ndash;25x in the US). Dividend yield is a major
+          driver &mdash; many Kenyan investors buy and hold blue-chips like Safaricom, KCB, and
+          Equity Bank primarily for dividends. The fundamentals analyst weights dividend yield
+          heavily and uses Kenya-specific metrics: NPL ratios and capital adequacy for banks,
+          M-Pesa revenue share for Safaricom, and export volumes for agricultural stocks.
+        </p>
+
+        <h3>News &amp; Macro Analyst</h3>
+        <p>
+          This agent monitors CBK Monetary Policy Committee decisions, T-bill rates (the 91-day
+          T-bill at ~16.5% is the risk-free benchmark, not the US Fed rate), KES/USD exchange rate
+          movements, and Kenya-specific macro indicators like tea/coffee export revenues, drought
+          conditions, and government debt levels. A CBK rate hike moves bank stocks immediately
+          &mdash; the news analyst needs to understand this.
+        </p>
+
+        <h3>Bull and Bear Researchers</h3>
+        <p>
+          The bull researcher draws on Kenya's demographic dividend (young population), M-Pesa and
+          mobile money innovation, EAC trade integration, and the "Silicon Savannah" tech narrative.
+          The bear researcher counters with KES depreciation pressure, high government debt (~70%
+          of GDP), drought and climate risk, NSE illiquidity, and the fact that 91-day T-bills yield
+          ~16.5% risk-free &mdash; why take equity risk when government paper pays that much?
+        </p>
+
+        <h3>Risk Managers</h3>
+        <p>
+          The three risk managers (aggressive, conservative, neutral) all check NSE-specific
+          constraints: Can you actually exit this position given daily volumes? Does the proposed
+          trade size exceed 10% of average daily volume? Is the expected return large enough to
+          overcome the 4.68% round-trip cost? The conservative risk manager also factors in
+          political event risk (elections, policy changes) and KES depreciation risk for
+          export-sensitive companies.
+        </p>
+
+        <!-- Section 9: The Entry Point -->
+        <h2>Running the Pipeline</h2>
+        <p>
+          The <code>FinArenaGraph</code> class is the main entry point. It builds the graph on
+          initialization, then exposes a single <code>propagate()</code> method that runs the
+          full 13-agent pipeline:
+        </p>
+
+<pre><code class="language-python">class FinArenaGraph:
+    """Multi-agent trading graph for NSE equities."""
+
+    def __init__(self, config: dict | None = None):
+        self.config = config or DEFAULT_CONFIG
+        self.memory = AgentMemory()
+        self._graph = build_trading_graph(self.config)
+        self._compiled = self._graph.compile()
+
+    def propagate(
+        self,
+        ticker: str,
+        date: str,
+        portfolio_context: dict | None = None,
+    ) -> tuple[dict, dict]:
+        """Run the full multi-agent pipeline.
+
+        Returns (final_state, decision) where decision
+        has action, quantity, reasoning, confidence.
+        """
+        initial_state = create_initial_state(
+            ticker=ticker,
+            date=date,
+            memory=self.memory,
+        )
+
+        if portfolio_context:
+            initial_state.update(portfolio_context)
+
+        final_state = self._compiled.invoke(
+            initial_state,
+            config={"recursion_limit": 50},
+        )
+
+        decision = {
+            "ticker": ticker,
+            "date": date,
+            "action": final_state.get("final_decision", "HOLD"),
+            "quantity": final_state.get("final_quantity", 0),
+            "reasoning": final_state.get("final_reasoning", ""),
+            "trader_confidence": final_state.get(
+                "trader_confidence", 0.0
+            ),
+            "reflection": final_state.get("reflection", ""),
+        }
+
+        return final_state, decision</code></pre>
+
+        <p>
+          The <code>memory</code> component deserves a note. After every decision, a reflection
+          node saves the ticker, decision, reasoning, confidence, and a self-critique to a JSON
+          file (<code>data/memory/{TICKER}.json</code>). The next time the same ticker is analyzed,
+          this history is injected into the initial state so the agents can learn from past
+          decisions. It's a simple rolling window of 50 entries per ticker, but it meaningfully
+          reduces repeated mistakes.
+        </p>
+
+        <!-- Section 10: Safaricom Case Study -->
+        <h2>Running It: Safaricom (SCOM) Analysis</h2>
+        <p>
+          To see the system in action, we ran a full analysis on Safaricom PLC (SCOM) &mdash; the
+          most traded stock on the NSE, accounting for roughly 25% of the NSE 20 index weight.
+          Here's what the pipeline looks like end to end.
+        </p>
+        <p>
+          The analysis form takes three inputs: ticker (SCOM), date (02/19/2026), and LLM provider
+          (DeepSeek). Hit "Run Analysis" and the 13-agent pipeline kicks off. The backend logs show
+          the data providers firing &mdash; you can see RSS fetches failing for Nation and Standard
+          (403/404 errors), all news providers falling through, and CBK rates returning a 404. This
+          is the fallback chain doing its job: failures are expected, the system keeps going.
+        </p>
+
+        <figure class="post-figure">
+          <img src="../../assets/blog/finarena_running.png" alt="FinArena Running Analysis" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <div class="figure-placeholder" style="display:none;">
+            <i class="fas fa-image"></i>
+            <p>Analysis Running</p>
+          </div>
+          <figcaption>Running a SCOM analysis with DeepSeek: the frontend shows "Running analysis &mdash; this may take 1-2 minutes" while the backend logs show data providers firing and falling through the priority chain.</figcaption>
+        </figure>
+
+        <p>
+          After about 90 seconds, the result comes back. The fund manager's final decision:
+          <strong>HOLD with 80% confidence</strong>. The reasoning is interesting &mdash; it
+          cites the 16.5% T-bill yield as a "superior, active alternative to equity risk in SCOM
+          at current levels" and recommends "mandatory reallocation of capital to T-bills" as
+          "disciplined frontier market risk management."
+        </p>
+
+        <figure class="post-figure">
+          <img src="../../assets/blog/finarena_results.png" alt="FinArena Decision Result" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <div class="figure-placeholder" style="display:none;">
+            <i class="fas fa-image"></i>
+            <p>Decision Result</p>
+          </div>
+          <figcaption>The final decision: HOLD with 80% confidence. The system correctly identifies that T-bill yields make equity risk unattractive at current SCOM price levels &mdash; a distinctly Kenyan market insight.</figcaption>
+        </figure>
+
+        <p>
+          Below the decision, the UI shows each agent's full report in expandable accordion panels.
+          The Market Analysis tab reveals detailed technical analysis: SCOM at KES 33.10, RSI at
+          74.45 (overbought territory), price above the 20-day and 50-day SMAs but dipping below
+          the 5-day SMA, and MACD histogram narrowing &mdash; signs of decelerating momentum.
+        </p>
+
+        <figure class="post-figure">
+          <img src="../../assets/blog/finarena_results_2.png" alt="Market Analysis Report" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <div class="figure-placeholder" style="display:none;">
+            <i class="fas fa-image"></i>
+            <p>Market Analysis Report</p>
+          </div>
+          <figcaption>The market analyst's technical report for SCOM: price action summary, indicator signals (RSI, MACD, Bollinger Bands, moving averages), all computed from pre-fetched 90-day OHLCV data.</figcaption>
+        </figure>
+
+        <p>
+          The Research Summary shows where the debate landed: <strong>MIXED with a BEARISH TILT
+          (Near-Term)</strong>. The bull case acknowledges SCOM's structural dominance (M-Pesa,
+          digital infrastructure, young demographics) and resilient profitability (ROE &gt;25%,
+          EBITDA ~50%). The bear case wins on near-term timing &mdash; with T-bills at 16.5%
+          and the stock in overbought territory, the risk/reward doesn't justify a new position.
+        </p>
+
+        <figure class="post-figure">
+          <img src="../../assets/blog/finarena_results_3.png" alt="Research Summary" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <div class="figure-placeholder" style="display:none;">
+            <i class="fas fa-image"></i>
+            <p>Research Summary</p>
+          </div>
+          <figcaption>The research manager's synthesis: MIXED with bearish tilt. The bull case cites M-Pesa dominance and macro recovery; the bear case counters with overbought technicals and 16.5% T-bill opportunity cost.</figcaption>
+        </figure>
+
+        <p>
+          The full output includes 12 expandable report sections &mdash; Market Analysis,
+          Fundamentals, News, Sentiment, Bull Case, Bear Case, Research Summary, Trader Signal,
+          Trader Reasoning, Risk Assessment, Final Decision, and Final Reasoning. Every step
+          of the 13-agent pipeline is transparent and auditable.
+        </p>
+
+        <figure class="post-figure">
+          <img src="../../assets/blog/finarena_results_4_remaining%20results_uoppened.png" alt="All Agent Report Tabs" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <div class="figure-placeholder" style="display:none;">
+            <i class="fas fa-image"></i>
+            <p>All Agent Report Tabs</p>
+          </div>
+          <figcaption>All 12 agent report sections in the results view &mdash; each expandable to show the full reasoning from every stage of the pipeline, from Sentiment through Final Reasoning.</figcaption>
+        </figure>
+
+        <!-- Section 11: LLM Provider Strategy -->
+        <h2>LLM Provider Strategy: Why DeepSeek</h2>
+        <p>
+          The system supports four LLM providers (DeepSeek, OpenAI, Anthropic, Ollama), but
+          DeepSeek is the default for a practical reason: cost. A single analysis run makes
+          roughly 16 LLM calls &mdash; 4 analyst calls (quick model) plus ~12 debate/synthesis
+          calls (deep model). With OpenAI GPT-4o, that's roughly $0.50&ndash;$1.00 per analysis.
+          With DeepSeek, it's less than $0.05.
+        </p>
+        <p>
+          The system uses two model tiers:
+        </p>
+        <ul>
+          <li><strong>Quick model</strong> (<code>deepseek-chat</code>) &mdash; Used by the four
+          analysts for data interpretation. These calls process pre-fetched data and produce
+          structured reports. Speed matters more than deep reasoning here.</li>
+          <li><strong>Deep model</strong> (<code>deepseek-reasoner</code>) &mdash; Used by the
+          debate agents, research manager, trader, risk managers, and fund manager. These calls
+          require multi-step reasoning, weighing conflicting evidence, and producing nuanced
+          arguments.</li>
+        </ul>
+        <p>
+          One gotcha with <code>deepseek-reasoner</code>: it doesn't support temperature control
+          or function calling. All prompts had to be designed for structured text output (parsed
+          with regex) rather than tool-use patterns. This is actually fine for our use case &mdash;
+          the agents don't need to call tools dynamically because all data is pre-fetched before
+          the LLM is invoked.
+        </p>
+
+        <!-- Section 11: Pre-fetched Data Pattern -->
+        <h2>Pre-fetched Data, Not Tool Calling</h2>
+        <p>
+          The paper uses a tool-calling pattern where agents decide what data to fetch during their
+          reasoning loop. I tried this initially and abandoned it. The problem is speed: each tool
+          call adds a round-trip to the data provider, and the LLM often makes redundant or poorly
+          formatted requests. With 4 analysts making 2&ndash;3 tool calls each, the pipeline
+          ballooned to 3+ minutes.
+        </p>
+        <p>
+          Instead, each analyst pre-fetches all relevant data <em>before</em> the LLM is invoked.
+          The market analyst fetches 90 days of OHLCV data and computes technical indicators
+          (SMAs, RSI, MACD, Bollinger Bands, ATR) upfront. The news analyst fetches CBK rates,
+          FX data, inflation numbers, and recent headlines. All of this is formatted as context
+          strings and passed to the LLM in a single call.
+        </p>
+        <figure class="post-figure">
+          <img src="../../assets/blog/finarena_adaptive_RAG.png" alt="Adaptive RAG Architecture" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <div class="figure-placeholder" style="display:none;">
+            <i class="fas fa-image"></i>
+            <p>Adaptive RAG Architecture</p>
+          </div>
+          <figcaption>Our news agent uses an adaptive RAG approach: a judgment module routes simple queries directly to the LLM while complex queries trigger retrieval &mdash; optimizing both efficiency and accuracy.</figcaption>
+        </figure>
+
+        <p>
+          This is a departure from the paper, but it's a pragmatic one. The LLM's job is
+          <em>interpretation</em>, not data retrieval. It reads pre-formatted analyst briefs and
+          produces a report. One LLM call per analyst, deterministic data, no retry loops.
+        </p>
+
+        <!-- Section 12: Backtesting with NSE Constraints -->
+        <h2>Backtesting with NSE Constraints</h2>
+        <p>
+          The backtesting engine runs the full 13-agent pipeline for every trading day in a date
+          range. For each day, it fetches the current price, runs <code>FinArenaGraph.propagate()</code>
+          with the portfolio context, and executes the decision. What makes it NSE-specific:
+        </p>
+        <ul>
+          <li><strong>KES accounting</strong> &mdash; All portfolio values, P&amp;L, and fees are
+          in Kenya Shillings, not USD. The risk-free rate for Sharpe ratio calculation uses the
+          CBK 91-day T-bill rate (~16.5%), not the US Fed rate.</li>
+          <li><strong>T+3 settlement tracking</strong> &mdash; Funds from a sale are marked
+          unavailable for 3 business days. The portfolio object tracks pending settlements and
+          only releases cash after the settlement period.</li>
+          <li><strong>NSE calendar</strong> &mdash; Skips weekends and Kenyan public holidays
+          (Madaraka Day, Mashujaa Day, Jamhuri Day, etc.). Trading hours are 09:00&ndash;15:00
+          EAT (UTC+3).</li>
+          <li><strong>Full transaction costs</strong> &mdash; Every trade deducts the 2.34%
+          commission + levies from the portfolio, matching real-world execution costs.</li>
+        </ul>
+
+        <!-- Section 13: Problems We Faced -->
+        <h2>Problems We Faced</h2>
+        <p>
+          Building FinArena was not a clean paper-to-code translation. Here's what actually went wrong.
+        </p>
+
+        <h3>Data Providers Go Down Constantly</h3>
+        <p>
+          The afx.kwayisi.org scraper &mdash; our primary price source &mdash; returns empty data
+          unpredictably. The CBK website changes its HTML structure without warning. Twitter's API
+          rate limits kick in during peak hours. This is why the fallback chain architecture isn't
+          optional &mdash; it's survival. I built the system to assume that any single provider
+          will fail, and only error out when <em>all</em> providers in a chain fail for the same
+          data type.
+        </p>
+
+        <h3>LLM Output Parsing Is Fragile</h3>
+        <p>
+          The trader agent is supposed to output a structured signal:
+          <code>Signal: BUY</code>, <code>Quantity: 100</code>,
+          <code>Confidence: 0.75</code>. In practice, LLMs output this in dozens of variations:
+          "My signal is BUY", "I recommend buying", "Signal &mdash; BUY", etc.
+          The signal parser uses regex with multiple fallback patterns, and still occasionally
+          fails on unexpected formatting. When parsing fails, the system defaults to HOLD with
+          0 quantity &mdash; the safe fallback.
+        </p>
+
+        <h3>Debate Rounds Can Produce Repetitive Arguments</h3>
+        <p>
+          With 2 rounds of bull/bear debate, the second round sometimes just restates the first
+          round's arguments with different wording. The research manager is instructed to ignore
+          repetitive points and focus on any <em>new</em> evidence introduced in later rounds.
+          In practice, the second round adds meaningful nuance about 60% of the time. Running
+          3+ rounds showed diminishing returns.
+        </p>
+
+        <h3>Small-Cap NSE Stocks Have Zero Data</h3>
+        <p>
+          For blue-chips like Safaricom (SCOM), KCB, and Equity Bank (EQTY), data is reasonably
+          available. For smaller stocks like Limuru Tea (LIMT) or Crown Paints (CRWN), the news
+          provider returns nothing, the sentiment provider finds no tweets, and fundamentals data
+          is sparse. The agents handle this gracefully &mdash; they note the data gaps in their
+          reports and reduce confidence accordingly &mdash; but the decisions for small-caps are
+          inherently lower quality.
+        </p>
+
+        <h3>DeepSeek Reasoner Doesn't Support System Prompts Properly</h3>
+        <p>
+          We discovered that <code>deepseek-reasoner</code> ignores the system prompt in certain
+          configurations. The fix was to prepend the persona and constraints directly into the user
+          prompt for the reasoning model, while keeping the cleaner system/user separation for
+          <code>deepseek-chat</code>.
+        </p>
+
+        <!-- Section 14: What We Learned -->
+        <h2>What We Learned</h2>
+        <p>
+          Building a multi-agent system from a research paper for a market the paper never
+          considered taught us several things:
+        </p>
+
+        <h3>The Architecture Is Market-Agnostic, the Data Isn't</h3>
+        <p>
+          The TradingAgents framework &mdash; analysts, debate, trader, risk managers, fund
+          manager &mdash; translates directly to any market. What doesn't translate is the data
+          infrastructure. 70% of the development effort went into the data layer: finding
+          providers, building scrapers, handling failures, and caching responses. The agent code
+          itself was relatively straightforward once the data was flowing.
+        </p>
+
+        <h3>Domain Knowledge Lives in the Prompts</h3>
+        <p>
+          The single most impactful change from the paper to FinArena wasn't architectural &mdash;
+          it was rewriting every prompt with NSE-specific knowledge. T+3 settlement, KES
+          commissions, dividend-driven valuations, CBK policy impacts, T-bill opportunity costs,
+          frontier market illiquidity. An LLM with a generic "analyze this stock" prompt makes
+          generic (bad) decisions. An LLM told "you're analyzing a Kenyan bank stock where NPL
+          ratios matter and T-bills yield 16.5%" makes meaningfully different recommendations.
+        </p>
+
+        <h3>Pre-fetching Beats Tool Calling for Structured Workflows</h3>
+        <p>
+          When you know exactly what data each agent needs (and you do in a trading system), there's
+          no reason to let the LLM decide what to fetch. Pre-fetching is faster, more reliable, and
+          produces deterministic data inputs. Tool calling makes sense for open-ended tasks; for
+          structured analytical pipelines, it's overhead.
+        </p>
+
+        <h3>Debate Actually Helps</h3>
+        <p>
+          The bull/bear debate isn't just a gimmick. In our testing, decisions that went through 2
+          rounds of debate were more conservative and cited more data points than single-pass
+          decisions. The debate forces the system to consider counterarguments explicitly, which
+          is especially valuable in a frontier market where risks are easy to overlook.
+        </p>
+
+        <h3>Frontier Markets Need Defensive Defaults</h3>
+        <p>
+          The most important agent in the system is the conservative risk manager. In a market with
+          2.34% transaction costs, T+3 settlement, and daily volume under KES 10M for most stocks,
+          the default should be "don't trade." The system earns its value not by making more trades,
+          but by correctly identifying the few situations where the signal is strong enough to
+          overcome the friction.
+        </p>
+
+        <!-- Section 15: Further Reading -->
+        <h2>Further Reading</h2>
+        <ul>
+          <li><a href="https://arxiv.org/abs/2412.20138" target="_blank">TradingAgents: Multi-Agents LLM Financial Trading Framework (Xiao et al., UCLA/MIT, 2024)</a></li>
+          <li><a href="https://langchain-ai.github.io/langgraph/" target="_blank">LangGraph Documentation &mdash; Stateful Multi-Agent Workflows</a></li>
+          <li><a href="https://www.nse.co.ke/" target="_blank">Nairobi Securities Exchange &mdash; Official Website</a></li>
+          <li><a href="https://www.centralbank.go.ke/" target="_blank">Central Bank of Kenya &mdash; Monetary Policy &amp; Rates</a></li>
+          <li><a href="https://www.cma.or.ke/" target="_blank">Capital Markets Authority (CMA) Kenya</a></li>
+          <li><a href="https://api-docs.deepseek.com/" target="_blank">DeepSeek API Documentation</a></li>
+        </ul>
+      </div>
+
+      <!-- Post Footer -->
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <!-- Related Posts -->
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <div class="related-post-card">
+            <a href="Automating-Financial-Statement-Audits-with-LLMs.html">
+              <span class="related-post-category">Implementation</span>
+              <h4>Automating Financial Statement Audits with LLMs</h4>
+              <span class="related-post-date">February 15, 2026</span>
+            </a>
+          </div>
+          <div class="related-post-card">
+            <a href="attention-post.html">
+              <span class="related-post-category">Paper Breakdown</span>
+              <h4>Understanding Attention Is All You Need</h4>
+              <span class="related-post-date">February 5, 2026</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Back to Blog -->
+      <div class="text-center mt-5 mb-4">
+        <a href="../" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Mainah</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2">
+          <i class="fab fa-linkedin fa-lg"></i>
+        </a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2">
+          <i class="fab fa-github fa-lg"></i>
+        </a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2">
+          <i class="fab fa-twitter fa-lg"></i>
+        </a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    // Initialize syntax highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+      hljs.highlightAll();
+
+      // Initialize KaTeX for math rendering
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+
+    // Theme toggle
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+
+      localStorage.setItem('lightMode', isLight);
+    });
+
+    // Load theme preference
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) {
+        document.body.classList.add('light-mode');
+        themeIcon.className = 'fas fa-moon';
+      } else {
+        themeIcon.className = 'fas fa-sun';
+      }
+    };
+
+    // Share functions
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(
+        `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`,
+        'linkedin-share',
+        'width=600,height=600'
+      );
+    }
+
+    function shareOnWhatsApp() {
+      const url = window.location.href;
+      const title = document.title;
+      const text = encodeURIComponent(`${title}\n${url}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(
+        `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+        'x-share',
+        'width=600,height=300'
+      );
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+
+</html>

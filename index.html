@@ -40,6 +40,7 @@
       <ul class="navbar-nav ml-auto text-uppercase">
         <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
         <li class="nav-item"><a class="nav-link" href="#my-works">Projects</a></li>
+        <li class="nav-item"><a class="nav-link" href="#research">Implementations</a></li>
         <li class="nav-item"><a class="nav-link" href="#publications">Publications</a></li>
         <li class="nav-item"><a class="nav-link" href="blog/">Blog</a></li>
         <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
@@ -99,6 +100,8 @@
           <span class="skill-tag">Next.js</span>
           <span class="skill-tag">PostgreSQL</span>
           <span class="skill-tag">Docker</span>
+          <span class="skill-tag">LangGraph</span>
+          <span class="skill-tag">DeepSeek</span>
         </div>
 
         <a href="assets/Samson_Kinyanjui_Resume.pdf" class="btn btn-outline-light mt-4" download>Download Resume</a>
@@ -110,7 +113,7 @@
 
   <section id="my-works" class="projects-section">
   <div class="container">
-    <h2 class="section-heading text-center mb-5">Projects</h2>
+    <h2 class="section-heading text-center mb-5">Client Projects</h2>
 
     <!-- Project 1: Image Left -->
     <div class="project-row">
@@ -143,6 +146,33 @@
           <span class="tag">Machine Learning</span>
         </div>
         <a href="https://chatbot-client-two.vercel.app/" target="_blank" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="research" class="projects-section" style="background: var(--bg-secondary);">
+  <div class="container">
+    <h2 class="section-heading text-center mb-3">AI Research in a Kenyan Context</h2>
+    <p class="text-center text-muted mb-5">Implementing global AI/ML research papers to solve local problems.</p>
+
+    <!-- FinArena -->
+    <div class="project-row">
+      <div class="project-image">
+        <img src="assets/blog/finarena.png" alt="FinArena">
+      </div>
+      <div class="project-content">
+        <h3 class="project-title">FinArena</h3>
+        <p class="project-description">Multi-agent LLM trading system for the NSE, implementing the TradingAgents paper (UCLA/MIT). Four parallel AI analysts debate and synthesize market data, fundamentals, news, and sentiment to produce trading decisions — adapted for NSE constraints like T+3 settlement, KES commissions, and frontier market illiquidity.</p>
+        <div class="project-tags">
+          <span class="tag">LangGraph</span>
+          <span class="tag">DeepSeek</span>
+          <span class="tag">FastAPI</span>
+          <span class="tag">Next.js</span>
+        </div>
+        <span class="badge-coming-soon">Live Demo Coming Soon</span>
+        <p class="paper-ref">Based on <a href="https://arxiv.org/abs/2412.20138" target="_blank">arXiv:2412.20138</a></p>
       </div>
     </div>
 
@@ -290,14 +320,14 @@
         <div class="blog-card-content">
           <div class="blog-card-meta">
             <span class="blog-date">Coming Soon</span>
-            <span class="blog-category">Research</span>
+            <span class="blog-category">Implementation</span>
           </div>
-          <h3 class="blog-card-title">Fine-tuning LLMs for Domain Tasks</h3>
-          <p class="blog-card-excerpt">Exploring techniques for adapting large language models to specific domains with limited data.</p>
+          <h3 class="blog-card-title">Building a Multi-Agent Trading System for the NSE</h3>
+          <p class="blog-card-excerpt">How we adapted the TradingAgents paper into a working multi-agent system for the Nairobi Securities Exchange using LangGraph and DeepSeek.</p>
           <div class="blog-card-tags">
-            <span class="blog-tag">Fine-tuning</span>
-            <span class="blog-tag">LLMs</span>
-            <span class="blog-tag">ML Ops</span>
+            <span class="blog-tag">LangGraph</span>
+            <span class="blog-tag">Multi-Agent</span>
+            <span class="blog-tag">NSE</span>
           </div>
         </div>
       </div>
@@ -457,7 +487,8 @@
         'Machine Learning Practitioner',
         'Software Developer',
         'Data Scientist',
-        'ML Engineer'
+        'ML Engineer',
+        'Turning Research Papers into Local Solutions'
       ],
       typeSpeed: 60,
       backSpeed: 40,
