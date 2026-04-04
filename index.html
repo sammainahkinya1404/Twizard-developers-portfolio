@@ -5,16 +5,71 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Samson Kinyanjui Portfolio </title>
+  <title>Samson Kinyanjui | ML Engineer & Software Developer</title>
+  <meta name="description" content="Machine Learning Engineer based in Nairobi, Kenya. Building multi-agent LLM systems, AI-powered tools, and turning research papers into production solutions for African markets.">
+  <meta name="keywords" content="Machine Learning, AI, Software Developer, Nairobi, Kenya, LLM, LangGraph, FastAPI, React, Next.js">
+  <meta name="author" content="Samson Kinyanjui">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Samson Kinyanjui | ML Engineer & Software Developer">
+  <meta property="og:description" content="Machine Learning Engineer building multi-agent LLM systems and AI-powered tools for African markets. 3 IEEE publications.">
+  <meta property="og:image" content="assets/Prof.png">
+  <meta property="og:url" content="">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Samson Kinyanjui | ML Engineer & Software Developer">
+  <meta name="twitter:description" content="Machine Learning Engineer building multi-agent LLM systems and AI-powered tools for African markets.">
+  <meta name="twitter:image" content="assets/Prof.png">
+  <meta name="twitter:creator" content="@MainahKinya">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Samson Kinyanjui",
+    "jobTitle": "Machine Learning Engineer",
+    "url": "",
+    "image": "assets/Prof.png",
+    "email": "sammainah98@gmail.com",
+    "telephone": "+254791848007",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Nairobi",
+      "addressCountry": "KE"
+    },
+    "sameAs": [
+      "https://www.linkedin.com/in/samson-kinyanjui-49051b23a/",
+      "https://github.com/sammainahkinya1404",
+      "https://x.com/MainahKinya"
+    ],
+    "alumniOf": {
+      "@type": "EducationalOrganization",
+      "name": "Dedan Kimathi University of Technology"
+    },
+    "knowsAbout": ["Machine Learning", "LLMs", "LangGraph", "FastAPI", "React", "Next.js", "Python", "TensorFlow"]
+  }
+  </script>
+
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" ... />
-<link rel="icon" href="assets/favicon.png" />  
+<link rel="icon" href="assets/favicon.png" />
+<!-- AOS Animate on Scroll -->
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />  
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
 
+<!-- Umami Analytics (privacy-friendly, no cookies) -->
+<script defer src="https://cloud.umami.is/script.js" data-website-id="YOUR_UMAMI_WEBSITE_ID"></script>
+
 </head>
 <body>
+  <!-- Skip Navigation -->
+  <a href="#about" class="skip-nav">Skip to main content</a>
+
   <!-- Loading Screen -->
   <div id="loading-screen">
     <div class="loader-content">
@@ -41,11 +96,12 @@
         <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
         <li class="nav-item"><a class="nav-link" href="#my-works">Projects</a></li>
         <li class="nav-item"><a class="nav-link" href="#research">Implementations</a></li>
+        <li class="nav-item"><a class="nav-link" href="#timeline">Experience</a></li>
         <li class="nav-item"><a class="nav-link" href="#publications">Publications</a></li>
-        <li class="nav-item"><a class="nav-link" href="blog/">Posts</a></li>
+        <li class="nav-item"><a class="nav-link" href="blog/index.html">Posts</a></li>
         <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
         <li class="nav-item">
-          <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+          <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3" aria-label="Toggle dark/light theme">
             <i class="fas fa-moon" id="theme-icon"></i>
           </button>
         </li>
@@ -58,11 +114,12 @@
   
     <!-- Hero Section -->
 <div class="intro-section">
-  <div class="container">
-    <p class="hero-greeting">Hi, I'm</p>
-    <h1 class="hero-name">Samson Kinyanjui</h1>
-    <p class="hero-role"><span id="typed-text"></span></p>
-    <a href="#my-works" class="btn btn-primary mt-4">View My Projects</a>
+  <div id="particles-js"></div>
+  <div class="container" style="position:relative; z-index:1;">
+    <p class="hero-greeting" data-aos="fade-down" data-aos-delay="200">Hi, I'm</p>
+    <h1 class="hero-name" data-aos="fade-up" data-aos-delay="400">Samson Kinyanjui</h1>
+    <p class="hero-role" data-aos="fade-up" data-aos-delay="600"><span id="typed-text"></span></p>
+    <a href="#my-works" class="btn btn-primary mt-4" data-aos="fade-up" data-aos-delay="800">View My Projects</a>
   </div>
 </div>
 
@@ -73,19 +130,20 @@
 
   </header>
   
- <section class="about-me-section" id="about">
+ <main>
+<section class="about-me-section" id="about">
   <div class="container">
     <div class="row align-items-center">
-      <div class="col-lg-4 text-center mb-4 mb-lg-0">
-        <img src="assets/Prof.png" alt="Samson Kinyanjui" class="profile-img">
+      <div class="col-lg-4 text-center mb-4 mb-lg-0" data-aos="fade-right">
+        <img src="assets/Prof.png" alt="Samson Kinyanjui" class="profile-img" loading="lazy">
       </div>
       <div class="col-lg-8">
-        <h2 class="section-heading">About Me</h2>
+        <h2 class="section-heading" data-aos="fade-up">About Me</h2>
         <p class="about-text">
           Machine Learning Engineer based in Nairobi, Kenya. I take AI/ML research papers and turn them into working systems built for African markets. My current focus is multi-agent LLM systems &mdash; I built TradingAgents, a 13-agent framework that debates and trades NSE equities, adapting a UCLA/MIT paper for frontier market constraints like T+3 settlement, KES-denominated portfolios, and illiquid order books.
         </p>
         <p class="about-text">
-          I also build production AI tools for professionals &mdash; an LLM-powered financial statement auditor using RAG and a capital gains tax engine that automates KRA compliance for Kenyan accountants. MSc Computer Science candidate with 3 IEEE publications spanning medical imaging, NLP, and financial assessment. I work across the full stack: Python, LangGraph, FastAPI on the backend; React and Next.js on the frontend.
+          I also build production AI tools for professionals &mdash; an LLM-powered financial statement auditor using RAG and a capital gains tax engine that automates KRA compliance for Kenyan accountants. MSc Computer Science from Dedan Kimathi University of Technology with 3 IEEE publications spanning medical imaging, NLP, and financial assessment. I work across the full stack: Python, LangGraph, FastAPI on the backend; React and Next.js on the frontend.
         </p>
 
         <div class="skills-list">
@@ -105,6 +163,56 @@
         </div>
 
         <a href="assets/Samson_Kinyanjui_Resume.pdf" class="btn btn-outline-light mt-4" download>Download Resume</a>
+
+        <div class="github-graph mt-4" data-aos="fade-up">
+          <h5 style="color: var(--text-secondary); font-weight: 600; margin-bottom: 12px;"><i class="fab fa-github"></i> GitHub Activity</h5>
+          <img src="https://ghchart.rshah.org/667eea/sammainahkinya1404" alt="GitHub Contribution Graph" loading="lazy" style="width:100%; border-radius:8px;">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Experience & Education Timeline -->
+<section id="timeline" class="timeline-section">
+  <div class="container">
+    <h2 class="section-heading text-center mb-5" data-aos="fade-up">Experience & Education</h2>
+    <div class="timeline">
+      <div class="timeline-item" data-aos="fade-right">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">2025 &mdash; Present</span>
+          <h4 class="timeline-title">Machine Learning Engineer</h4>
+          <p class="timeline-company">CGT Brain &mdash; Australia (Remote)</p>
+          <p class="timeline-desc">Built an AI-powered capital gains tax engine using Next.js, FastAPI, and LLMs. Automates ATO compliance for property transactions.</p>
+        </div>
+      </div>
+      <div class="timeline-item" data-aos="fade-left">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">2024 &mdash; Present</span>
+          <h4 class="timeline-title">Independent AI/ML Researcher</h4>
+          <p class="timeline-company">Nairobi, Kenya</p>
+          <p class="timeline-desc">Implementing global AI research papers for African markets. Built TradingAgents (multi-agent NSE trading) and LLM-powered financial auditor. 3 IEEE publications.</p>
+        </div>
+      </div>
+      <div class="timeline-item" data-aos="fade-right">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">Oct 2023 &mdash; May 2026</span>
+          <h4 class="timeline-title">Master's Degree, Computer Science</h4>
+          <p class="timeline-company">Dedan Kimathi University of Technology (DeKUT)</p>
+          <p class="timeline-desc">Research focus: Medical imaging with deep learning, NLP topic modeling, financial health assessment using ML. 3 IEEE publications.</p>
+        </div>
+      </div>
+      <div class="timeline-item" data-aos="fade-left">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">May 2019 &mdash; Apr 2023</span>
+          <h4 class="timeline-title">BSc Information Technology</h4>
+          <p class="timeline-company">Dedan Kimathi University of Technology (DeKUT)</p>
+          <p class="timeline-desc">Second Class Upper Honours.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -113,12 +221,19 @@
 
   <section id="my-works" class="projects-section">
   <div class="container">
-    <h2 class="section-heading text-center mb-5">Projects</h2>
+    <h2 class="section-heading text-center mb-5" data-aos="fade-up">Projects</h2>
+
+    <div class="filter-tabs text-center mb-5" data-aos="fade-up">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="ai">AI / ML</button>
+      <button class="filter-btn" data-filter="web">Web</button>
+      <button class="filter-btn" data-filter="research">Research</button>
+    </div>
 
     <!-- Project 1: Image Left -->
-    <div class="project-row">
+    <div class="project-row filterable" data-category="ai web" data-aos="fade-up">
       <div class="project-image">
-        <img src="assets/CGT.png" alt="CGT Brain">
+        <img src="assets/CGT.png" alt="CGT Brain" loading="lazy">
       </div>
       <div class="project-content">
         <h3 class="project-title">CGT Brain</h3>
@@ -133,9 +248,9 @@
     </div>
 
     <!-- Project 2: Image Right -->
-    <div class="project-row reverse">
+    <div class="project-row reverse filterable" data-category="ai web" data-aos="fade-up" data-aos-delay="200">
       <div class="project-image">
-        <img src="assets/ss3.PNG" alt="Biashara Buddy">
+        <img src="assets/ss3.PNG" alt="Biashara Buddy" loading="lazy">
       </div>
       <div class="project-content">
         <h3 class="project-title">Biashara Buddy</h3>
@@ -154,13 +269,13 @@
 
 <section id="research" class="projects-section" style="background: var(--bg-secondary);">
   <div class="container">
-    <h2 class="section-heading text-center mb-3">AI Research in a Kenyan Context</h2>
+    <h2 class="section-heading text-center mb-3" data-aos="fade-up">AI Research in a Kenyan Context</h2>
     <p class="text-center text-muted mb-5">Implementing global AI/ML research papers to solve local problems.</p>
 
     <!-- TradingAgents -->
-    <div class="project-row">
+    <div class="project-row filterable" data-category="ai research" data-aos="fade-up">
       <div class="project-image">
-        <img src="assets/blog/TradingAgents_Archtecture.png" alt="TradingAgents">
+        <img src="assets/blog/TradingAgents_Archtecture.png" alt="TradingAgents" loading="lazy">
       </div>
       <div class="project-content">
         <h3 class="project-title">TradingAgents</h3>
@@ -177,9 +292,9 @@
     </div>
 
     <!-- Automating Financial Statement Audits -->
-    <div class="project-row">
+    <div class="project-row filterable" data-category="ai research" data-aos="fade-up" data-aos-delay="200">
       <div class="project-image">
-        <img src="assets/blog/auditor.png" alt="LLM Financial Auditor">
+        <img src="assets/blog/auditor.png" alt="LLM Financial Auditor" loading="lazy">
       </div>
       <div class="project-content">
         <h3 class="project-title">Automating Financial Statement Audits with LLMs</h3>
@@ -200,7 +315,7 @@
  <section id="publications" class="publications-section">
   <div class="container">
     <div class="text-center mb-5">
-      <h1 class="section-title text-primary font-weight-bold">My Publications</h1>
+      <h1 class="section-title text-primary font-weight-bold" data-aos="fade-up">My Publications</h1>
       <p class="text-muted">Selected research contributions in data science and technology for development.</p>
     </div>
 
@@ -292,13 +407,13 @@
 <section id="blog" class="blog-section">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="section-heading">Latest from the Blog</h2>
+      <h2 class="section-heading" data-aos="fade-up">Latest from the Blog</h2>
       <p class="text-muted">AI/ML paper breakdowns, implementations, and research notes.</p>
     </div>
 
     <div class="blog-grid">
       <!-- Blog Card 1 -->
-      <a href="blog/posts/attention-post.html" class="blog-card">
+      <a href="blog/posts/attention-post.html" class="blog-card" data-aos="fade-up">
         <div class="blog-card-content">
           <div class="blog-card-meta">
             <span class="blog-date">Feb 5, 2026</span>
@@ -316,7 +431,7 @@
       </a>
 
       <!-- Blog Card 2 -->
-      <a href="blog/posts/Automating-Financial-Statement-Audits-with-LLMs.html" class="blog-card">
+      <a href="blog/posts/Automating-Financial-Statement-Audits-with-LLMs.html" class="blog-card" data-aos="fade-up" data-aos-delay="100">
         <div class="blog-card-content">
           <div class="blog-card-meta">
             <span class="blog-date">Feb 15, 2026</span>
@@ -334,7 +449,7 @@
       </a>
 
       <!-- Blog Card 3 -->
-      <a href="blog/posts/building-tradingagents-for-the-nse.html" class="blog-card">
+      <a href="blog/posts/building-tradingagents-for-the-nse.html" class="blog-card" data-aos="fade-up" data-aos-delay="200">
         <div class="blog-card-content">
           <div class="blog-card-meta">
             <span class="blog-date">Feb 18, 2026</span>
@@ -353,16 +468,80 @@
     </div>
 
     <div class="text-center mt-5">
-      <a href="blog/" class="btn btn-outline-accent">View All Posts <i class="fas fa-arrow-right ml-2"></i></a>
+      <a href="blog/index.html" class="btn btn-outline-accent">View All Posts <i class="fas fa-arrow-right ml-2"></i></a>
     </div>
   </div>
 </section>
 
+<!-- Testimonials Section -->
+<section id="testimonials" class="testimonials-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-heading" data-aos="fade-up">What People Say</h2>
+      <p class="text-muted" data-aos="fade-up">Feedback from collaborators and clients.</p>
+    </div>
+
+    <div id="testimonialCarousel" class="carousel slide" data-ride="carousel" data-interval="6000" data-aos="fade-up">
+      <ol class="carousel-indicators">
+        <li data-target="#testimonialCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#testimonialCarousel" data-slide-to="1"></li>
+        <li data-target="#testimonialCarousel" data-slide-to="2"></li>
+      </ol>
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="testimonial-card">
+            <i class="fas fa-quote-left testimonial-quote-icon"></i>
+            <p class="testimonial-text">Samson delivered an exceptional AI-powered tax engine that exceeded our expectations. His deep understanding of both ML systems and real-world business requirements made the collaboration seamless.</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
+              <div>
+                <h5 class="testimonial-name">Client</h5>
+                <p class="testimonial-role">CGT Brain, Australia</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="testimonial-card">
+            <i class="fas fa-quote-left testimonial-quote-icon"></i>
+            <p class="testimonial-text">An outstanding researcher with a rare ability to take complex ML papers and turn them into working systems. His IEEE publications demonstrate rigorous academic thinking paired with practical implementation skills.</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
+              <div>
+                <h5 class="testimonial-name">Academic Collaborator</h5>
+                <p class="testimonial-role">IEEE Conference Co-author</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="testimonial-card">
+            <i class="fas fa-quote-left testimonial-quote-icon"></i>
+            <p class="testimonial-text">The Biashara Buddy platform has been a game-changer for entrepreneurs looking for affordable, AI-driven business guidance. Samson's work bridges the gap between cutting-edge AI and local market needs.</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
+              <div>
+                <h5 class="testimonial-name">Early User</h5>
+                <p class="testimonial-role">Biashara Buddy Beta Tester</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="carousel-control-prev" href="#testimonialCarousel" role="button" data-slide="prev" aria-label="Previous testimonial">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      </a>
+      <a class="carousel-control-next" href="#testimonialCarousel" role="button" data-slide="next" aria-label="Next testimonial">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      </a>
+    </div>
+  </div>
+</section>
 
 <section id="contact" class="contact-section">
   <div class="container">
     <div class="text-center mb-5">
-      <h1 class="section-title text-primary font-weight-bold">Contact Me</h1>
+      <h1 class="section-title text-primary font-weight-bold" data-aos="fade-up">Contact Me</h1>
       <p class="text-muted">Let’s connect and build something great. I’d love to hear from you!</p>
     </div>
 
@@ -392,7 +571,10 @@
       <div class="col-md-7">
         <div class="p-4 bg-white shadow rounded">
           <h4 class="mb-4 text-dark"><i class="fas fa-paper-plane text-primary mr-2"></i> Send a Message</h4>
-          <form action="https://formbold.com/s/oPbaa" method="POST">
+          <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" aria-label="Contact form">
+            <input type="hidden" name="access_key" value="1e0855de-ea6c-4e85-abe5-98cd76c71014">
+            <input type="hidden" name="subject" value="New Portfolio Contact from {{name}}">
+            <input type="checkbox" name="botcheck" class="hidden" style="display:none">
             <div class="form-group">
               <label for="name">Name</label>
               <input type="text" name="name" class="form-control" required placeholder="Enter your name">
@@ -405,15 +587,17 @@
               <label for="message">Message</label>
               <textarea name="message" rows="5" class="form-control" required placeholder="Write your message here..."></textarea>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+            <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Send Message</button>
+            <div id="form-result" class="mt-3" style="display:none"></div>
           </form>
         </div>
       </div>
     </div>
   </div>
 </section>
+</main>
 
-  
+
 <footer class="footer bg-dark text-white pt-4 pb-3">
   <div class="container text-center">
     <p class="mb-2">&copy; 2026 <strong>Samson Mainah</strong>. All rights reserved.</p>
@@ -434,7 +618,6 @@
 
   
  <!-- JAVASCRIPT -->
- <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 <script>
@@ -500,6 +683,65 @@
       themeIcon.className = 'fas fa-sun';
     }
 
+    // Project filtering
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        document.querySelectorAll('.filterable').forEach(item => {
+          if (filter === 'all' || item.dataset.category.includes(filter)) {
+            item.style.display = '';
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+          } else {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            setTimeout(() => { item.style.display = 'none'; }, 300);
+          }
+        });
+      });
+    });
+
+    // Web3Forms AJAX submission
+    const contactForm = document.getElementById('contact-form');
+    const formResult = document.getElementById('form-result');
+    const submitBtn = document.getElementById('submit-btn');
+
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: new FormData(contactForm)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          formResult.style.display = 'block';
+          formResult.className = 'mt-3 alert alert-success';
+          formResult.textContent = 'Message sent successfully! I\'ll get back to you soon.';
+          contactForm.reset();
+        } else {
+          formResult.style.display = 'block';
+          formResult.className = 'mt-3 alert alert-danger';
+          formResult.textContent = 'Something went wrong. Please try again.';
+        }
+      })
+      .catch(() => {
+        formResult.style.display = 'block';
+        formResult.className = 'mt-3 alert alert-danger';
+        formResult.textContent = 'Something went wrong. Please try again.';
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Message';
+        setTimeout(() => { formResult.style.display = 'none'; }, 5000);
+      });
+    });
+
     // Initialize Typed.js
     new Typed('#typed-text', {
       strings: [
@@ -522,7 +764,47 @@
   };
 
 </script>
-<a href="https://wa.me/254791848007?text=Hi%20Samson%2C%20I'd%20like%20to%20book%20a%20consultation." target="_blank" class="whatsapp-float">
+<!-- Particles.js -->
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+  particlesJS('particles-js', {
+    particles: {
+      number: { value: 80, density: { enable: true, value_area: 800 } },
+      color: { value: '#667eea' },
+      shape: { type: 'circle' },
+      opacity: { value: 0.5, random: true },
+      size: { value: 3, random: true },
+      line_linked: { enable: true, distance: 150, color: '#667eea', opacity: 0.2, width: 1 },
+      move: { enable: true, speed: 1.5, direction: 'none', random: false, straight: false, out_mode: 'out' }
+    },
+    interactivity: {
+      detect_on: 'canvas',
+      events: {
+        onhover: { enable: true, mode: 'grab' },
+        onclick: { enable: true, mode: 'push' },
+        resize: true
+      },
+      modes: {
+        grab: { distance: 140, line_linked: { opacity: 0.5 } },
+        push: { particles_nb: 4 }
+      }
+    },
+    retina_detect: true
+  });
+</script>
+
+<!-- AOS Init -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 800,
+    easing: 'ease-out',
+    once: true,
+    offset: 100
+  });
+</script>
+
+<a href="https://wa.me/254791848007?text=Hi%20Samson%2C%20I'd%20like%20to%20book%20a%20consultation." target="_blank" class="whatsapp-float" aria-label="Book a consultation on WhatsApp">
   <i class="fab fa-whatsapp whatsapp-icon"></i>
   <span class="whatsapp-text d-none d-md-inline"> Book a Consultation</span>
 </a>

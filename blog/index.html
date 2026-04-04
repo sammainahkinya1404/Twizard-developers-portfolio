@@ -11,13 +11,15 @@
   <link rel="icon" href="../assets/favicon.png" />
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS Animate on Scroll -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
 </head>
 
 <body>
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
     <div class="container">
-      <a class="navbar-brand" href="../">Samson Kinyanjui</a>
+      <a class="navbar-brand" href="../index.html">Samson Kinyanjui</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -25,12 +27,12 @@
 
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto text-uppercase">
-          <li class="nav-item"><a class="nav-link" href="../#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="../#my-works">Projects</a></li>
-          <li class="nav-item"><a class="nav-link" href="../#research">Implementations</a></li>
-          <li class="nav-item"><a class="nav-link" href="../#publications">Publications</a></li>
-          <li class="nav-item"><a class="nav-link active" href="./">Posts</a></li>
-          <li class="nav-item"><a class="nav-link" href="../#contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#contact">Contact</a></li>
           <li class="nav-item">
             <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
               <i class="fas fa-moon" id="theme-icon"></i>
@@ -44,15 +46,21 @@
   <!-- Blog Hero Section -->
   <section class="blog-hero">
     <div class="container">
-      <h1 class="blog-hero-title">Posts</h1>
-      <p class="blog-hero-subtitle">AI/ML paper breakdowns, implementations, and research notes.</p>
+      <h1 class="blog-hero-title" data-aos="fade-up">Posts</h1>
+      <p class="blog-hero-subtitle" data-aos="fade-up" data-aos-delay="100">AI/ML paper breakdowns, implementations, and research notes.</p>
+      <div class="blog-search-wrapper" data-aos="fade-up" data-aos-delay="200">
+        <div class="blog-search">
+          <i class="fas fa-search"></i>
+          <input type="text" id="blog-search" placeholder="Search posts..." autocomplete="off">
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Blog Filters -->
   <section class="blog-filters-section">
     <div class="container">
-      <div class="blog-filters">
+      <div class="blog-filters" data-aos="fade-up">
         <button class="blog-filter-btn active" data-filter="all">All Posts</button>
         <button class="blog-filter-btn" data-filter="paper-breakdown">Paper Breakdown</button>
         <button class="blog-filter-btn" data-filter="implementation">Implementation</button>
@@ -65,8 +73,9 @@
   <section class="blog-listing">
     <div class="container">
       <div class="blog-grid">
+        <p id="no-results" style="display:none; text-align:center; color:var(--text-muted); grid-column:1/-1; padding:40px 0;">No posts found.</p>
         <!-- Blog Card 1 -->
-        <a href="posts/attention-post.html" class="blog-card" data-category="paper-breakdown">
+        <a href="posts/attention-post.html" class="blog-card" data-category="paper-breakdown" data-aos="fade-up">
           <div class="blog-card-content">
             <div class="blog-card-meta">
               <span class="blog-date">Feb 5, 2026</span>
@@ -87,7 +96,7 @@
         </a>
 
         <!-- Blog Card 2 -->
-        <a href="posts/Automating-Financial-Statement-Audits-with-LLMs.html" class="blog-card" data-category="implementation">
+        <a href="posts/Automating-Financial-Statement-Audits-with-LLMs.html" class="blog-card" data-category="implementation" data-aos="fade-up" data-aos-delay="100">
           <div class="blog-card-content">
             <div class="blog-card-meta">
               <span class="blog-date">Feb 15, 2026</span>
@@ -108,7 +117,7 @@
         </a>
 
         <!-- Blog Card 3 -->
-        <a href="posts/building-tradingagents-for-the-nse.html" class="blog-card" data-category="implementation">
+        <a href="posts/building-tradingagents-for-the-nse.html" class="blog-card" data-category="implementation" data-aos="fade-up" data-aos-delay="200">
           <div class="blog-card-content">
             <div class="blog-card-meta">
               <span class="blog-date">Feb 18, 2026</span>
@@ -191,6 +200,26 @@
     </div>
   </section>
 
+  <!-- Newsletter CTA -->
+  <section class="newsletter-section" data-aos="fade-up">
+    <div class="container">
+      <div class="newsletter-card">
+        <i class="fas fa-envelope newsletter-icon"></i>
+        <h3 class="newsletter-title">Stay Updated</h3>
+        <p class="newsletter-desc">Get notified when I publish new AI/ML paper breakdowns and implementation posts.</p>
+        <form class="newsletter-form" action="https://api.web3forms.com/submit" method="POST" id="newsletter-form">
+          <input type="hidden" name="access_key" value="1e0855de-ea6c-4e85-abe5-98cd76c71014">
+          <input type="hidden" name="subject" value="New Blog Newsletter Subscriber">
+          <input type="hidden" name="from_name" value="Blog Newsletter">
+          <input type="checkbox" name="botcheck" style="display:none">
+          <input type="email" name="email" placeholder="Enter your email" required class="newsletter-input">
+          <button type="submit" class="newsletter-btn">Subscribe</button>
+        </form>
+        <p id="newsletter-result" class="newsletter-result" style="display:none"></p>
+      </div>
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer class="footer bg-dark text-white pt-4 pb-3">
     <div class="container text-center">
@@ -241,30 +270,87 @@
       }
     };
 
-    // Blog filter functionality
+    // Blog filter & search
     const filterBtns = document.querySelectorAll('.blog-filter-btn');
     const blogCards = document.querySelectorAll('.blog-card');
+    const searchInput = document.getElementById('blog-search');
+    const noResults = document.getElementById('no-results');
+    let activeFilter = 'all';
+
+    function applyFilters() {
+      const query = searchInput.value.toLowerCase().trim();
+      let visible = 0;
+
+      blogCards.forEach(card => {
+        const matchesFilter = activeFilter === 'all' || card.dataset.category === activeFilter;
+        const text = card.textContent.toLowerCase();
+        const matchesSearch = !query || text.includes(query);
+
+        if (matchesFilter && matchesSearch) {
+          card.style.display = 'block';
+          card.style.animation = 'fadeInUp 0.4s ease';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      noResults.style.display = visible === 0 ? 'block' : 'none';
+    }
 
     filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        // Update active button
         filterBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        applyFilters();
+      });
+    });
 
-        const filter = btn.dataset.filter;
+    searchInput.addEventListener('input', applyFilters);
 
-        // Filter cards
-        blogCards.forEach(card => {
-          if (filter === 'all' || card.dataset.category === filter) {
-            card.style.display = 'block';
-            card.style.animation = 'fadeInUp 0.4s ease';
-          } else {
-            card.style.display = 'none';
-          }
-        });
+    // Newsletter AJAX
+    const newsletterForm = document.getElementById('newsletter-form');
+    const newsletterResult = document.getElementById('newsletter-result');
+
+    newsletterForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = newsletterForm.querySelector('.newsletter-btn');
+      btn.disabled = true;
+      btn.textContent = 'Subscribing...';
+
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: new FormData(newsletterForm)
+      })
+      .then(res => res.json())
+      .then(data => {
+        newsletterResult.style.display = 'block';
+        if (data.success) {
+          newsletterResult.className = 'newsletter-result success';
+          newsletterResult.textContent = 'Subscribed! You\'ll hear from me soon.';
+          newsletterForm.reset();
+        } else {
+          newsletterResult.className = 'newsletter-result error';
+          newsletterResult.textContent = 'Something went wrong. Try again.';
+        }
+      })
+      .catch(() => {
+        newsletterResult.style.display = 'block';
+        newsletterResult.className = 'newsletter-result error';
+        newsletterResult.textContent = 'Something went wrong. Try again.';
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Subscribe';
+        setTimeout(() => { newsletterResult.style.display = 'none'; }, 5000);
       });
     });
   </script>
+
+  <!-- AOS Init -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init({ duration: 800, easing: 'ease-out', once: true, offset: 80 });</script>
 </body>
 
 </html>

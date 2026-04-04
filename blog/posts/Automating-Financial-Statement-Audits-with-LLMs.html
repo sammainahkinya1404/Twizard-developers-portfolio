@@ -43,10 +43,13 @@
 </head>
 
 <body>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
     <div class="container">
-      <a class="navbar-brand" href="../../">Samson Kinyanjui</a>
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -54,12 +57,12 @@
 
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto text-uppercase">
-          <li class="nav-item"><a class="nav-link" href="../../#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../#my-works">Projects</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../#research">Implementations</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../#publications">Publications</a></li>
-          <li class="nav-item"><a class="nav-link active" href="../">Posts</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../#contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
           <li class="nav-item">
             <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
               <i class="fas fa-moon" id="theme-icon"></i>
@@ -74,7 +77,7 @@
   <article class="blog-post">
     <div class="container">
       <!-- Back to Blog -->
-      <a href="../" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
 
       <!-- Post Header -->
       <header class="post-header">
@@ -786,7 +789,7 @@ async def run_audit_stream(
 
       <!-- Back to Blog -->
       <div class="text-center mt-5 mb-4">
-        <a href="../" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
       </div>
     </div>
   </article>
@@ -813,6 +816,14 @@ async def run_audit_stream(
   <!-- JavaScript -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script>
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      document.getElementById('reading-progress').style.width = progress + '%';
+    });
+
     // Initialize syntax highlighting
     document.addEventListener('DOMContentLoaded', () => {
       hljs.highlightAll();
