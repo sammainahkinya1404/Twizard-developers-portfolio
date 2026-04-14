@@ -6,7 +6,11 @@
       "WebFetch(domain:colorlib.com)",
       "WebFetch(domain:www.index.dev)",
       "WebFetch(domain:ai.cgtbrain.com.au)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:www.linkedin.com)",
+      "Bash(pip show:*)",
+      "Bash(python -c \"import cairosvg\")",
+      "Bash(python -c \"from PIL import Image\")"
     ]
   }
 }

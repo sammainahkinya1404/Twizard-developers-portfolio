@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demystifying LLM Quantization: GPTQ, AWQ & GGUF | Samson Kinyanjui</title>
+  <meta name="description" content="A practical guide to LLM quantization methods — GPTQ, AWQ, and GGUF — with Python code examples for running large language models on consumer hardware." />
+
+  <!-- Open Graph (LinkedIn, WhatsApp, Facebook) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Demystifying LLM Quantization: GPTQ, AWQ & GGUF" />
+  <meta property="og:description" content="A practical guide to LLM quantization — GPTQ, AWQ, and GGUF — with code examples for running LLMs on consumer hardware." />
+  <meta property="og:image" content="https://sammainah.com/assets/blog/quantization.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/llm-quantization-gptq-awq-gguf.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <!-- X / Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Demystifying LLM Quantization: GPTQ, AWQ & GGUF" />
+  <meta name="twitter:description" content="A practical guide to LLM quantization — GPTQ, AWQ, and GGUF — with code examples for running LLMs on consumer hardware." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/blog/quantization.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+
+  <!-- Math Notation (KaTeX) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+
+<body>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Post -->
+  <article class="blog-post">
+    <div class="container">
+      <!-- Back to Blog -->
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+      <!-- Post Header -->
+      <header class="post-header">
+        <div class="post-category">Paper Breakdown</div>
+        <h1 class="post-title">Demystifying LLM Quantization: GPTQ, AWQ & GGUF</h1>
+        <p class="post-subtitle">How to shrink a 14GB model to 4GB and still get usable results &mdash; a practical guide with Python code.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item">
+            <i class="fas fa-user"></i>
+            <span>Samson Kinyanjui</span>
+          </div>
+          <div class="post-meta-item">
+            <i class="fas fa-calendar"></i>
+            <span>April 14, 2026</span>
+          </div>
+          <div class="post-meta-item">
+            <i class="fas fa-clock"></i>
+            <span>10 min read</span>
+          </div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">Quantization</span>
+          <span class="post-tag">LLMs</span>
+          <span class="post-tag">GPTQ</span>
+          <span class="post-tag">AWQ</span>
+          <span class="post-tag">GGUF</span>
+        </div>
+      </header>
+
+      <!-- Post Content -->
+      <div class="post-content">
+        <h2>Introduction</h2>
+        <p>
+          You've downloaded a 7B-parameter model, loaded it in FP16, and watched your GPU memory hit 14GB. Sound familiar? Quantization is how you get that same model running in 3.5&ndash;4.5GB &mdash; on a laptop GPU or even a CPU &mdash; with surprisingly little quality loss.
+        </p>
+        <p>
+          In this post I break down the three dominant quantization approaches in the LLM ecosystem: <strong>GPTQ</strong>, <strong>AWQ</strong>, and <strong>GGUF</strong>. For each, I explain the core idea, show working Python code, and discuss when to use which.
+        </p>
+
+        <h2>What Is Quantization?</h2>
+        <p>
+          Quantization means storing numbers with fewer bits. A model trained in FP32 (32 bits per weight) can be compressed to FP16 (16 bits), INT8 (8 bits), or INT4 (4 bits). The model doesn't "think" in 4-bit integers &mdash; during inference, weights are dequantized back to higher precision for computation.
+        </p>
+
+        <p>Here's the intuition. Given original FP32 weights:</p>
+
+        <pre><code class="language-python">original = [0.40, 0.79, 1.22]
+
+# Quantize to INT4 range (0-15) using scale + zero-point
+scale = (max(original) - min(original)) / 15
+zero_point = min(original)
+
+quantized = [round((x - zero_point) / scale) for x in original]
+# quantized = [0, 7, 15]
+
+# Dequantize back
+dequantized = [(q * scale) + zero_point for q in quantized]
+# dequantized = [0.40, 0.78, 1.22]  (close, not exact)</code></pre>
+
+        <p>
+          That tiny rounding error is the quantization tax. The art is minimizing it where it matters most.
+        </p>
+
+        <h2>Three Types of Quantization</h2>
+
+        <h3>1. Weight Quantization (Mature)</h3>
+        <p>
+          Compresses stored model weights from FP32 &rarr; FP16 &rarr; INT8 &rarr; INT4. This is the most common approach. A 7B model drops from ~14GB (FP16) to ~3.5&ndash;4.5GB (INT4).
+        </p>
+
+        <h3>2. Activation Quantization (Emerging)</h3>
+        <p>
+          Targets intermediate tensors during the forward pass. Still experimental but promising for reducing compute during inference.
+        </p>
+
+        <h3>3. KV-Cache Quantization (Frontier)</h3>
+        <p>
+          The big new frontier. Using FP8/INT8 for the key-value cache reduces memory by 2&ndash;4&times;, enabling much longer context windows on consumer hardware.
+        </p>
+
+        <h2>GPTQ: The Hessian Approach (2022)</h2>
+        <p>
+          GPTQ was the first practical method to quantize full LLMs to INT4 post-training. It uses the <strong>Hessian matrix</strong> (second-order gradient information) to determine optimal rounding for each weight, minimizing the overall output error layer by layer.
+        </p>
+
+        <p>Key characteristics:</p>
+        <ul>
+          <li>Post-training &mdash; no retraining needed</li>
+          <li>Treats all weights equally within groups (typically 128 weights per group)</li>
+          <li>Robust to imperfect calibration data</li>
+          <li>Computationally expensive during quantization, but inference is lightweight</li>
+        </ul>
+
+        <h3>Quantizing a Model with GPTQ</h3>
+        <pre><code class="language-bash"># Install dependencies
+pip install auto-gptq transformers torch</code></pre>
+
+        <pre><code class="language-python">from transformers import AutoTokenizer
+from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
+
+model_name = "meta-llama/Llama-2-7b-hf"
+
+# Configure quantization
+quantize_config = BaseQuantizeConfig(
+    bits=4,
+    group_size=128,
+    desc_act=False,  # set True for better quality, slower
+)
+
+# Load model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoGPTQForCausalLM.from_pretrained(
+    model_name, quantize_config=quantize_config
+)
+
+# Prepare calibration data (small representative sample)
+calibration_data = [
+    tokenizer(text, return_tensors="pt")
+    for text in [
+        "The capital of Kenya is Nairobi, a major economic hub in East Africa.",
+        "Machine learning models can be compressed using quantization techniques.",
+        "The Nairobi Securities Exchange lists companies across multiple sectors.",
+    ]
+]
+
+# Quantize (this takes a while)
+model.quantize(calibration_data)
+
+# Save the quantized model
+model.save_quantized("llama2-7b-gptq-4bit")
+tokenizer.save_pretrained("llama2-7b-gptq-4bit")</code></pre>
+
+        <h3>Loading a Pre-Quantized GPTQ Model</h3>
+        <pre><code class="language-python">from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = "TheBloke/Llama-2-7B-GPTQ"
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map="auto",
+    torch_dtype="auto",
+)
+
+prompt = "Explain quantization in machine learning:"
+inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_new_tokens=200)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))</code></pre>
+
+        <h2>AWQ: Activation-Aware Quantization (2024)</h2>
+        <p>
+          AWQ improves on GPTQ with a key insight: <strong>not all weights are equally important</strong>. Instead of treating every weight the same, AWQ identifies "salient" weights &mdash; those that correspond to large activation magnitudes &mdash; and protects them during quantization.
+        </p>
+        <p>
+          It uses a technique called <strong>Duo Scaling</strong> that balances activation and weight magnitudes to find the optimal per-channel scaling factors.
+        </p>
+
+        <p>Key characteristics:</p>
+        <ul>
+          <li>Often achieves higher accuracy at 4-bit than GPTQ, especially on reasoning tasks</li>
+          <li>Faster to quantize than GPTQ</li>
+          <li>More sensitive to calibration dataset quality</li>
+          <li>It matters who quantized the model &mdash; prefer community-trusted sources</li>
+        </ul>
+
+        <h3>Quantizing with AWQ</h3>
+        <pre><code class="language-bash"># Install dependencies
+pip install autoawq transformers torch</code></pre>
+
+        <pre><code class="language-python">from awq import AutoAWQForCausalLM
+from transformers import AutoTokenizer
+
+model_name = "meta-llama/Llama-2-7b-hf"
+
+# Load model
+model = AutoAWQForCausalLM.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+# Configure and quantize
+quant_config = {
+    "zero_point": True,
+    "q_group_size": 128,
+    "w_bit": 4,
+    "version": "GEMM",  # use GEMM for GPU inference
+}
+
+model.quantize(tokenizer, quant_config=quant_config)
+
+# Save
+model.save_quantized("llama2-7b-awq-4bit")
+tokenizer.save_pretrained("llama2-7b-awq-4bit")</code></pre>
+
+        <h3>Loading a Pre-Quantized AWQ Model</h3>
+        <pre><code class="language-python">from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = "TheBloke/Llama-2-7B-AWQ"
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map="auto",
+    torch_dtype="auto",
+)
+
+prompt = "What is activation-aware quantization?"
+inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_new_tokens=200)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))</code></pre>
+
+        <h2>GGUF: The Universal Runtime Format</h2>
+        <p>
+          GGUF is not a quantization algorithm &mdash; it's a <strong>container and runtime format</strong> created for <code>llama.cpp</code>. It packages quantized weights (at various levels from Q2 to Q8), the tokenizer, and model metadata into a single portable file.
+        </p>
+        <p>
+          The killer feature: GGUF runs on <strong>CPU, GPU, and Apple M-series</strong> with minimal overhead, no Python runtime needed. This makes it the go-to format for local LLM deployment.
+        </p>
+
+        <h3>Running a GGUF Model with llama-cpp-python</h3>
+        <pre><code class="language-bash"># Install with GPU support (CUDA)
+CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python
+
+# Or CPU-only
+pip install llama-cpp-python</code></pre>
+
+        <pre><code class="language-python">from llama_cpp import Llama
+
+# Load a GGUF model (download .gguf file from HuggingFace)
+llm = Llama(
+    model_path="./llama-2-7b.Q4_K_M.gguf",
+    n_ctx=2048,        # context window
+    n_gpu_layers=-1,   # offload all layers to GPU (-1 = all)
+    verbose=False,
+)
+
+# Generate text
+response = llm(
+    "Explain LLM quantization in simple terms:",
+    max_tokens=256,
+    temperature=0.7,
+    top_p=0.9,
+)
+
+print(response["choices"][0]["text"])</code></pre>
+
+        <h3>GGUF Quantization Levels</h3>
+        <p>GGUF files come in multiple quantization levels. Here's a practical guide:</p>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>Bits</th>
+              <th>7B Model Size</th>
+              <th>Quality</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Q2_K</td><td>2.5</td><td>~2.8 GB</td><td>Low</td><td>Experimentation only</td></tr>
+            <tr><td>Q4_K_M</td><td>4.5</td><td>~4.1 GB</td><td>Good</td><td>Best balance for most users</td></tr>
+            <tr><td>Q5_K_M</td><td>5.5</td><td>~4.8 GB</td><td>Very Good</td><td>When you have a bit more RAM</td></tr>
+            <tr><td>Q6_K</td><td>6.5</td><td>~5.5 GB</td><td>Excellent</td><td>Near-original quality</td></tr>
+            <tr><td>Q8_0</td><td>8</td><td>~7.2 GB</td><td>Best</td><td>Minimal quality loss</td></tr>
+          </tbody>
+        </table>
+
+        <p>For most use cases, <strong>Q4_K_M</strong> hits the sweet spot between size and quality.</p>
+
+        <h2>GPTQ vs AWQ vs GGUF: When to Use Which</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr>
+              <th>Factor</th>
+              <th>GPTQ</th>
+              <th>AWQ</th>
+              <th>GGUF</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Best for</strong></td><td>GPU inference</td><td>GPU inference (higher quality)</td><td>CPU/hybrid inference</td></tr>
+            <tr><td><strong>Quality at 4-bit</strong></td><td>Good</td><td>Better (especially reasoning)</td><td>Depends on quant level</td></tr>
+            <tr><td><strong>Speed</strong></td><td>Fast on GPU</td><td>Fast on GPU</td><td>Great on CPU + GPU split</td></tr>
+            <tr><td><strong>Calibration sensitivity</strong></td><td>Low</td><td>Higher</td><td>N/A (pre-quantized)</td></tr>
+            <tr><td><strong>Ecosystem</strong></td><td>HuggingFace</td><td>HuggingFace</td><td>llama.cpp / Ollama</td></tr>
+            <tr><td><strong>Apple Silicon</strong></td><td>Limited</td><td>Limited</td><td>Excellent</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Practical Tips</h2>
+        <ul>
+          <li><strong>Calibration data matters:</strong> Use 100+ diverse samples. On a 4GB GPU, ~96&times;1024 tokens is a good target.</li>
+          <li><strong>Source matters for AWQ:</strong> Professionally quantized models (from autoawq or official teams) perform noticeably better than random community uploads.</li>
+          <li><strong>Always benchmark on your actual task:</strong> Run the quantized model on real-world inputs before deploying. A model that benchmarks well on perplexity might still fail on your specific use case.</li>
+          <li><strong>Embedding and norm layers stay unquantized:</strong> These are small but critical for quality &mdash; every major method leaves them in FP16.</li>
+          <li><strong>For local development:</strong> Start with GGUF Q4_K_M. If you need HuggingFace ecosystem compatibility, go AWQ.</li>
+        </ul>
+
+        <h2>Key Takeaways</h2>
+        <ul>
+          <li>Quantization makes LLMs accessible on consumer hardware with 4&ndash;5&times; memory reduction</li>
+          <li>GPTQ is the battle-tested choice for GPU inference with broad ecosystem support</li>
+          <li>AWQ delivers better quality at 4-bit by protecting activation-important weights</li>
+          <li>GGUF is the universal format for running models locally across any hardware</li>
+          <li>KV-cache quantization is the next frontier for enabling longer context on smaller GPUs</li>
+        </ul>
+
+        <h2>Further Reading</h2>
+        <ul>
+          <li><a href="https://arxiv.org/abs/2210.17323" target="_blank">GPTQ Paper: Accurate Post-Training Quantization for Generative Pre-trained Transformers</a></li>
+          <li><a href="https://arxiv.org/abs/2306.00978" target="_blank">AWQ Paper: Activation-aware Weight Quantization for LLM Compression</a></li>
+          <li><a href="https://github.com/ggerganov/llama.cpp" target="_blank">llama.cpp GitHub (GGUF runtime)</a></li>
+          <li><a href="https://github.com/AutoGPTQ/AutoGPTQ" target="_blank">AutoGPTQ Library</a></li>
+          <li><a href="https://github.com/casper-hansen/AutoAWQ" target="_blank">AutoAWQ Library</a></li>
+        </ul>
+      </div>
+
+      <!-- Post Footer -->
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <!-- Related Posts -->
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="attention-post.html" class="related-post-card">
+            <span class="related-post-category">Paper Breakdown</span>
+            <h4>Understanding Attention Is All You Need</h4>
+            <span class="related-post-date">February 5, 2026</span>
+          </a>
+          <a href="building-tradingagents-for-the-nse.html" class="related-post-card">
+            <span class="related-post-category">Implementation</span>
+            <h4>Building TradingAgents for the NSE</h4>
+            <span class="related-post-date">February 18, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Back to Blog -->
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Mainah</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2">
+          <i class="fab fa-linkedin fa-lg"></i>
+        </a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2">
+          <i class="fab fa-github fa-lg"></i>
+        </a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2">
+          <i class="fab fa-twitter fa-lg"></i>
+        </a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      document.getElementById('reading-progress').style.width = progress + '%';
+    });
+
+    // Initialize syntax highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+      hljs.highlightAll();
+
+      // Initialize KaTeX for math rendering
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+
+    // Theme toggle
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+
+      localStorage.setItem('lightMode', isLight);
+    });
+
+    // Load theme preference
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) {
+        document.body.classList.add('light-mode');
+        themeIcon.className = 'fas fa-moon';
+      } else {
+        themeIcon.className = 'fas fa-sun';
+      }
+    };
+
+    // Share functions
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(
+        `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`,
+        'linkedin-share',
+        'width=600,height=600'
+      );
+    }
+
+    function shareOnWhatsApp() {
+      const url = window.location.href;
+      const title = document.title;
+      const text = encodeURIComponent(`${title}\n${url}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(
+        `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+        'x-share',
+        'width=600,height=300'
+      );
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+
+</html>

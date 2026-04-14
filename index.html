@@ -49,7 +49,7 @@
       "@type": "EducationalOrganization",
       "name": "Dedan Kimathi University of Technology"
     },
-    "knowsAbout": ["Machine Learning", "LLMs", "LangGraph", "FastAPI", "React", "Next.js", "Python", "TensorFlow"]
+    "knowsAbout": ["Machine Learning", "LLMs", "Fine-Tuning (LoRA/QLoRA)", "Quantization", "RAG", "Synthetic Data Generation", "Model Deployment", "LangGraph", "FastAPI", "React", "Next.js", "Python", "TensorFlow"]
   }
   </script>
 
@@ -140,10 +140,10 @@
       <div class="col-lg-8">
         <h2 class="section-heading" data-aos="fade-up">About Me</h2>
         <p class="about-text">
-          Machine Learning Engineer based in Nairobi, Kenya. I take AI/ML research papers and turn them into working systems built for African markets. My current focus is multi-agent LLM systems &mdash; I built TradingAgents, a 13-agent framework that debates and trades NSE equities, adapting a UCLA/MIT paper for frontier market constraints like T+3 settlement, KES-denominated portfolios, and illiquid order books.
+          AI Engineer based in Nairobi, Kenya. I build and deploy self-hosted LLM systems &mdash; fine-tuning, quantization, RAG, and multi-agent pipelines. Currently at Supreme AI building AI-powered products for the Australian market.
         </p>
         <p class="about-text">
-          I also build production AI tools for professionals &mdash; an LLM-powered financial statement auditor using RAG and a capital gains tax engine that automates KRA compliance for Kenyan accountants. MSc Computer Science from Dedan Kimathi University of Technology with 3 IEEE publications spanning medical imaging, NLP, and financial assessment. I work across the full stack: Python, LangGraph, FastAPI on the backend; React and Next.js on the frontend.
+          I also build AI tools independently &mdash; TradingAgents (a 13-agent NSE trading framework) and an LLM-powered financial auditor. MSc Computer Science from DeKUT with 3 IEEE publications. Full stack: Python, LangGraph, FastAPI, React, Next.js.
         </p>
 
         <div class="skills-list">
@@ -152,13 +152,18 @@
           <span class="skill-tag">Flask</span>
           <span class="skill-tag">TensorFlow</span>
           <span class="skill-tag">LLMs</span>
+          <span class="skill-tag">Fine-Tuning (LoRA/QLoRA)</span>
+          <span class="skill-tag">Quantization</span>
+          <span class="skill-tag">Model Deployment</span>
+          <span class="skill-tag">RAG</span>
+          <span class="skill-tag">Synthetic Data Generation</span>
           <span class="skill-tag">LangChain</span>
+          <span class="skill-tag">LangGraph</span>
           <span class="skill-tag">JavaScript</span>
           <span class="skill-tag">React</span>
           <span class="skill-tag">Next.js</span>
           <span class="skill-tag">PostgreSQL</span>
           <span class="skill-tag">Docker</span>
-          <span class="skill-tag">LangGraph</span>
           <span class="skill-tag">DeepSeek</span>
         </div>
 
@@ -182,21 +187,21 @@
         <div class="timeline-dot"></div>
         <div class="timeline-content">
           <span class="timeline-date">2025 &mdash; Present</span>
-          <h4 class="timeline-title">Machine Learning Engineer</h4>
-          <p class="timeline-company">CGT Brain &mdash; Australia (Remote)</p>
-          <p class="timeline-desc">Built an AI-powered capital gains tax engine using Next.js, FastAPI, and LLMs. Automates ATO compliance for property transactions.</p>
+          <h4 class="timeline-title">AI Engineer</h4>
+          <p class="timeline-company">Supreme AI &mdash; Australia (Remote)</p>
+          <p class="timeline-desc">Building AI-powered products for the Australian market including CGT Brain (capital gains tax engine) and an AML/CTF compliance system. Fine-tuning, quantization, and deploying self-hosted LLMs via vLLM.</p>
         </div>
       </div>
-      <div class="timeline-item" data-aos="fade-left">
+      <div class="timeline-item" data-aos="fade-right">
         <div class="timeline-dot"></div>
         <div class="timeline-content">
           <span class="timeline-date">2024 &mdash; Present</span>
           <h4 class="timeline-title">Independent AI/ML Researcher</h4>
           <p class="timeline-company">Nairobi, Kenya</p>
-          <p class="timeline-desc">Implementing global AI research papers for African markets. Built TradingAgents (multi-agent NSE trading) and LLM-powered financial auditor. 3 IEEE publications.</p>
+          <p class="timeline-desc">Implementing global AI research papers for African markets. Built TradingAgents (multi-agent NSE trading system) and an LLM-powered financial auditor. 3 IEEE publications.</p>
         </div>
       </div>
-      <div class="timeline-item" data-aos="fade-right">
+      <div class="timeline-item" data-aos="fade-left">
         <div class="timeline-dot"></div>
         <div class="timeline-content">
           <span class="timeline-date">Oct 2023 &mdash; May 2026</span>
@@ -205,7 +210,7 @@
           <p class="timeline-desc">Research focus: Medical imaging with deep learning, NLP topic modeling, financial health assessment using ML. 3 IEEE publications.</p>
         </div>
       </div>
-      <div class="timeline-item" data-aos="fade-left">
+      <div class="timeline-item" data-aos="fade-right">
         <div class="timeline-dot"></div>
         <div class="timeline-content">
           <span class="timeline-date">May 2019 &mdash; Apr 2023</span>
@@ -412,8 +417,26 @@
     </div>
 
     <div class="blog-grid">
+      <!-- Blog Card: Quantization (Latest) -->
+      <a href="blog/posts/llm-quantization-gptq-awq-gguf.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">Apr 14, 2026</span>
+            <span class="blog-category">Paper Breakdown</span>
+          </div>
+          <h3 class="blog-card-title">Demystifying LLM Quantization: GPTQ, AWQ & GGUF</h3>
+          <p class="blog-card-excerpt">How to shrink a 14GB model to 4GB and still get usable results &mdash; a practical guide with Python code.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">Quantization</span>
+            <span class="blog-tag">LLMs</span>
+            <span class="blog-tag">GPTQ</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
       <!-- Blog Card 1 -->
-      <a href="blog/posts/attention-post.html" class="blog-card" data-aos="fade-up">
+      <a href="blog/posts/attention-post.html" class="blog-card" data-aos="fade-up" data-aos-delay="100">
         <div class="blog-card-content">
           <div class="blog-card-meta">
             <span class="blog-date">Feb 5, 2026</span>
@@ -745,11 +768,11 @@
     // Initialize Typed.js
     new Typed('#typed-text', {
       strings: [
-        'Machine Learning Practitioner',
-        'Software Developer',
-        'Data Scientist',
+        'AI Engineer',
         'ML Engineer',
-        'Turning Research Papers into Local Solutions'
+        'Building Self-Hosted LLM Systems',
+        'Fine-Tuning & Deploying Models',
+        'Turning Research Papers into Production'
       ],
       typeSpeed: 60,
       backSpeed: 40,
