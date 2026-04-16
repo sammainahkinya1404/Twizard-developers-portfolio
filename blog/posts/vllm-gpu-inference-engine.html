@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How I Get the Best Out of My GPU Using vLLM for Local LLM Production | Samson Kinyanjui</title>
+  <meta name="description" content="A deep dive into vLLM — how PagedAttention achieves 14-24x throughput over HuggingFace Transformers, with code examples for deploying LLMs on GPUs." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="How I Get the Best Out of My GPU Using vLLM for Local LLM Production" />
+  <meta property="og:description" content="How PagedAttention achieves 14-24x throughput over HuggingFace Transformers, with code examples for deploying LLMs on GPUs." />
+  <meta property="og:image" content="https://sammainah.com/assets/blog/vllm.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/vllm-gpu-inference-engine.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <!-- X / Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="How I Get the Best Out of My GPU Using vLLM for Local LLM Production" />
+  <meta name="twitter:description" content="How PagedAttention achieves 14-24x throughput over HuggingFace Transformers, with code examples for deploying LLMs on GPUs." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/blog/vllm.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+
+  <!-- Math Notation (KaTeX) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+
+<body>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Post -->
+  <article class="blog-post">
+    <div class="container">
+      <!-- Back to Blog -->
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+      <!-- Post Header -->
+      <header class="post-header">
+        <div class="post-category">Deep Dive</div>
+        <h1 class="post-title">How I Get the Best Out of My GPU Using vLLM for Local LLM Production</h1>
+        <p class="post-subtitle">How PagedAttention borrows from OS virtual memory to achieve 14-24x throughput, and how to deploy it yourself.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item">
+            <i class="fas fa-user"></i>
+            <span>Samson Kinyanjui</span>
+          </div>
+          <div class="post-meta-item">
+            <i class="fas fa-calendar"></i>
+            <span>April 16, 2026</span>
+          </div>
+          <div class="post-meta-item">
+            <i class="fas fa-clock"></i>
+            <span>14 min read</span>
+          </div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">vLLM</span>
+          <span class="post-tag">PagedAttention</span>
+          <span class="post-tag">GPU</span>
+          <span class="post-tag">Model Deployment</span>
+          <span class="post-tag">Inference</span>
+        </div>
+      </header>
+
+      <!-- Post Content -->
+      <div class="post-content">
+
+        <h2>Introduction</h2>
+        <p>
+          You have a fine-tuned 70B model. It works. Now you need to serve it to users: fast, reliably, and without burning money on GPU hours. This is where most teams hit a wall: naive inference with HuggingFace Transformers wastes 60&ndash;80% of GPU memory, handles one request at a time, and leaves expensive hardware sitting idle.
+        </p>
+        <p>
+          <strong>vLLM</strong> is an open-source inference engine from UC Berkeley that solves this. Its core innovation, <strong>PagedAttention</strong>, borrows virtual memory concepts from operating systems to manage the KV cache, achieving 14&ndash;24x higher throughput than HuggingFace Transformers. I use it to serve models on an NVIDIA RTX Pro 6000 Blackwell (96GB VRAM) and it's become the standard for serious LLM deployment.
+        </p>
+
+        <h2>The Problem: GPU Memory Waste</h2>
+        <p>
+          During autoregressive generation, every token's attention keys and values (the <strong>KV cache</strong>) must live in GPU memory. For a 13B model, each token needs ~800KB of KV cache. With a 2048-token max sequence, that's up to <strong>1.6GB per request</strong>.
+        </p>
+        <p>
+          Traditional systems pre-allocate a contiguous block of GPU memory for each request, sized for the <em>maximum possible</em> sequence length. If a user sends a short prompt and gets a short reply, most of that block goes unused. Across many concurrent requests, this creates three forms of waste:
+        </p>
+        <ul>
+          <li><strong>Internal fragmentation:</strong> unused slots within each allocated block</li>
+          <li><strong>Reservation waste:</strong> entire blocks held for sequences that never grow</li>
+          <li><strong>External fragmentation:</strong> gaps between blocks that can't be reused</li>
+        </ul>
+        <p>
+          The result: existing systems waste <strong>60&ndash;80%</strong> of KV cache memory. Fewer concurrent requests fit in memory, batch sizes stay small, and GPU compute sits idle.
+        </p>
+
+        <h2>PagedAttention: Virtual Memory for KV Cache</h2>
+        <p>
+          PagedAttention is vLLM's core innovation, published at <strong>SOSP 2023</strong> (one of the top systems conferences). The idea is simple: apply the same techniques your OS uses for RAM management to GPU KV cache management.
+        </p>
+
+        <p>Instead of one contiguous block per request, PagedAttention:</p>
+        <ol>
+          <li><strong>Divides the KV cache into fixed-size blocks</strong> (typically 16 tokens per block)</li>
+          <li><strong>Allocates blocks on demand</strong> as tokens are generated, not upfront</li>
+          <li><strong>Maps logical blocks to physical blocks</strong> via a block table (like an OS page table)</li>
+          <li><strong>Shares physical blocks</strong> across requests with common prefixes (copy-on-write)</li>
+        </ol>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr>
+              <th>OS Concept</th>
+              <th>PagedAttention Equivalent</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Virtual address space</td><td>Logical KV blocks (sequential view)</td></tr>
+            <tr><td>Physical memory frames</td><td>Physical KV blocks in GPU VRAM</td></tr>
+            <tr><td>Page table</td><td>Block table</td></tr>
+            <tr><td>On-demand paging</td><td>Incremental block allocation</td></tr>
+            <tr><td>Shared memory pages</td><td>Shared blocks for common prefixes</td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          The only wasted memory per sequence is the last partially-filled block, at most 15 tokens. Overall KV cache waste drops from <strong>60&ndash;80% to under 4%</strong>.
+        </p>
+
+        <h2>Why This Matters for GPU Utilization</h2>
+        <p>
+          With near-zero memory waste, vLLM can fit <strong>far more concurrent requests</strong> in the same GPU. Combined with <strong>continuous batching</strong> (inserting new requests into the batch as others finish, rather than waiting for a static batch), the throughput gains are massive:
+        </p>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr>
+              <th>Comparison</th>
+              <th>Throughput Gain</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>vLLM vs. HuggingFace Transformers</td><td><strong>14&ndash;24x</strong></td></tr>
+            <tr><td>vLLM vs. HuggingFace TGI</td><td><strong>2.2&ndash;2.5x</strong></td></tr>
+            <tr><td>vLLM vs. FasterTransformer</td><td><strong>2&ndash;4x</strong></td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          The advantage <strong>grows with longer sequences, larger models, and more complex decoding</strong> (beam search, parallel sampling) because those are exactly the scenarios where KV cache memory pressure is worst.
+        </p>
+
+        <h2>Key Features</h2>
+
+        <h3>Continuous Batching</h3>
+        <p>
+          Static batching waits for a fixed batch, pads shorter sequences, and blocks everything until the longest finishes. vLLM's continuous batching changes the batch composition at <em>every decoding step</em>. As soon as one sequence finishes, a new request takes its slot. No waiting, no padding.
+        </p>
+
+        <h3>Tensor Parallelism</h3>
+        <p>
+          For models that don't fit on a single GPU, vLLM shards weight matrices across multiple GPUs. A 70B model in FP16 (~140GB) can run on 2x H100s (80GB each) with <code>--tensor-parallel-size 2</code>. NVLink interconnect is strongly recommended since PCIe degrades throughput significantly.
+        </p>
+
+        <h3>Quantization Support</h3>
+        <p>
+          vLLM supports GPTQ, AWQ, FP8, bitsandbytes, and more. FP8 is particularly interesting on modern hardware (H100, L40S), offering 2x memory reduction with up to 1.6x throughput improvement and minimal quality loss.
+        </p>
+
+        <h3>OpenAI-Compatible API</h3>
+        <p>
+          vLLM serves an OpenAI-compatible API out of the box. You can point any existing OpenAI client at your vLLM server by changing the base URL. Zero code changes for migration.
+        </p>
+
+        <h3>Prefix Caching</h3>
+        <p>
+          Requests sharing common prefixes (e.g., the same system prompt) automatically share KV cache blocks via copy-on-write. For chat applications with repeated system prompts, this saves significant memory.
+        </p>
+
+        <h2>How to Use vLLM</h2>
+
+        <h3>Installation</h3>
+        <pre><code class="language-bash"># Recommended: install with pip
+pip install vllm
+
+# Or with uv (faster)
+uv pip install vllm --torch-backend=auto</code></pre>
+
+        <h3>Offline Batch Inference</h3>
+        <pre><code class="language-python">from vllm import LLM, SamplingParams
+
+prompts = [
+    "Explain PagedAttention in one paragraph:",
+    "What is the capital of Kenya?",
+    "Write a Python function that reverses a string:",
+]
+
+sampling_params = SamplingParams(
+    temperature=0.7,
+    top_p=0.95,
+    max_tokens=256,
+)
+
+llm = LLM(model="Qwen/Qwen2.5-7B-Instruct")
+outputs = llm.generate(prompts, sampling_params)
+
+for output in outputs:
+    print(f"Prompt: {output.prompt[:50]}...")
+    print(f"Output: {output.outputs[0].text}\n")</code></pre>
+
+        <h3>Starting the API Server</h3>
+        <pre><code class="language-bash"># Basic
+vllm serve Qwen/Qwen2.5-7B-Instruct
+
+# Production: FP8 quantization, 64K context, 90% GPU memory
+vllm serve meta-llama/Llama-3.1-70B-Instruct \
+    --quantization fp8 \
+    --max-model-len 65536 \
+    --tensor-parallel-size 2 \
+    --gpu-memory-utilization 0.90 \
+    --host 0.0.0.0 \
+    --port 8000</code></pre>
+
+        <h3>Querying the Server</h3>
+        <pre><code class="language-python">from openai import OpenAI
+
+# Point the standard OpenAI client at your vLLM server
+client = OpenAI(
+    api_key="EMPTY",
+    base_url="http://localhost:8000/v1",
+)
+
+response = client.chat.completions.create(
+    model="Qwen/Qwen2.5-7B-Instruct",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "What is PagedAttention?"},
+    ],
+    temperature=0.7,
+    max_tokens=256,
+)
+
+print(response.choices[0].message.content)</code></pre>
+
+        <p>Or with curl:</p>
+        <pre><code class="language-bash">curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "messages": [{"role": "user", "content": "Hello!"}],
+    "max_tokens": 128
+  }'</code></pre>
+
+        <h3>Key Launch Parameters</h3>
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>What It Does</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>--model</code></td><td>HuggingFace model ID or local path</td><td><code>meta-llama/Llama-3.1-8B-Instruct</code></td></tr>
+            <tr><td><code>--quantization</code></td><td>Quantization method</td><td><code>fp8</code>, <code>awq</code>, <code>gptq</code></td></tr>
+            <tr><td><code>--max-model-len</code></td><td>Max context window</td><td><code>65536</code></td></tr>
+            <tr><td><code>--tensor-parallel-size</code></td><td>Number of GPUs</td><td><code>2</code>, <code>4</code></td></tr>
+            <tr><td><code>--gpu-memory-utilization</code></td><td>Fraction of VRAM to use</td><td><code>0.90</code></td></tr>
+            <tr><td><code>--dtype</code></td><td>Model data type</td><td><code>bfloat16</code>, <code>auto</code></td></tr>
+          </tbody>
+        </table>
+
+        <h2>vLLM vs. the Alternatives</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr>
+              <th>Factor</th>
+              <th>vLLM</th>
+              <th>Ollama</th>
+              <th>llama.cpp</th>
+              <th>TGI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Best for</strong></td><td>Production GPU serving</td><td>Local dev/prototyping</td><td>CPU/edge inference</td><td>Legacy HF deployments</td></tr>
+            <tr><td><strong>Throughput</strong></td><td>120&ndash;160 req/s</td><td>1&ndash;3 req/s</td><td>&lt;1 req/s concurrent</td><td>Good (2x slower than vLLM)</td></tr>
+            <tr><td><strong>Multi-GPU</strong></td><td>Tensor + pipeline parallel</td><td>No</td><td>Limited</td><td>Yes</td></tr>
+            <tr><td><strong>API</strong></td><td>OpenAI-compatible</td><td>Custom + OpenAI</td><td>C++ library</td><td>Custom</td></tr>
+            <tr><td><strong>Setup</strong></td><td>Moderate</td><td>Minimal</td><td>Minimal</td><td>Moderate</td></tr>
+            <tr><td><strong>Hardware</strong></td><td>NVIDIA, AMD, TPU</td><td>Any</td><td>Any (CPU, Metal)</td><td>NVIDIA, AMD</td></tr>
+          </tbody>
+        </table>
+
+        <p><strong>Rule of thumb:</strong> Use vLLM when you have GPUs and need to serve multiple users. Use Ollama for quick local testing. Use llama.cpp for CPU-only or edge deployment. TGI entered maintenance mode in late 2025. HuggingFace now recommends vLLM or SGLang for new projects.</p>
+
+        <h2>VRAM Estimation Cheat Sheet</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr>
+              <th>Model Size</th>
+              <th>FP16</th>
+              <th>FP8 / INT8</th>
+              <th>INT4</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>7B</td><td>14 GB</td><td>7 GB</td><td>3.5 GB</td></tr>
+            <tr><td>13B</td><td>26 GB</td><td>13 GB</td><td>6.5 GB</td></tr>
+            <tr><td>70B</td><td>140 GB</td><td>70 GB</td><td>35 GB</td></tr>
+          </tbody>
+        </table>
+
+        <p>Remember to reserve 4&ndash;5GB for the CUDA runtime, driver overhead, and activation buffers. A 70B FP8 model needs ~70GB for weights plus overhead, so it fits on a single 96GB GPU with room for KV cache.</p>
+
+        <h2>Deployment Tips</h2>
+        <ul>
+          <li><strong>Start with <code>--gpu-memory-utilization 0.90</code></strong> and drop to 0.85 if you see OOM errors</li>
+          <li><strong>Single GPU is faster than multi-GPU</strong> when the model fits because tensor parallelism adds communication overhead</li>
+          <li><strong>Use FP8 on modern GPUs</strong> (H100, L40S, Blackwell) for 2x memory savings with minimal quality loss</li>
+          <li><strong>Enable prefix caching</strong> for chat apps with repeated system prompts</li>
+          <li><strong>Monitor KV cache utilization.</strong> If it stays above 90%, reduce <code>--max-num-seqs</code> or enable chunked prefill</li>
+          <li><strong>Always benchmark on your actual task</strong> before deploying a quantized model</li>
+        </ul>
+
+        <h2>The Research Paper</h2>
+        <p>
+          vLLM is based on the paper <em>"Efficient Memory Management for Large Language Model Serving with PagedAttention"</em> by Woosuk Kwon et al. from UC Berkeley, published at <strong>SOSP 2023</strong>.
+        </p>
+        <p>Key findings from the paper:</p>
+        <ul>
+          <li>Existing systems waste 60&ndash;80% of KV cache memory due to contiguous pre-allocation</li>
+          <li>PagedAttention reduces this to under 4% using block-based, on-demand allocation</li>
+          <li>Copy-on-write sharing enables efficient parallel sampling and beam search</li>
+          <li>2&ndash;4x throughput over FasterTransformer and Orca, 14&ndash;24x over HuggingFace Transformers</li>
+        </ul>
+
+        <h2>Key Takeaways</h2>
+        <ul>
+          <li>vLLM's PagedAttention treats GPU VRAM like OS virtual memory: paged, on-demand, and shared</li>
+          <li>This eliminates 60&ndash;80% KV cache waste, enabling far more concurrent requests per GPU</li>
+          <li>Combined with continuous batching, it achieves 14&ndash;24x throughput over naive inference</li>
+          <li>The OpenAI-compatible API makes migration from hosted APIs trivial</li>
+          <li>For GPU-based production LLM serving, vLLM is the current standard</li>
+        </ul>
+
+        <h2>Further Reading</h2>
+        <ul>
+          <li><a href="https://arxiv.org/abs/2309.06180" target="_blank">PagedAttention Paper (SOSP 2023)</a></li>
+          <li><a href="https://docs.vllm.ai/en/latest/" target="_blank">vLLM Official Documentation</a></li>
+          <li><a href="https://github.com/vllm-project/vllm" target="_blank">vLLM GitHub Repository</a></li>
+          <li><a href="https://blog.vllm.ai/" target="_blank">vLLM Blog</a></li>
+        </ul>
+      </div>
+
+      <!-- Post Footer -->
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <!-- Related Posts -->
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="llm-quantization-gptq-awq-gguf.html" class="related-post-card">
+            <span class="related-post-category">Paper Breakdown</span>
+            <h4>Demystifying LLM Quantization: GPTQ, AWQ & GGUF</h4>
+            <span class="related-post-date">April 14, 2026</span>
+          </a>
+          <a href="building-tradingagents-for-the-nse.html" class="related-post-card">
+            <span class="related-post-category">Implementation</span>
+            <h4>Building TradingAgents for the NSE</h4>
+            <span class="related-post-date">February 18, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Back to Blog -->
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Mainah</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2">
+          <i class="fab fa-linkedin fa-lg"></i>
+        </a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2">
+          <i class="fab fa-github fa-lg"></i>
+        </a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2">
+          <i class="fab fa-twitter fa-lg"></i>
+        </a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      document.getElementById('reading-progress').style.width = progress + '%';
+    });
+
+    // Initialize syntax highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+      hljs.highlightAll();
+
+      // Initialize KaTeX for math rendering
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+
+    // Theme toggle
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+
+      localStorage.setItem('lightMode', isLight);
+    });
+
+    // Load theme preference
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) {
+        document.body.classList.add('light-mode');
+        themeIcon.className = 'fas fa-moon';
+      } else {
+        themeIcon.className = 'fas fa-sun';
+      }
+    };
+
+    // Share functions
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(
+        `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`,
+        'linkedin-share',
+        'width=600,height=600'
+      );
+    }
+
+    function shareOnWhatsApp() {
+      const url = window.location.href;
+      const title = document.title;
+      const text = encodeURIComponent(`${title}\n${url}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(
+        `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+        'x-share',
+        'width=600,height=300'
+      );
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How I Build AI Agents That Actually Work in Production | Samson Kinyanjui</title>
+  <meta name="description" content="A practical guide to building AI agents with LangGraph and OpenAI function calling. ReAct pattern, tool use, memory, multi-agent systems, and the research papers behind it all." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="How I Build AI Agents That Actually Work in Production" />
+  <meta property="og:description" content="A practical guide to building AI agents with LangGraph and OpenAI function calling, with code examples and research paper references." />
+  <meta property="og:image" content="https://sammainah.com/assets/blog/ai-agents.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/how-i-build-ai-agents.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <!-- X / Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="How I Build AI Agents That Actually Work in Production" />
+  <meta name="twitter:description" content="A practical guide to building AI agents with LangGraph and OpenAI function calling, with code examples." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/blog/ai-agents.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Post -->
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+      <!-- Post Header -->
+      <header class="post-header">
+        <div class="post-category">Implementation</div>
+        <h1 class="post-title">How I Build AI Agents That Actually Work in Production</h1>
+        <p class="post-subtitle">The patterns, tools, and pitfalls I've learned from building multi-agent systems that go beyond demos.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>April 16, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>16 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">AI Agents</span>
+          <span class="post-tag">LangGraph</span>
+          <span class="post-tag">ReAct</span>
+          <span class="post-tag">Tool Use</span>
+          <span class="post-tag">Multi-Agent</span>
+        </div>
+      </header>
+
+      <!-- Post Content -->
+      <div class="post-content">
+
+        <h2>Introduction</h2>
+        <p>
+          I've spent the past year building AI systems that go beyond chat. My TradingAgents project uses 13 LLM agents that debate and trade NSE equities. The AML/CTF compliance system I'm building at Supreme AI runs three specialized models in sequence, each making real decisions about real people. These aren't toy demos. They're production systems where a wrong decision has consequences.
+        </p>
+        <p>
+          Along the way, I've developed a clear mental model for what an AI agent actually is, which frameworks are worth using, and where things break in production. This post is everything I wish I'd known when I started.
+        </p>
+
+        <h2>What Is an AI Agent, Really?</h2>
+        <p>
+          An AI agent is a program where an LLM controls the workflow. Unlike a chatbot that takes input and returns output, an agent operates in a loop: it observes the current state, reasons about what to do, takes an action (calls a tool, queries an API, runs code), observes the result, and repeats until the task is done.
+        </p>
+        <p>The core loop looks like this:</p>
+
+        <pre><code class="language-python">memory = [user_task]
+
+while llm_should_continue(memory):
+    action = llm_get_next_action(memory)    # Think
+    observations = execute_action(action)    # Act
+    memory += [action, observations]         # Observe</code></pre>
+
+        <p>
+          That's it. Every agent framework, regardless of complexity, implements some version of this loop. The differences come down to how they manage state, route between steps, and handle failures.
+        </p>
+
+        <h2>The Four Components Every Agent Needs</h2>
+
+        <h3>1. The LLM (Brain)</h3>
+        <p>
+          The LLM is the reasoning engine. It interprets instructions, decides which tools to call, and synthesizes results. I've found that model choice matters a lot here. Larger models (GPT-4o, Claude Opus, Qwen3-72B) handle complex multi-step reasoning far better than smaller ones. In production, I often use a cheaper model for routine steps and a more capable one for complex planning.
+        </p>
+
+        <h3>2. Tools</h3>
+        <p>
+          Tools give the agent hands. Without them, an LLM can only generate text. With tools, it can search the web, query databases, execute code, call APIs, and modify files. The quality of your tool descriptions directly impacts agent performance. Vague descriptions lead to the agent calling the wrong tool or hallucinating arguments.
+        </p>
+
+        <h3>3. Memory</h3>
+        <p>
+          <strong>Short-term memory</strong> is the conversation history in the context window. As conversations grow, older context gets pushed out or needs summarization.
+        </p>
+        <p>
+          <strong>Long-term memory</strong> persists across sessions, typically via vector stores (Pinecone, Chroma, FAISS) using RAG. Text is embedded, stored, and retrieved by semantic similarity when needed.
+        </p>
+
+        <h3>4. Planning</h3>
+        <p>
+          The agent's ability to break complex tasks into subtasks and adapt as new information arrives. Key strategies include Chain-of-Thought (step-by-step reasoning), ReAct (interleaved reasoning and acting), and Plan-and-Execute (generate a full plan upfront, then run it).
+        </p>
+
+        <h2>The ReAct Pattern: How Agents Think and Act</h2>
+        <p>
+          Most production agents use the ReAct pattern from <a href="https://arxiv.org/abs/2210.03629" target="_blank">Yao et al. (2022)</a>. The core idea is simple: interleave reasoning traces with actions. The LLM thinks out loud about what it needs to do, calls a tool, observes the result, then reasons again.
+        </p>
+
+        <pre><code class="language-python"># ReAct in action:
+
+# Thought 1: I need to find the population of Nairobi.
+# Action 1:  search("population of Nairobi 2026")
+# Observation 1: Nairobi's population is approximately 5.2 million.
+
+# Thought 2: Now I need to compare it with Mombasa.
+# Action 2:  search("population of Mombasa 2026")
+# Observation 2: Mombasa's population is approximately 1.4 million.
+
+# Thought 3: Nairobi is about 3.7x larger. I have my answer.
+# Action 3:  finish("Nairobi (5.2M) is ~3.7x larger than Mombasa (1.4M)")</code></pre>
+
+        <p>
+          Neither reasoning alone nor action alone is sufficient. Chain-of-thought without tool access leads to hallucination. Action without reasoning leads to blind tool-calling with no strategy. ReAct combines both, and 1-2 shot ReAct prompting has been shown to outperform RL methods trained on thousands of examples.
+        </p>
+
+        <h2>Building an Agent from Scratch (OpenAI Function Calling)</h2>
+        <p>
+          Before reaching for a framework, I think it's important to understand the raw mechanics. Here's a minimal agent using nothing but the OpenAI SDK:
+        </p>
+
+        <pre><code class="language-python">import json
+from openai import OpenAI
+
+client = OpenAI()
+
+# Define your tools
+def get_weather(city: str) -> str:
+    weather_data = {
+        "Nairobi": "Sunny, 24C",
+        "London": "Cloudy, 12C",
+        "Sydney": "Clear, 19C",
+    }
+    return weather_data.get(city, f"No data for {city}")
+
+def calculate(expression: str) -> str:
+    try:
+        return str(eval(expression, {"__builtins__": {}}))
+    except Exception as e:
+        return f"Error: {e}"
+
+available_functions = {
+    "get_weather": get_weather,
+    "calculate": calculate,
+}
+
+# Tool schemas for the API
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get current weather for a city.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "city": {"type": "string", "description": "City name"}
+                },
+                "required": ["city"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "calculate",
+            "description": "Evaluate a math expression using Python syntax.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "expression": {"type": "string", "description": "e.g. '2**10 + 5'"}
+                },
+                "required": ["expression"],
+            },
+        },
+    },
+]
+
+# The agent loop
+def run_agent(user_message: str, max_iterations: int = 10):
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant. Use tools when needed."},
+        {"role": "user", "content": user_message},
+    ]
+
+    for i in range(max_iterations):
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages,
+            tools=tools,
+            tool_choice="auto",
+        )
+
+        msg = response.choices[0].message
+
+        # No tool calls means we have the final answer
+        if not msg.tool_calls:
+            print(f"Agent: {msg.content}")
+            return msg.content
+
+        messages.append(msg)
+
+        for tool_call in msg.tool_calls:
+            name = tool_call.function.name
+            args = json.loads(tool_call.function.arguments)
+            print(f"  [Tool] {name}({args})")
+
+            result = available_functions[name](**args)
+            print(f"  [Result] {result}")
+
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": result,
+            })
+
+    return "Max iterations reached."
+
+run_agent("What's the weather in Nairobi, and what is 2^10 + 42?")</code></pre>
+
+        <p>Output:</p>
+        <pre><code class="language-bash">  [Tool] get_weather({'city': 'Nairobi'})
+  [Result] Sunny, 24C
+  [Tool] calculate({'expression': '2**10 + 42'})
+  [Result] 1066
+Agent: The weather in Nairobi is Sunny at 24C. And 2^10 + 42 = 1,066.</code></pre>
+
+        <p>
+          That's 60 lines of code for a working agent. The LLM decided which tools to call, called them in parallel, and synthesized the results. No framework needed.
+        </p>
+
+        <h2>Scaling Up with LangGraph</h2>
+        <p>
+          The bare-bones approach works for simple agents, but production systems need state management, persistence, error handling, and human-in-the-loop controls. That's where I reach for <strong>LangGraph</strong>.
+        </p>
+        <p>
+          LangGraph models your agent as a state machine: nodes (LLM calls, tool execution), edges (transitions), and conditional routing. Here's a proper agent with tools:
+        </p>
+
+        <pre><code class="language-python">from typing import Literal
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
+from langchain_core.tools import tool
+from langchain_openai import ChatOpenAI
+from langgraph.graph import END, START, MessagesState, StateGraph
+
+model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+@tool
+def search_web(query: str) -> str:
+    """Search the web for current information about a topic."""
+    # In production, use Tavily, SerpAPI, etc.
+    return f"Search results for: {query}"
+
+@tool
+def run_python(code: str) -> str:
+    """Run Python code and return the output."""
+    from io import StringIO
+    import sys
+    old_stdout = sys.stdout
+    sys.stdout = captured = StringIO()
+    try:
+        exec(code, {})
+        return captured.getvalue().strip() or "Executed successfully."
+    except Exception as e:
+        return f"Error: {e}"
+    finally:
+        sys.stdout = old_stdout
+
+tools = [search_web, run_python]
+tools_by_name = {t.name: t for t in tools}
+model_with_tools = model.bind_tools(tools)
+
+def call_llm(state: MessagesState):
+    system = SystemMessage(content="You are a research assistant. Use tools when needed.")
+    response = model_with_tools.invoke([system] + state["messages"])
+    return {"messages": [response]}
+
+def call_tools(state: MessagesState):
+    results = []
+    for tc in state["messages"][-1].tool_calls:
+        result = tools_by_name[tc["name"]].invoke(tc["args"])
+        results.append(ToolMessage(content=result, tool_call_id=tc["id"]))
+    return {"messages": results}
+
+def should_continue(state: MessagesState) -> Literal["tools", "__end__"]:
+    if state["messages"][-1].tool_calls:
+        return "tools"
+    return END
+
+# Build the graph
+graph = StateGraph(MessagesState)
+graph.add_node("llm", call_llm)
+graph.add_node("tools", call_tools)
+graph.add_edge(START, "llm")
+graph.add_conditional_edges("llm", should_continue, {"tools": "tools", END: END})
+graph.add_edge("tools", "llm")
+
+agent = graph.compile()
+
+# Run it
+result = agent.invoke(
+    {"messages": [HumanMessage(content="Search for LangGraph, then write Python to sort [5,2,8,1]")]}
+)</code></pre>
+
+        <p>The graph structure is the classic ReAct loop:</p>
+
+        <pre><code class="language-bash">START -> [LLM] -> has_tool_calls? -> yes -> [Tools] -> back to [LLM]
+                                    -> no  -> END</code></pre>
+
+        <p>
+          LangGraph gives me checkpointing (resume from any state), human-in-the-loop interrupts, and streaming. These are the things that matter when you're building agents that make real decisions.
+        </p>
+
+        <h2>Choosing a Framework</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr>
+              <th>Framework</th>
+              <th>Best For</th>
+              <th>Learning Curve</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>LangGraph</strong></td><td>Production agents, custom control flow</td><td>Medium-High</td></tr>
+            <tr><td><strong>CrewAI</strong></td><td>Role-based multi-agent pipelines</td><td>Low</td></tr>
+            <tr><td><strong>AutoGen</strong></td><td>Agent debate and negotiation</td><td>Medium</td></tr>
+            <tr><td><strong>Smolagents</strong></td><td>Lightweight code-executing agents</td><td>Low</td></tr>
+            <tr><td><strong>OpenAI SDK</strong></td><td>OpenAI-ecosystem agents with guardrails</td><td>Low</td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          I use LangGraph for most of my production work because I need fine-grained control over agent behavior. For quick prototypes or role-based pipelines, CrewAI is surprisingly effective. If you're building with OpenAI models exclusively, their Agents SDK has excellent built-in tracing and guardrails.
+        </p>
+
+        <h2>Multi-Agent Systems: When One Agent Isn't Enough</h2>
+        <p>
+          My TradingAgents project taught me that some problems genuinely need multiple agents. When I need four different analytical perspectives (fundamentals, technicals, sentiment, news) evaluated independently and then debated, a single agent with 15 tools just doesn't cut it. The context gets too crowded and tool selection degrades.
+        </p>
+        <p>The main orchestration patterns I've used:</p>
+        <ul>
+          <li><strong>Pipeline (Sequential):</strong> Agent A processes, passes to Agent B, then Agent C. I use this for my AML/CTF system where risk profiling feeds into the CDD interview, which feeds into the decision engine.</li>
+          <li><strong>Fan-out/Fan-in (Concurrent):</strong> Multiple agents analyze the same input in parallel, then an aggregator synthesizes results. This is how TradingAgents works: four analyst agents run concurrently, then a debate agent resolves disagreements.</li>
+          <li><strong>Debate (Group Chat):</strong> Agents argue for and against a position. Useful for high-stakes decisions where you want multiple perspectives before committing.</li>
+        </ul>
+        <p>
+          A word of caution: don't use multi-agent systems when a single agent can do the job. Each additional agent adds latency, cost, and failure modes. 88-95% of AI agent pilots never reach production, and over-engineering is a common reason.
+        </p>
+
+        <h2>Where Agents Break in Production</h2>
+        <p>
+          Here's what I've learned the hard way:
+        </p>
+
+        <h3>1. Tool Hallucination</h3>
+        <p>
+          The LLM invents tool names that don't exist or fabricates arguments. In a compliance system, a hallucinated function call doesn't just fail quietly. It can cascade into multiple downstream systems. Always validate tool names and arguments against the schema before execution.
+        </p>
+
+        <h3>2. Infinite Loops</h3>
+        <p>
+          An agent keeps calling the same tool with slightly different arguments, or loops back to verify something it already verified. Always set a hard <code>max_iterations</code> limit. I use 10-15 for most agents.
+        </p>
+
+        <h3>3. Context Window Overflow</h3>
+        <p>
+          As tool results accumulate, the context fills up. The LLM starts drowning in information, and paradoxically, sometimes less context produces better results. I summarize tool outputs before appending them to context, keeping only the key facts.
+        </p>
+
+        <h3>4. Prompt Injection</h3>
+        <p>
+          Any agent that processes external data (web pages, documents, user uploads) is vulnerable. A webpage could contain hidden instructions that the agent follows. I use input validation, output sanitization, and human-in-the-loop approval for sensitive actions.
+        </p>
+
+        <h2>Key Takeaways</h2>
+        <ul>
+          <li>An AI agent is just an LLM in a loop: Observe, Think, Act, repeat</li>
+          <li>Start with raw function calling to understand the mechanics, then add a framework when you need state management</li>
+          <li>The ReAct pattern (interleaved reasoning and acting) is the foundation of most production agents</li>
+          <li>Tool descriptions are as important as the model choice. Bad descriptions lead to bad tool selection</li>
+          <li>Multi-agent systems are powerful but add complexity. Use them only when a single agent genuinely can't handle the task</li>
+          <li>Production agents need hard iteration limits, input validation, tool schema enforcement, and human-in-the-loop controls</li>
+        </ul>
+
+        <h2>Research Papers Worth Reading</h2>
+        <ul>
+          <li><a href="https://arxiv.org/abs/2210.03629" target="_blank">ReAct: Synergizing Reasoning and Acting in Language Models</a> (Yao et al., 2022)</li>
+          <li><a href="https://arxiv.org/abs/2302.04761" target="_blank">Toolformer: Language Models Can Teach Themselves to Use Tools</a> (Schick et al., 2023)</li>
+          <li><a href="https://arxiv.org/abs/2305.16291" target="_blank">Voyager: An Open-Ended Embodied Agent with LLMs</a> (Wang et al., 2023)</li>
+          <li><a href="https://arxiv.org/abs/2303.17580" target="_blank">HuggingGPT: Solving AI Tasks with ChatGPT and Hugging Face</a> (Shen et al., 2023)</li>
+          <li><a href="https://arxiv.org/abs/2304.03442" target="_blank">Generative Agents: Interactive Simulacra of Human Behavior</a> (Park et al., 2023)</li>
+          <li><a href="https://arxiv.org/abs/2308.11432" target="_blank">A Survey on LLM-based Autonomous Agents</a> (Wang et al., 2023)</li>
+        </ul>
+      </div>
+
+      <!-- Post Footer -->
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <!-- Related Posts -->
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="vllm-gpu-inference-engine.html" class="related-post-card">
+            <span class="related-post-category">Deep Dive</span>
+            <h4>How I Get the Best Out of My GPU Using vLLM</h4>
+            <span class="related-post-date">April 16, 2026</span>
+          </a>
+          <a href="building-tradingagents-for-the-nse.html" class="related-post-card">
+            <span class="related-post-category">Implementation</span>
+            <h4>Building TradingAgents for the NSE</h4>
+            <span class="related-post-date">February 18, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Mainah</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

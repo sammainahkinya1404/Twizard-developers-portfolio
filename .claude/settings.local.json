@@ -10,7 +10,16 @@
       "WebFetch(domain:www.linkedin.com)",
       "Bash(pip show:*)",
       "Bash(python -c \"import cairosvg\")",
-      "Bash(python -c \"from PIL import Image\")"
+      "Bash(python -c \"from PIL import Image\")",
+      "WebFetch(domain:docs.vllm.ai)",
+      "WebFetch(domain:arxiv.org)",
+      "WebFetch(domain:www.runpod.io)",
+      "WebFetch(domain:openai.github.io)",
+      "WebFetch(domain:www.langchain.com)",
+      "WebFetch(domain:www.promptingguide.ai)",
+      "WebFetch(domain:help.openai.com)",
+      "WebFetch(domain:www.getmaxim.ai)",
+      "WebFetch(domain:developers.openai.com)"
     ]
   }
 }
