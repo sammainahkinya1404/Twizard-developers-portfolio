@@ -115,6 +115,35 @@ while llm_should_continue(memory):
     observations = execute_action(action)    # Act
     memory += [action, observations]         # Observe</code></pre>
 
+        <p>Here's a minimal working simulation you can run right now. No API keys needed:</p>
+
+        <pre class="runnable"><code class="language-python"># Simulated agent loop (no API needed)
+import random
+
+tools = {
+    "search": lambda q: f"Result for '{q}': Python was created by Guido van Rossum in 1991",
+    "calculate": lambda expr: str(eval(expr)),
+}
+
+def simple_agent(task):
+    memory = [f"Task: {task}"]
+    steps = [
+        ("search", "who created Python"),
+        ("calculate", "2026 - 1991"),
+    ]
+
+    for tool_name, tool_input in steps:
+        print(f"Thought: I should use {tool_name}('{tool_input}')")
+        result = tools[tool_name](tool_input)
+        print(f"Observation: {result}")
+        memory.append(result)
+        print()
+
+    print("Final Answer: Python was created by Guido van Rossum, 35 years ago.")
+    print(f"\nMemory has {len(memory)} entries")
+
+simple_agent("How old is Python?")</code></pre>
+
         <p>
           That's it. Every agent framework, regardless of complexity, implements some version of this loop. The differences come down to how they manage state, route between steps, and handle failures.
         </p>
@@ -280,6 +309,40 @@ Agent: The weather in Nairobi is Sunny at 24C. And 2^10 + 42 = 1,066.</code></pr
         <p>
           That's 60 lines of code for a working agent. The LLM decided which tools to call, called them in parallel, and synthesized the results. No framework needed.
         </p>
+
+        <p>Try this simplified version that simulates the same pattern without needing an API key:</p>
+
+        <pre class="runnable"><code class="language-python"># Tool-calling agent simulation (runs in your browser)
+import json
+
+# Define tools
+def get_weather(city):
+    data = {"Nairobi": "Sunny, 24C", "London": "Cloudy, 12C", "Sydney": "Clear, 19C"}
+    return data.get(city, f"No data for {city}")
+
+def calculate(expression):
+    return str(eval(expression))
+
+tools = {"get_weather": get_weather, "calculate": calculate}
+
+# Simulate an agent deciding to call tools
+planned_calls = [
+    {"name": "get_weather", "args": {"city": "Nairobi"}},
+    {"name": "calculate", "args": {"expression": "2**10 + 42"}},
+]
+
+print("User: What's the weather in Nairobi, and what is 2^10 + 42?\n")
+
+results = []
+for call in planned_calls:
+    fn = tools[call["name"]]
+    result = fn(**call["args"])
+    print(f"  [Tool] {call['name']}({call['args']})")
+    print(f"  [Result] {result}\n")
+    results.append(result)
+
+print(f"Agent: The weather in Nairobi is {results[0]}.")
+print(f"       And 2^10 + 42 = {results[1]}.")</code></pre>
 
         <h2>Scaling Up with LangGraph</h2>
         <p>
@@ -546,5 +609,7 @@ result = agent.invoke(
       });
     }
   </script>
+  <!-- Interactive Code Runner -->
+  <script src="../pyrunner.js"></script>
 </body>
 </html>

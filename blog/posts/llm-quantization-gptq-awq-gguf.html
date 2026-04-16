@@ -124,18 +124,39 @@
 
         <p>Here's the intuition. Given original FP32 weights:</p>
 
-        <pre><code class="language-python">original = [0.40, 0.79, 1.22]
+        <pre class="runnable"><code class="language-python">original = [0.40, 0.79, 1.22]
+print(f"Original FP32 weights: {original}")
 
 # Quantize to INT4 range (0-15) using scale + zero-point
 scale = (max(original) - min(original)) / 15
 zero_point = min(original)
+print(f"Scale: {scale:.4f}, Zero point: {zero_point}")
 
 quantized = [round((x - zero_point) / scale) for x in original]
-# quantized = [0, 7, 15]
+print(f"Quantized INT4:        {quantized}")
 
 # Dequantize back
-dequantized = [(q * scale) + zero_point for q in quantized]
-# dequantized = [0.40, 0.78, 1.22]  (close, not exact)</code></pre>
+dequantized = [round((q * scale) + zero_point, 2) for q in quantized]
+print(f"Dequantized:           {dequantized}")
+
+# Show the error
+errors = [round(abs(o - d), 4) for o, d in zip(original, dequantized)]
+print(f"Quantization error:    {errors}")
+print(f"Max error: {max(errors)} (the 'quantization tax')")
+
+# Try it with more values
+print("\n--- Try with 10 random weights ---")
+import random
+random.seed(42)
+weights = [round(random.uniform(-1, 1), 3) for _ in range(10)]
+s = (max(weights) - min(weights)) / 15
+zp = min(weights)
+q = [round((x - zp) / s) for x in weights]
+dq = [round((v * s) + zp, 3) for v in q]
+total_err = sum(abs(o - d) for o, d in zip(weights, dq)) / len(weights)
+print(f"Original:    {weights}")
+print(f"Dequantized: {dq}")
+print(f"Avg error:   {total_err:.4f}")</code></pre>
 
         <p>
           That tiny rounding error is the quantization tax. The art is minimizing it where it matters most.
@@ -172,6 +193,9 @@ dequantized = [(q * scale) + zero_point for q in quantized]
         </ul>
 
         <h3>Quantizing a Model with GPTQ</h3>
+        <a href="https://colab.research.google.com/drive/1?usp=sharing" target="_blank" class="colab-btn">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Colab"> Open in Google Colab (GPU required)
+        </a>
         <pre><code class="language-bash"># Install dependencies
 pip install auto-gptq transformers torch</code></pre>
 
@@ -244,6 +268,9 @@ print(tokenizer.decode(outputs[0], skip_special_tokens=True))</code></pre>
         </ul>
 
         <h3>Quantizing with AWQ</h3>
+        <a href="https://colab.research.google.com/drive/1?usp=sharing" target="_blank" class="colab-btn">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Colab"> Open in Google Colab (GPU required)
+        </a>
         <pre><code class="language-bash"># Install dependencies
 pip install autoawq transformers torch</code></pre>
 
@@ -296,6 +323,9 @@ print(tokenizer.decode(outputs[0], skip_special_tokens=True))</code></pre>
         </p>
 
         <h3>Running a GGUF Model with llama-cpp-python</h3>
+        <a href="https://colab.research.google.com/drive/1?usp=sharing" target="_blank" class="colab-btn">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Colab"> Open in Google Colab
+        </a>
         <pre><code class="language-bash"># Install with GPU support (CUDA)
 CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python
 
@@ -538,6 +568,8 @@ print(response["choices"][0]["text"])</code></pre>
       });
     }
   </script>
+  <!-- Interactive Code Runner -->
+  <script src="../pyrunner.js"></script>
 </body>
 
 </html>

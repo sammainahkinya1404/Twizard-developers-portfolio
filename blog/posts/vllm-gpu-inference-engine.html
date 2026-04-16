@@ -227,6 +227,9 @@ pip install vllm
 uv pip install vllm --torch-backend=auto</code></pre>
 
         <h3>Offline Batch Inference</h3>
+        <a href="https://colab.research.google.com/drive/1?usp=sharing" target="_blank" class="colab-btn">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Colab"> Open in Google Colab (GPU required)
+        </a>
         <pre><code class="language-python">from vllm import LLM, SamplingParams
 
 prompts = [
@@ -537,6 +540,8 @@ print(response.choices[0].message.content)</code></pre>
       });
     }
   </script>
+  <!-- Interactive Code Runner -->
+  <script src="../pyrunner.js"></script>
 </body>
 
 </html>

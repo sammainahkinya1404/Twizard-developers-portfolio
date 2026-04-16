@@ -2362,3 +2362,160 @@ body.light-mode .hljs-title.class_ {
     padding: 10px 16px;
   }
 }
+
+/* ===================================
+   PyRunner - Interactive Code Blocks
+=================================== */
+.pyrunner-wrapper {
+  margin: 24px 0;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1e1e1e;
+}
+
+.pyrunner-wrapper pre {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.pyrunner-editable code {
+  outline: none;
+  display: block;
+  white-space: pre;
+  cursor: text;
+}
+
+.pyrunner-editable code:focus {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.pyrunner-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #161616;
+  border-top: 1px solid #2a2a2a;
+}
+
+.pyrunner-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.pyrunner-run {
+  background: #667eea;
+  color: #fff;
+}
+
+.pyrunner-run:hover {
+  background: #5a6fd6;
+}
+
+.pyrunner-run:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pyrunner-reset {
+  background: transparent;
+  color: #888;
+  border: 1px solid #333;
+}
+
+.pyrunner-reset:hover {
+  color: #ccc;
+  border-color: #555;
+}
+
+.pyrunner-status {
+  font-size: 0.75rem;
+  color: #666;
+  margin-left: auto;
+}
+
+.pyrunner-status.loading {
+  color: #ff9800;
+}
+
+.pyrunner-status.running {
+  color: #667eea;
+}
+
+.pyrunner-status.success {
+  color: #4caf50;
+}
+
+.pyrunner-status.error {
+  color: #f44336;
+}
+
+.pyrunner-output {
+  margin: 0;
+  padding: 16px;
+  background: #0d0d0d;
+  border-top: 1px solid #2a2a2a;
+  color: #ccc;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.pyrunner-output.error {
+  color: #f44336;
+}
+
+.pyrunner-output.success {
+  color: #4caf50;
+}
+
+/* Open in Colab button */
+.colab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  margin: 8px 0 16px;
+  background: #f9ab00;
+  color: #000;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.colab-btn:hover {
+  background: #e09600;
+  color: #000;
+  text-decoration: none;
+}
+
+.colab-btn img {
+  height: 18px;
+}
+
+@media (max-width: 576px) {
+  .pyrunner-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .pyrunner-btn {
+    font-size: 0.75rem;
+    padding: 5px 12px;
+  }
+}
