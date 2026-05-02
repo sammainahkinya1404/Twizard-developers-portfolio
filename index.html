@@ -60,8 +60,6 @@
 <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />  
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
-
 <!-- Umami Analytics (privacy-friendly, no cookies) -->
 <script defer src="https://cloud.umami.is/script.js" data-website-id="YOUR_UMAMI_WEBSITE_ID"></script>
 
@@ -69,15 +67,6 @@
 <body>
   <!-- Skip Navigation -->
   <a href="#about" class="skip-nav">Skip to main content</a>
-
-  <!-- Loading Screen -->
-  <div id="loading-screen">
-    <div class="loader-content">
-      <div class="spinner"></div>
-      <h2 class="loader-text">Samson Kinyanjui</h2>
-      <p class="loader-subtitle">Loading Portfolio...</p>
-    </div>
-  </div>
 
   <header>
     <!-- Navigation Bar Section -->
@@ -99,6 +88,7 @@
         <li class="nav-item"><a class="nav-link" href="#timeline">Experience</a></li>
         <li class="nav-item"><a class="nav-link" href="#publications">Publications</a></li>
         <li class="nav-item"><a class="nav-link" href="blog/index.html">Posts</a></li>
+        <li class="nav-item"><a class="nav-link" href="now.html">Now</a></li>
         <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
         <li class="nav-item">
           <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3" aria-label="Toggle dark/light theme">
@@ -116,10 +106,9 @@
 <div class="intro-section">
   <div id="particles-js"></div>
   <div class="container" style="position:relative; z-index:1;">
-    <p class="hero-greeting" data-aos="fade-down" data-aos-delay="200">Hi, I'm</p>
-    <h1 class="hero-name" data-aos="fade-up" data-aos-delay="400">Samson Kinyanjui</h1>
-    <p class="hero-role" data-aos="fade-up" data-aos-delay="600"><span id="typed-text"></span></p>
-    <a href="#my-works" class="btn btn-primary mt-4" data-aos="fade-up" data-aos-delay="800">View My Projects</a>
+    <h1 class="hero-name" data-aos="fade-up" data-aos-delay="200">AI Engineer</h1>
+    <p class="hero-role" data-aos="fade-up" data-aos-delay="400">I build self-hosted LLM systems &mdash; fine-tuning, quantization, RAG, and multi-agent pipelines. Currently shipping compliance and tax engines for the Australian market at Supreme AI. 3&times; IEEE published. Based in Nairobi.</p>
+    <a href="#my-works" class="btn btn-primary mt-4" data-aos="fade-up" data-aos-delay="600">View Projects</a>
   </div>
 </div>
 
@@ -146,25 +135,44 @@
           I also build AI tools independently &mdash; TradingAgents (a 13-agent NSE trading framework) and an LLM-powered financial auditor. MSc Computer Science from DeKUT with 3 IEEE publications. Full stack: Python, LangGraph, FastAPI, React, Next.js.
         </p>
 
-        <div class="skills-list">
-          <span class="skill-tag">Python</span>
-          <span class="skill-tag">FastAPI</span>
-          <span class="skill-tag">Flask</span>
-          <span class="skill-tag">TensorFlow</span>
-          <span class="skill-tag">LLMs</span>
-          <span class="skill-tag">Fine-Tuning (LoRA/QLoRA)</span>
-          <span class="skill-tag">Quantization</span>
-          <span class="skill-tag">Model Deployment</span>
-          <span class="skill-tag">RAG</span>
-          <span class="skill-tag">Synthetic Data Generation</span>
-          <span class="skill-tag">LangChain</span>
-          <span class="skill-tag">LangGraph</span>
-          <span class="skill-tag">JavaScript</span>
-          <span class="skill-tag">React</span>
-          <span class="skill-tag">Next.js</span>
-          <span class="skill-tag">PostgreSQL</span>
-          <span class="skill-tag">Docker</span>
-          <span class="skill-tag">DeepSeek</span>
+        <div class="skills-groups">
+          <div class="skill-group">
+            <h5 class="skill-group-heading">LLM Systems</h5>
+            <div class="skills-list">
+              <span class="skill-tag">Fine-Tuning (LoRA/QLoRA)</span>
+              <span class="skill-tag">Quantization (GPTQ/AWQ/GGUF)</span>
+              <span class="skill-tag">vLLM</span>
+              <span class="skill-tag">RAG</span>
+              <span class="skill-tag">Multi-agent (LangGraph)</span>
+              <span class="skill-tag">Synthetic Data Generation</span>
+              <span class="skill-tag">Model Deployment</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h5 class="skill-group-heading">Backend</h5>
+            <div class="skills-list">
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">FastAPI</span>
+              <span class="skill-tag">Flask</span>
+              <span class="skill-tag">PostgreSQL</span>
+              <span class="skill-tag">Docker</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h5 class="skill-group-heading">Frontend</h5>
+            <div class="skills-list">
+              <span class="skill-tag">Next.js</span>
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">JavaScript</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h5 class="skill-group-heading">ML Foundations</h5>
+            <div class="skills-list">
+              <span class="skill-tag">TensorFlow</span>
+              <span class="skill-tag">LangChain</span>
+            </div>
+          </div>
         </div>
 
         <a href="assets/Samson_Kinyanjui_Resume.pdf" class="btn btn-outline-light mt-4" download>Download Resume</a>
@@ -204,7 +212,7 @@
       <div class="timeline-item" data-aos="fade-left">
         <div class="timeline-dot"></div>
         <div class="timeline-content">
-          <span class="timeline-date">Oct 2023 &mdash; May 2026</span>
+          <span class="timeline-date">Oct 2023 &mdash; Jun 2026 &middot; Graduating 12 June 2026</span>
           <h4 class="timeline-title">Master's Degree, Computer Science</h4>
           <p class="timeline-company">Dedan Kimathi University of Technology (DeKUT)</p>
           <p class="timeline-desc">Research focus: Medical imaging with deep learning, NLP topic modeling, financial health assessment using ML. 3 IEEE publications.</p>
@@ -242,13 +250,16 @@
       </div>
       <div class="project-content">
         <h3 class="project-title">CGT Brain</h3>
-        <p class="project-description">An AI system that does what lawyers and accountants do for Capital Gains Tax. Feed it any property timeline and it applies ATO rules, performs full CGT analysis, and generates detailed reports work that traditionally takes professionals hours, done in seconds.</p>
+        <p class="project-description">An AI system that does what lawyers and accountants do for Capital Gains Tax. Feed it any property timeline and it applies ATO rules, performs full CGT analysis, and generates detailed reports &mdash; work that traditionally takes professionals hours, done in seconds.</p>
         <div class="project-tags">
           <span class="tag">Next.js</span>
           <span class="tag">FastAPI</span>
           <span class="tag">Gen AI</span>
         </div>
-        <a href="https://ai.cgtbrain.com.au/" target="_blank" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+        <div class="project-actions">
+          <a href="https://ai.cgtbrain.com.au/" target="_blank" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+          <span class="project-link project-link--muted">Case study coming</span>
+        </div>
       </div>
     </div>
 
@@ -265,7 +276,10 @@
           <span class="tag">Flask</span>
           <span class="tag">Machine Learning</span>
         </div>
-        <a href="https://chatbot-client-two.vercel.app/" target="_blank" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+        <div class="project-actions">
+          <a href="https://chatbot-client-two.vercel.app/" target="_blank" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+          <span class="project-link project-link--muted">Case study coming</span>
+        </div>
       </div>
     </div>
 
@@ -291,7 +305,10 @@
           <span class="tag">FastAPI</span>
           <span class="tag">Next.js</span>
         </div>
-        <span class="badge-coming-soon">Live Demo Coming Soon</span>
+        <div class="project-actions">
+          <span class="badge-coming-soon">Live Demo Coming Soon</span>
+          <a href="blog/posts/building-tradingagents-for-the-nse.html" class="project-link">Read Case Study <i class="fas fa-arrow-right"></i></a>
+        </div>
         <p class="paper-ref">Based on <a href="https://arxiv.org/abs/2412.20138" target="_blank">arXiv:2412.20138</a></p>
       </div>
     </div>
@@ -310,7 +327,9 @@
           <span class="tag">FastAPI</span>
           <span class="tag">Next.js</span>
         </div>
-        <a href="blog/posts/Automating-Financial-Statement-Audits-with-LLMs.html" class="btn btn-sm btn-outline-light mt-2">Read the Post</a>
+        <div class="project-actions">
+          <a href="blog/posts/Automating-Financial-Statement-Audits-with-LLMs.html" class="project-link">Read Case Study <i class="fas fa-arrow-right"></i></a>
+        </div>
       </div>
     </div>
 
@@ -471,25 +490,25 @@
         </div>
       </a>
 
-      <!-- Blog Card 1 -->
-      <a href="blog/posts/attention-post.html" class="blog-card" data-aos="fade-up" data-aos-delay="100">
+      <!-- Blog Card: TradingAgents -->
+      <a href="blog/posts/building-tradingagents-for-the-nse.html" class="blog-card" data-aos="fade-up" data-aos-delay="100">
         <div class="blog-card-content">
           <div class="blog-card-meta">
-            <span class="blog-date">Feb 5, 2026</span>
-            <span class="blog-category">Paper Breakdown</span>
+            <span class="blog-date">Feb 18, 2026</span>
+            <span class="blog-category">Implementation</span>
           </div>
-          <h3 class="blog-card-title">Understanding Attention Is All You Need</h3>
-          <p class="blog-card-excerpt">A deep dive into the Transformer architecture that revolutionized NLP and became the foundation for modern LLMs.</p>
+          <h3 class="blog-card-title">Building TradingAgents for the NSE</h3>
+          <p class="blog-card-excerpt">From UCLA/MIT research paper to a working multi-agent LLM system that debates, analyzes, and trades NSE equities &mdash; adapted for frontier market constraints.</p>
           <div class="blog-card-tags">
-            <span class="blog-tag">Transformers</span>
-            <span class="blog-tag">NLP</span>
-            <span class="blog-tag">Deep Learning</span>
+            <span class="blog-tag">LangGraph</span>
+            <span class="blog-tag">Multi-Agent</span>
+            <span class="blog-tag">NSE</span>
           </div>
           <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
         </div>
       </a>
 
-      <!-- Blog Card 2 -->
+      <!-- Blog Card: Financial Auditor -->
       <a href="blog/posts/Automating-Financial-Statement-Audits-with-LLMs.html" class="blog-card" data-aos="fade-up" data-aos-delay="100">
         <div class="blog-card-content">
           <div class="blog-card-meta">
@@ -507,19 +526,19 @@
         </div>
       </a>
 
-      <!-- Blog Card 3 -->
-      <a href="blog/posts/building-tradingagents-for-the-nse.html" class="blog-card" data-aos="fade-up" data-aos-delay="200">
+      <!-- Blog Card: Attention -->
+      <a href="blog/posts/attention-post.html" class="blog-card" data-aos="fade-up" data-aos-delay="200">
         <div class="blog-card-content">
           <div class="blog-card-meta">
-            <span class="blog-date">Feb 18, 2026</span>
-            <span class="blog-category">Implementation</span>
+            <span class="blog-date">Feb 5, 2026</span>
+            <span class="blog-category">Paper Breakdown</span>
           </div>
-          <h3 class="blog-card-title">Building TradingAgents for the NSE</h3>
-          <p class="blog-card-excerpt">From UCLA/MIT research paper to a working multi-agent LLM system that debates, analyzes, and trades NSE equities &mdash; adapted for frontier market constraints.</p>
+          <h3 class="blog-card-title">Understanding Attention Is All You Need</h3>
+          <p class="blog-card-excerpt">A deep dive into the Transformer architecture that revolutionized NLP and became the foundation for modern LLMs.</p>
           <div class="blog-card-tags">
-            <span class="blog-tag">LangGraph</span>
-            <span class="blog-tag">Multi-Agent</span>
-            <span class="blog-tag">NSE</span>
+            <span class="blog-tag">Transformers</span>
+            <span class="blog-tag">NLP</span>
+            <span class="blog-tag">Deep Learning</span>
           </div>
           <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
         </div>
@@ -532,71 +551,6 @@
   </div>
 </section>
 
-<!-- Testimonials Section -->
-<section id="testimonials" class="testimonials-section">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2 class="section-heading" data-aos="fade-up">What People Say</h2>
-      <p class="text-muted" data-aos="fade-up">Feedback from collaborators and clients.</p>
-    </div>
-
-    <div id="testimonialCarousel" class="carousel slide" data-ride="carousel" data-interval="6000" data-aos="fade-up">
-      <ol class="carousel-indicators">
-        <li data-target="#testimonialCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#testimonialCarousel" data-slide-to="1"></li>
-        <li data-target="#testimonialCarousel" data-slide-to="2"></li>
-      </ol>
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <div class="testimonial-card">
-            <i class="fas fa-quote-left testimonial-quote-icon"></i>
-            <p class="testimonial-text">Samson delivered an exceptional AI-powered tax engine that exceeded our expectations. His deep understanding of both ML systems and real-world business requirements made the collaboration seamless.</p>
-            <div class="testimonial-author">
-              <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
-              <div>
-                <h5 class="testimonial-name">Client</h5>
-                <p class="testimonial-role">CGT Brain, Australia</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <div class="testimonial-card">
-            <i class="fas fa-quote-left testimonial-quote-icon"></i>
-            <p class="testimonial-text">An outstanding researcher with a rare ability to take complex ML papers and turn them into working systems. His IEEE publications demonstrate rigorous academic thinking paired with practical implementation skills.</p>
-            <div class="testimonial-author">
-              <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
-              <div>
-                <h5 class="testimonial-name">Academic Collaborator</h5>
-                <p class="testimonial-role">IEEE Conference Co-author</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <div class="testimonial-card">
-            <i class="fas fa-quote-left testimonial-quote-icon"></i>
-            <p class="testimonial-text">The Biashara Buddy platform has been a game-changer for entrepreneurs looking for affordable, AI-driven business guidance. Samson's work bridges the gap between cutting-edge AI and local market needs.</p>
-            <div class="testimonial-author">
-              <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
-              <div>
-                <h5 class="testimonial-name">Early User</h5>
-                <p class="testimonial-role">Biashara Buddy Beta Tester</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <a class="carousel-control-prev" href="#testimonialCarousel" role="button" data-slide="prev" aria-label="Previous testimonial">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      </a>
-      <a class="carousel-control-next" href="#testimonialCarousel" role="button" data-slide="next" aria-label="Next testimonial">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      </a>
-    </div>
-  </div>
-</section>
-
 <section id="contact" class="contact-section">
   <div class="container">
     <div class="text-center mb-5">
@@ -604,9 +558,9 @@
       <p class="text-muted">Let’s connect and build something great. I’d love to hear from you!</p>
     </div>
 
-    <div class="row">
+    <div class="row justify-content-center">
       <!-- Contact Info -->
-      <div class="col-md-5 mb-4">
+      <div class="col-md-8">
         <div class="p-4 bg-white shadow rounded h-100">
           <h4 class="mb-4 text-dark"><i class="fas fa-address-card mr-2 text-primary"></i> Get in Touch</h4>
           <p><i class="fas fa-envelope text-info mr-2"></i> <a href="mailto:sammainah98@gmail.com">sammainah98@gmail.com</a></p>
@@ -625,32 +579,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Contact Form -->
-      <div class="col-md-7">
-        <div class="p-4 bg-white shadow rounded">
-          <h4 class="mb-4 text-dark"><i class="fas fa-paper-plane text-primary mr-2"></i> Send a Message</h4>
-          <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" aria-label="Contact form">
-            <input type="hidden" name="access_key" value="1e0855de-ea6c-4e85-abe5-98cd76c71014">
-            <input type="hidden" name="subject" value="New Portfolio Contact from {{name}}">
-            <input type="checkbox" name="botcheck" class="hidden" style="display:none">
-            <div class="form-group">
-              <label for="name">Name</label>
-              <input type="text" name="name" class="form-control" required placeholder="Enter your name">
-            </div>
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" name="email" class="form-control" required placeholder="Enter your email">
-            </div>
-            <div class="form-group">
-              <label for="message">Message</label>
-              <textarea name="message" rows="5" class="form-control" required placeholder="Write your message here..."></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Send Message</button>
-            <div id="form-result" class="mt-3" style="display:none"></div>
-          </form>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -659,7 +587,7 @@
 
 <footer class="footer bg-dark text-white pt-4 pb-3">
   <div class="container text-center">
-    <p class="mb-2">&copy; 2026 <strong>Samson Mainah</strong>. All rights reserved.</p>
+    <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
     <div class="mb-3">
       <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2">
         <i class="fab fa-linkedin fa-lg"></i>
@@ -724,15 +652,6 @@
 
   // Load theme preference
   window.onload = () => {
-    // Hide loading screen
-    const loadingScreen = document.getElementById('loading-screen');
-    setTimeout(() => {
-      loadingScreen.classList.add('hidden');
-      setTimeout(() => {
-        loadingScreen.remove();
-      }, 600);
-    }, 1500);
-
     // Check if user prefers light mode
     const isLight = localStorage.getItem('lightMode') === 'true';
     if (isLight) {
@@ -760,64 +679,6 @@
           }
         });
       });
-    });
-
-    // Web3Forms AJAX submission
-    const contactForm = document.getElementById('contact-form');
-    const formResult = document.getElementById('form-result');
-    const submitBtn = document.getElementById('submit-btn');
-
-    contactForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending...';
-
-      fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: new FormData(contactForm)
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          formResult.style.display = 'block';
-          formResult.className = 'mt-3 alert alert-success';
-          formResult.textContent = 'Message sent successfully! I\'ll get back to you soon.';
-          contactForm.reset();
-        } else {
-          formResult.style.display = 'block';
-          formResult.className = 'mt-3 alert alert-danger';
-          formResult.textContent = 'Something went wrong. Please try again.';
-        }
-      })
-      .catch(() => {
-        formResult.style.display = 'block';
-        formResult.className = 'mt-3 alert alert-danger';
-        formResult.textContent = 'Something went wrong. Please try again.';
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Send Message';
-        setTimeout(() => { formResult.style.display = 'none'; }, 5000);
-      });
-    });
-
-    // Initialize Typed.js
-    new Typed('#typed-text', {
-      strings: [
-        'AI Engineer',
-        'ML Engineer',
-        'Building Self-Hosted LLM Systems',
-        'Fine-Tuning & Deploying Models',
-        'Turning Research Papers into Production'
-      ],
-      typeSpeed: 60,
-      backSpeed: 40,
-      backDelay: 2000,
-      startDelay: 500,
-      loop: true,
-      showCursor: true,
-      cursorChar: '|',
-      autoInsertCss: true
     });
 
   };
@@ -862,13 +723,6 @@
     offset: 100
   });
 </script>
-
-<a href="https://wa.me/254791848007?text=Hi%20Samson%2C%20I'd%20like%20to%20book%20a%20consultation." target="_blank" class="whatsapp-float" aria-label="Book a consultation on WhatsApp">
-  <i class="fab fa-whatsapp whatsapp-icon"></i>
-  <span class="whatsapp-text d-none d-md-inline"> Book a Consultation</span>
-</a>
-
-
 
 </body>
 
