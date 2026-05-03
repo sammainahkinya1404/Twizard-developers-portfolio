@@ -19,7 +19,8 @@
       "WebFetch(domain:www.promptingguide.ai)",
       "WebFetch(domain:help.openai.com)",
       "WebFetch(domain:www.getmaxim.ai)",
-      "WebFetch(domain:developers.openai.com)"
+      "WebFetch(domain:developers.openai.com)",
+      "Skill(schedule)"
     ]
   }
 }

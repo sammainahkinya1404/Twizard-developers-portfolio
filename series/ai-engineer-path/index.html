@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The AI Engineer's Path | Samson Kinyanjui</title>
+  <meta name="description" content="A 10-part hands-on series that walks from Python fundamentals to deploying production LLM systems. Each part builds the same project: a self-hosted, fine-tuned, quantized, RAG-augmented AI service." />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../../blog/index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../now.html">Now</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3" aria-label="Toggle dark/light theme">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <section class="blog-hero">
+    <div class="container">
+      <p style="color: var(--accent); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.85rem;" data-aos="fade-up">10-Part Series</p>
+      <h1 class="blog-hero-title" data-aos="fade-up">The AI Engineer's Path</h1>
+      <p class="blog-hero-subtitle" data-aos="fade-up" data-aos-delay="100">A hands-on walk from Python fundamentals to deploying production LLM systems. Each part builds on the last, ending with a self-hosted, fine-tuned, quantized, RAG-augmented AI service you've trained and deployed yourself.</p>
+      <div data-aos="fade-up" data-aos-delay="200" style="margin-top: 24px;">
+        <a href="../../blog/posts/ai-path-01-python-foundations.html" class="btn btn-primary">Start with Part 1 <i class="fas fa-arrow-right ml-2"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="blog-listing">
+    <div class="container">
+      <div class="blog-grid">
+
+        <a href="../../blog/posts/ai-path-01-python-foundations.html" class="blog-card" data-aos="fade-up">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Apr 24, 2026</span>
+              <span class="blog-category">Part 1</span>
+            </div>
+            <h3 class="blog-card-title">Python Foundations for AI Engineers</h3>
+            <p class="blog-card-excerpt">Type hints, async, context managers, and tests &mdash; the Python that holds up under production AI load. Build a CLI tool you'll extend across every part.</p>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 14 min read</span>
+              <span class="blog-read-more">Read &rarr;</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="../../blog/posts/ai-path-02-first-llm-api-call.html" class="blog-card" data-aos="fade-up">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Apr 25, 2026</span>
+              <span class="blog-category">Part 2</span>
+            </div>
+            <h3 class="blog-card-title">Your First LLM API Call</h3>
+            <p class="blog-card-excerpt">From four lines of OpenAI SDK to a production-grade client wrapper with retries, streaming, structured output, and cost tracking.</p>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 15 min read</span>
+              <span class="blog-read-more">Read &rarr;</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="../../blog/posts/ai-path-03-fastapi-for-llms.html" class="blog-card" data-aos="fade-up">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Apr 26, 2026</span>
+              <span class="blog-category">Part 3</span>
+            </div>
+            <h3 class="blog-card-title">Building APIs with FastAPI</h3>
+            <p class="blog-card-excerpt">Wrapping the LLM client in a production-ready FastAPI service: validation, streaming, auth, rate limiting, and a Dockerfile.</p>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 14 min read</span>
+              <span class="blog-read-more">Read &rarr;</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="../../blog/posts/ai-path-04-embeddings-vector-search.html" class="blog-card" data-aos="fade-up">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Apr 27, 2026</span>
+              <span class="blog-category">Part 4</span>
+            </div>
+            <h3 class="blog-card-title">Embeddings and Vector Search</h3>
+            <p class="blog-card-excerpt">How embeddings work, which model to pick, and how to add semantic search to the FastAPI service from Part 3.</p>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 13 min read</span>
+              <span class="blog-read-more">Read &rarr;</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="../../blog/posts/ai-path-05-production-rag.html" class="blog-card" data-aos="fade-up">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Apr 28, 2026</span>
+              <span class="blog-category">Part 5</span>
+            </div>
+            <h3 class="blog-card-title">Building a Production RAG System</h3>
+            <p class="blog-card-excerpt">Chunking, hybrid retrieval, prompt construction, citations, and evaluation &mdash; the parts of RAG that actually matter.</p>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 16 min read</span>
+              <span class="blog-read-more">Read &rarr;</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="../../blog/posts/ai-path-06-lora-qlora-fine-tuning.html" class="blog-card" data-aos="fade-up">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Apr 29, 2026</span>
+              <span class="blog-category">Part 6</span>
+            </div>
+            <h3 class="blog-card-title">Fine-Tuning with LoRA and QLoRA</h3>
+            <p class="blog-card-excerpt">QLoRA + Unsloth on a free Colab T4. Dataset prep, hyperparameters, training, evaluation &mdash; end to end.</p>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 17 min read</span>
+              <span class="blog-read-more">Read &rarr;</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="../../blog/posts/ai-path-07-quantization-for-deployment.html" class="blog-card" data-aos="fade-up">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">Apr 30, 2026</span>
+              <span class="blog-category">Part 7</span>
+            </div>
+            <h3 class="blog-card-title">Quantization for Deployment</h3>
+            <p class="blog-card-excerpt">14 GB FP16 down to 4 GB AWQ with sub-1% accuracy loss. Full pipeline from merged checkpoint to AWQ + GGUF, with benchmarks.</p>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 13 min read</span>
+              <span class="blog-read-more">Read &rarr;</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="../../blog/posts/ai-path-08-serving-with-vllm.html" class="blog-card" data-aos="fade-up">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">May 1, 2026</span>
+              <span class="blog-category">Part 8</span>
+            </div>
+            <h3 class="blog-card-title">Serving Quantized Models with vLLM</h3>
+            <p class="blog-card-excerpt">From AWQ checkpoint to a production endpoint. Multi-LoRA hot-swapping, prefix caching, and swapping the local endpoint into the Part 5 RAG.</p>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 14 min read</span>
+              <span class="blog-read-more">Read &rarr;</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="../../blog/posts/ai-path-09-knowledge-distillation.html" class="blog-card" data-aos="fade-up">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">May 2, 2026</span>
+              <span class="blog-category">Part 9</span>
+            </div>
+            <h3 class="blog-card-title">Knowledge Distillation</h3>
+            <p class="blog-card-excerpt">Distil a fine-tuned 4B teacher into a 1.5B student via synthetic data &mdash; with quality-control filters and an honest eval against the teacher.</p>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 14 min read</span>
+              <span class="blog-read-more">Read &rarr;</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="../../blog/posts/ai-path-10-scaling-ai-systems.html" class="blog-card" data-aos="fade-up">
+          <div class="blog-card-content">
+            <div class="blog-card-meta">
+              <span class="blog-date">May 3, 2026</span>
+              <span class="blog-category">Part 10</span>
+            </div>
+            <h3 class="blog-card-title">Scaling AI Systems</h3>
+            <p class="blog-card-excerpt">The series finale: concurrency patterns, caching, structured logging, monitoring, graceful degradation, and a one-page shipping checklist.</p>
+            <div class="blog-card-footer">
+              <span class="blog-read-time"><i class="fas fa-clock"></i> 16 min read</span>
+              <span class="blog-read-more">Read &rarr;</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+      <div class="text-center mt-5">
+        <a href="../../blog/index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> All blog posts</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed &amp; built with &hearts; by Samson.</p>
+    </div>
+  </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+  </script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init({ duration: 800, easing: 'ease-out', once: true, offset: 80 });</script>
+</body>
+
+</html>

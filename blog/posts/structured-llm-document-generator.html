@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generating Long-Form Compliance Documents with a Single LLM Call Pipeline | Samson Kinyanjui</title>
+  <meta name="description" content="Why big-prompt generation breaks at scale, and how I rebuilt my document generator as a pipeline of small typed LLM calls — with deliberate decisions about RAG, LoRA targets, and prefix caching." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Generating Long-Form Compliance Documents with a Single LLM Call Pipeline" />
+  <meta property="og:description" content="Why big-prompt generation breaks at scale, and how I rebuilt my document generator as a pipeline of small typed LLM calls." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/structured-llm-document-generator.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <!-- X / Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Generating Long-Form Compliance Documents with a Single LLM Call Pipeline" />
+  <meta name="twitter:description" content="Why big-prompt generation breaks at scale, and how I rebuilt my document generator as a pipeline of small typed LLM calls." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Post -->
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+      <!-- Post Header -->
+      <header class="post-header">
+        <div class="post-category">Implementation</div>
+        <h1 class="post-title">Generating Long-Form Compliance Documents with a Single LLM Call Pipeline</h1>
+        <p class="post-subtitle">Why big-prompt generation breaks at scale, and how I rebuilt my document generator as a pipeline of small typed LLM calls &mdash; with deliberate decisions about RAG, LoRA targets, and prefix caching.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>May 3, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>7 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">LLM</span>
+          <span class="post-tag">vLLM</span>
+          <span class="post-tag">LoRA</span>
+          <span class="post-tag">Pydantic</span>
+          <span class="post-tag">Structured Generation</span>
+          <span class="post-tag">Document Generation</span>
+        </div>
+      </header>
+
+      <!-- Post Content -->
+      <div class="post-content">
+
+        <p>Most LLM document generators are wrappers around a single big prompt. You send the model everything you know, ask for the whole document, and pray the output parses. For a one-pager, this works. For a 40-section regulatory document where every section has to be internally consistent, schema-typed, and grounded in primary law &mdash; it falls apart fast.</p>
+
+        <p>I learned this the hard way. The first version of my generator did exactly that. The model invented section numbers, contradicted itself across sections, and produced JSON that broke the renderer about one run in five. So I rebuilt it as a structured pipeline of small, typed LLM calls, each constrained by Pydantic, each doing one thing. This post is about what that architecture looks like and the specific decisions that made it work.</p>
+
+        <h2>The Problem with Big-Prompt Generation</h2>
+
+        <p>When you ask a 32B model to produce a structured 40-section document in one call, three things go wrong:</p>
+
+        <ul>
+          <li><strong>Schema drift.</strong> The model decides 38 sections is enough, or invents a 41st, or returns the JSON with one field renamed</li>
+          <li><strong>Internal contradiction.</strong> Section 12 says the business is medium-risk; section 27 (deeper in the same response) treats it as high-risk</li>
+          <li><strong>Context dilution.</strong> The instruction to ground every claim in a specific source-of-truth gets attenuated by the time the model is generating section 30</li>
+        </ul>
+
+        <p>Big-prompt generation is also impossible to debug. If section 19 is wrong, you regenerate the entire document. There's no surgical fix.</p>
+
+        <h2>The Architecture: Five Typed Artefacts</h2>
+
+        <p>I broke the pipeline into five LLM-backed artefacts, each with its own narrow schema:</p>
+
+        <ol>
+          <li><strong>Per-item structured assessment</strong> &mdash; yes/no decisions over a fixed list of inputs from the intake</li>
+          <li><strong>Narrative profile</strong> &mdash; a paragraph summarising the business in its own words</li>
+          <li><strong>Cross-section critic</strong> &mdash; reads the outputs of the first two and flags inconsistencies</li>
+          <li><strong>Repair pass</strong> &mdash; surgically rewrites a single field flagged by the critic, leaving everything else untouched</li>
+          <li><strong>Customisation overlay</strong> &mdash; applies user-specific rules layered on top of the generic output</li>
+        </ol>
+
+        <p>Each call returns Pydantic-validated JSON. If validation fails, the call retries with the same prompt. If retries fail, the pipeline raises rather than papering over the error with a fallback.</p>
+
+        <h2>Why No RAG in the Generator</h2>
+
+        <p>This was the most counter-intuitive decision. RAG is the default move for any LLM application that touches a corpus, and skipping it on a compliance generator sounds like negligence.</p>
+
+        <p>But RAG inside a structured pipeline introduces two failure modes:</p>
+
+        <ul>
+          <li><strong>Retrieved chunks vary across runs.</strong> Same intake, same prompt, slightly different retrieved context, slightly different output. For a deliverable that customers compare side-by-side, this is unacceptable</li>
+          <li><strong>Retrieved chunks can contradict the intake.</strong> If the user describes their business one way and a retrieved chunk describes a similar business differently, the model often defers to the chunk</li>
+        </ul>
+
+        <p>The fix: all grounding comes from a typed intake context plus static, curated source-of-truth JSONs loaded at startup. The corpus is still there &mdash; but it's used by the chat assistant (different module, different write-up), where the question shape is open and grounding is the whole point. For structured generation against a known schema, RAG is noise.</p>
+
+        <h2>Inference Layer: One vLLM Process, Two Aliases</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th>What</th><th>Detail</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Base model</td><td>Qwen3-32B-AWQ</td></tr>
+            <tr><td>Kernel</td><td>Marlin (fastest INT4 path on Hopper)</td></tr>
+            <tr><td>LoRA adapter</td><td>Domain-specific, r=16, served as a second alias</td></tr>
+            <tr><td>GPU memory</td><td><code>--gpu-memory-utilization 0.35</code></td></tr>
+            <tr><td>Concurrency cap</td><td><code>--max-num-seqs 8</code></td></tr>
+            <tr><td>Prefix caching</td><td>Enabled</td></tr>
+          </tbody>
+        </table>
+
+        <p>Both the chat assistant and the generator point at the same vLLM process. Chat hits the base alias; the generator hits the LoRA-adapted alias. One set of base weights loaded, two endpoints served. This saves ~30 GB of GPU compared to running two separate 32B instances and means I can serve both workloads on one box.</p>
+
+        <p>Prefix caching is the underrated win here. The cross-section critic prompt is ~2 KB and identical on every call. With prefix caching enabled, vLLM reuses the KV cache for that shared prefix across every critic invocation in the run. On a 6-section parallel fan-out, that's a measurable latency reduction for free.</p>
+
+        <h2>LoRA Configuration</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th>Parameter</th><th>Value</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Rank</td><td>16</td><td>Matches <code>--max-lora-rank</code></td></tr>
+            <tr><td>Alpha</td><td>32</td><td>Effective scaling 2.0</td></tr>
+            <tr><td>Dropout</td><td>0.05</td><td>Standard</td></tr>
+            <tr><td>Target modules</td><td>All 7 projections</td><td>Full LoRA, attention + MLP</td></tr>
+            <tr><td>Adapter size</td><td>~537 MB</td><td>Trained at checkpoint-177</td></tr>
+          </tbody>
+        </table>
+
+        <p>The decision worth calling out: target modules cover both attention (<code>q/k/v/o</code>) <strong>and</strong> MLP (<code>gate/up/down</code>). Most LoRA tutorials default to attention-only because it's cheaper. For a domain where the structure of the output matters as much as the content &mdash; every section follows a specific template &mdash; full LoRA gave noticeably better adherence to that structure.</p>
+
+        <h2>The Honest Trade-off</h2>
+
+        <p>The adapter was trained against the FP16 base but loaded against the AWQ-quantised base at inference. This is documented in the code with a comment. Quality drift from this mismatch is unmeasured and on the calibration backlog.</p>
+
+        <p>The cleaner path is to re-train against the AWQ base directly. The reason I didn't: the GPU budget didn't allow for a parallel training run during the initial build, and visible quality on held-out examples was good enough to ship. This is the kind of decision that's fine to make explicitly and revisit, and bad to make implicitly and forget.</p>
+
+        <h2>The Defensive Strips That Save You</h2>
+
+        <p>Two post-processing steps run on every LLM response, regardless of prompt:</p>
+
+        <ul>
+          <li><strong>Strip <code>&lt;think&gt;...&lt;/think&gt;</code> blocks.</strong> Qwen3 leaks reasoning blocks even with <code>enable_thinking=False</code>. Maybe one call in fifty. Strip them defensively and stop worrying about it</li>
+          <li><strong>Strip JSON code-fences.</strong> The model adds them inconsistently regardless of system prompt instructions. Strip the <code> ```json </code> and <code> ``` </code> wrappers post-hoc and parse what's left</li>
+        </ul>
+
+        <p>Temperature is fixed at 0.01 across all calls. For structured output, low temperature is the largest single lever for stability. The residual variance lives in non-determinism of batched inference, not in sampling.</p>
+
+        <h2>Concurrency</h2>
+
+        <p>Six section tasks fan out in parallel via a <code>ThreadPoolExecutor</code>. The HTTP layer uses a process-wide <code>httpx.Client</code> singleton with <code>max_keepalive_connections=10</code> and <code>max_connections=20</code> so connection setup isn't paid per call. vLLM handles the actual batching on the GPU side via continuous batching &mdash; my job at the application layer is just to feed it requests fast enough to keep the batch full.</p>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>Big-prompt generation breaks at scale; small typed calls compose</li>
+          <li>RAG belongs in chat, not in structured generation pipelines</li>
+          <li>One vLLM process with two aliases beats two vLLM processes for any workload that shares a base model</li>
+          <li>Prefix caching is free latency reduction whenever your prompts have stable prefixes</li>
+          <li>Full LoRA (attention + MLP) matters when structural adherence matters</li>
+          <li>Defensive output stripping is cheaper than fighting the model's leak modes</li>
+        </ul>
+      </div>
+
+      <!-- Post Footer -->
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <!-- Related Posts -->
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="vllm-gpu-inference-engine.html" class="related-post-card">
+            <span class="related-post-category">Deep Dive</span>
+            <h4>How I Get the Best Out of My GPU Using vLLM</h4>
+            <span class="related-post-date">April 16, 2026</span>
+          </a>
+          <a href="how-i-build-ai-agents.html" class="related-post-card">
+            <span class="related-post-category">Implementation</span>
+            <h4>How I Build AI Agents That Actually Work in Production</h4>
+            <span class="related-post-date">April 16, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

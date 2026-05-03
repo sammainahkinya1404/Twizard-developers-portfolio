@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 9: Knowledge Distillation | Samson Kinyanjui</title>
+  <meta name="description" content="Quantization makes a big model smaller. Distillation gives you a fundamentally smaller model that learned from the big one. Here's how to distil a 7B teacher into a 1.5B student that runs on a laptop." />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Part 9: Knowledge Distillation" />
+  <meta property="og:description" content="Distil a fine-tuned 4B/7B teacher into a 1.5B student via synthetic data. With quality-control filters and an honest eval." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/ai-path-09-knowledge-distillation.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Part 9: Knowledge Distillation" />
+  <meta name="twitter:description" content="Distil a fine-tuned 4B/7B teacher into a 1.5B student via synthetic data." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+      <p style="margin-top: 16px;"><a href="ai-path-08-serving-with-vllm.html"><i class="fas fa-arrow-left"></i> Previous: Part 8 &mdash; Serving Quantized Models with vLLM</a></p>
+
+      <header class="post-header">
+        <div class="post-category">Tutorial</div>
+        <h1 class="post-title">Part 9: Knowledge Distillation</h1>
+        <p class="post-subtitle">Quantization makes a big model smaller. Distillation gives you a fundamentally smaller model that learned from the big one. Here's how to distil a 7B teacher into a 1.5B student that runs on a laptop.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>May 2, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>14 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">AI Engineer Path</span>
+          <span class="post-tag">Distillation</span>
+          <span class="post-tag">Teacher-Student</span>
+          <span class="post-tag">Synthetic Data</span>
+          <span class="post-tag">Small Models</span>
+        </div>
+      </header>
+
+      <nav class="series-nav" aria-label="AI Engineer Path series navigation">
+        <div class="series-nav-header">
+          <p class="series-nav-title"><a href="../../series/ai-engineer-path/index.html">&larr; The AI Engineer's Path</a></p>
+          <span class="series-nav-meta">Part 9 of 10</span>
+        </div>
+        <div class="series-nav-pills">
+          <a class="series-pill" href="ai-path-01-python-foundations.html" title="Python Foundations">1</a>
+          <a class="series-pill" href="ai-path-02-first-llm-api-call.html" title="Your First LLM API Call">2</a>
+          <a class="series-pill" href="ai-path-03-fastapi-for-llms.html" title="Building APIs with FastAPI">3</a>
+          <a class="series-pill" href="ai-path-04-embeddings-vector-search.html" title="Embeddings and Vector Search">4</a>
+          <a class="series-pill" href="ai-path-05-production-rag.html" title="Production RAG">5</a>
+          <a class="series-pill" href="ai-path-06-lora-qlora-fine-tuning.html" title="LoRA and QLoRA Fine-Tuning">6</a>
+          <a class="series-pill" href="ai-path-07-quantization-for-deployment.html" title="Quantization for Deployment">7</a>
+          <a class="series-pill" href="ai-path-08-serving-with-vllm.html" title="Serving with vLLM">8</a>
+          <span class="series-pill is-current" title="Knowledge Distillation">9</span>
+          <a class="series-pill" href="ai-path-10-scaling-ai-systems.html" title="Scaling AI Systems">10</a>
+        </div>
+      </nav>
+
+      <div class="post-content">
+
+        <p><strong>Hardware:</strong> a CUDA GPU with 8 GB+ VRAM works for both teacher inference (4B model) and student training (1.5B QLoRA). Free Colab T4 works. <strong>Python:</strong> 3.11+.</p>
+
+        <h2>Quantization vs Distillation</h2>
+
+        <p>Quantization compresses weights. Distillation compresses behaviour. They solve different problems and they compose &mdash; a distilled model can also be quantized. Why bother with distillation when you've already quantized? Because no amount of quantization gets a 7B model to run on a phone. For that you need a fundamentally smaller architecture, and the cheapest way to make a small model good at your task is to teach it from a big one.</p>
+
+        <p>What we'll build:</p>
+
+        <ol>
+          <li>Use the Part 6 fine-tuned 4B model as a teacher to generate synthetic (input, output) pairs</li>
+          <li>Filter the synthetic data for quality &mdash; this is where most distillation projects fail</li>
+          <li>Fine-tune a 1.5B base on the synthetic data using the same Unsloth pipeline as Part 6</li>
+          <li>Evaluate student vs teacher on the same eval set</li>
+        </ol>
+
+        <h2>Three Flavours of Distillation</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Flavour</th><th>What it matches</th><th>Practical?</th></tr></thead>
+          <tbody>
+            <tr><td>Response-based</td><td>Student matches teacher outputs</td><td>Yes &mdash; works with any teacher, including closed-source APIs</td></tr>
+            <tr><td>Feature-based</td><td>Student matches teacher hidden states</td><td>Open-weight teachers only; complex to set up</td></tr>
+            <tr><td>Relation-based</td><td>Student matches relationships between teacher outputs</td><td>Research-grade; rarely used in practice</td></tr>
+          </tbody>
+        </table>
+
+        <p>For the rest of this post we use response-based distillation. It's the only flavour that's both practical and robust enough for a tutorial.</p>
+
+        <h2>Why You'd Distil</h2>
+
+        <ul>
+          <li><strong>Latency.</strong> A 1.5B model serves at 2&ndash;5&times; the throughput of a 4B for the same hardware</li>
+          <li><strong>Cost.</strong> Smaller model, smaller GPU, smaller bill</li>
+          <li><strong>Privacy / on-device.</strong> Running on a phone or laptop without a GPU is impossible at 7B; perfectly fine at 1.5B</li>
+          <li><strong>Edge deployment.</strong> Same point: where the GPU isn't</li>
+        </ul>
+
+        <h2>Step 1: Generate Synthetic Data</h2>
+
+        <p>The teacher is your Part 6 fine-tuned 4B model, served via the Part 8 vLLM endpoint. Save as <code>scripts/generate_synthetic.py</code>:</p>
+
+        <pre><code class="language-python">"""Use the teacher (Part 6 model on Part 8 endpoint) to generate (input, output) pairs."""
+from __future__ import annotations
+import json
+import random
+from pathlib import Path
+from openai import OpenAI
+
+# Hit the local vLLM endpoint
+client = OpenAI(api_key="EMPTY", base_url="http://localhost:8001/v1", timeout=60.0)
+TEACHER_MODEL = "domain"   # the LoRA alias from Part 8
+OUT_PATH = Path("data/synthetic.jsonl")
+
+# Seed prompts &mdash; the diversity of these directly determines dataset diversity.
+SEEDS = [
+    "Convert temperature.\n\n{value} F",
+    "Format as JSON.\n\nname={name} age={age}",
+    "Summarise in one sentence.\n\n{paragraph}",
+]
+
+NAMES = ["Alice", "Bob", "Charlie", "Dana", "Erin", "Felix"]
+PARAGRAPHS = [
+    "FastAPI is a Python web framework with async support and automatic OpenAPI docs.",
+    "Postgres has supported full-text search natively since version 8.3 via tsvector.",
+    "Quantization compresses model weights with a small accuracy cost.",
+    # ... add more
+]
+
+
+def generate_input() -&gt; str:
+    template = random.choice(SEEDS)
+    return template.format(
+        value=random.randint(0, 200),
+        name=random.choice(NAMES),
+        age=random.randint(18, 80),
+        paragraph=random.choice(PARAGRAPHS),
+    )
+
+
+def teacher_answer(prompt: str) -&gt; str:
+    resp = client.chat.completions.create(
+        model=TEACHER_MODEL,
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=256,
+        temperature=0.0,
+    )
+    return resp.choices[0].message.content or ""
+
+
+def main(n: int = 2000) -&gt; None:
+    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(OUT_PATH, "w") as f:
+        for i in range(n):
+            inp = generate_input()
+            out = teacher_answer(inp)
+            f.write(json.dumps({"instruction": inp, "input": "", "output": out}) + "\n")
+            if (i + 1) % 100 == 0:
+                print(f"generated {i + 1}/{n}")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+        <p>Run it &mdash; with vLLM serving on a single GPU and a 4B teacher, ~2,000 examples generates in ~10 minutes.</p>
+
+        <h2>Step 2: Quality Control (the Hardest Part)</h2>
+
+        <p>Most synthetic datasets are 50% useful and 50% noise. The cleanup is the work. The filters that catch the most damage:</p>
+
+        <pre><code class="language-python">"""Filter synthetic data: dedup, length sanity, keyword guards, diversity sample."""
+from __future__ import annotations
+import json
+from collections import Counter
+from pathlib import Path
+
+IN_PATH = Path("data/synthetic.jsonl")
+OUT_PATH = Path("data/synthetic_clean.jsonl")
+
+
+def load(path: Path) -&gt; list[dict]:
+    return [json.loads(l) for l in path.read_text().splitlines() if l.strip()]
+
+
+def dedup(rows: list[dict]) -&gt; list[dict]:
+    seen = set()
+    out = []
+    for r in rows:
+        key = (r["instruction"].strip(), r["output"].strip())
+        if key in seen: continue
+        seen.add(key); out.append(r)
+    return out
+
+
+def length_sane(rows: list[dict], min_out: int = 5, max_out: int = 800) -&gt; list[dict]:
+    return [r for r in rows if min_out &lt;= len(r["output"]) &lt;= max_out]
+
+
+def hallucination_guard(rows: list[dict]) -&gt; list[dict]:
+    """Drop outputs that look like the model giving up or going off-topic."""
+    bad_phrases = [
+        "i don't know", "as an ai language model", "i cannot",
+        "sorry, i", "let me think", "[redacted]",
+    ]
+    return [r for r in rows if not any(b in r["output"].lower() for b in bad_phrases)]
+
+
+def diversity_sample(rows: list[dict], cap_per_template: int = 50) -&gt; list[dict]:
+    """If one input shape dominates, cap it so the dataset isn't 80% one task."""
+    counts: Counter[str] = Counter()
+    out = []
+    for r in rows:
+        # Collapse the instruction to its template (rough): first 4 words.
+        key = " ".join(r["instruction"].split()[:4])
+        if counts[key] &gt;= cap_per_template: continue
+        counts[key] += 1; out.append(r)
+    return out
+
+
+def main() -&gt; None:
+    rows = load(IN_PATH)
+    n0 = len(rows)
+    rows = dedup(rows);                     n1 = len(rows)
+    rows = length_sane(rows);               n2 = len(rows)
+    rows = hallucination_guard(rows);       n3 = len(rows)
+    rows = diversity_sample(rows);          n4 = len(rows)
+    OUT_PATH.write_text("\n".join(json.dumps(r) for r in rows))
+    print(f"raw {n0} &rarr; dedup {n1} &rarr; length {n2} &rarr; halluc {n3} &rarr; diversity {n4}")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+        <p>Typical numbers: 2,000 raw &rarr; 1,200 clean. If your filtered set is 95% of raw, your filters are too lax. If it's 30% of raw, your generation is too noisy.</p>
+
+        <h2>Step 3: Pick a Student</h2>
+
+        <p>Rules of thumb:</p>
+
+        <ul>
+          <li><strong>Same family as teacher when possible.</strong> Qwen3-4B teacher &rarr; Qwen3-1.5B student. The shared tokeniser and pretraining data make distillation smoother</li>
+          <li><strong>Instruction-tuned variant if you want chat behaviour.</strong> A base model needs more data to learn chat formatting from scratch</li>
+          <li><strong>Don't drop too far in size.</strong> A 4B &rarr; 1.5B distillation usually works. 4B &rarr; 0.5B often fails because the small model can't hold the same task complexity</li>
+        </ul>
+
+        <p>For this post: <code>Qwen/Qwen3-1.5B-Instruct</code>.</p>
+
+        <h2>Step 4: Train the Student</h2>
+
+        <p>Same Unsloth + SFTTrainer pipeline as Part 6. Save as <code>scripts/distil_train.py</code>:</p>
+
+        <pre><code class="language-python">"""QLoRA fine-tune Qwen3-1.5B on the cleaned synthetic dataset."""
+from datasets import load_dataset
+from unsloth import FastLanguageModel
+from trl import SFTTrainer, SFTConfig
+
+MODEL_NAME = "unsloth/Qwen3-1.5B-Instruct"
+MAX_SEQ_LENGTH = 2048
+DATA_PATH = "data/synthetic_clean.jsonl"
+OUTPUT_DIR = "outputs/qwen3-1.5b-distilled"
+
+model, tok = FastLanguageModel.from_pretrained(
+    model_name=MODEL_NAME,
+    max_seq_length=MAX_SEQ_LENGTH,
+    dtype=None, load_in_4bit=True,
+)
+model = FastLanguageModel.get_peft_model(
+    model,
+    r=16, lora_alpha=16, lora_dropout=0,
+    target_modules=["q_proj","k_proj","v_proj","o_proj","gate_proj","up_proj","down_proj"],
+    bias="none",
+    use_gradient_checkpointing="unsloth",
+    random_state=42,
+)
+
+
+def fmt(ex):
+    msgs = [{"role": "user", "content": ex["instruction"]},
+             {"role": "assistant", "content": ex["output"]}]
+    return {"text": tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=False)}
+
+
+ds = load_dataset("json", data_files=DATA_PATH, split="train").map(fmt, remove_columns=["instruction","input","output"])
+ds = ds.train_test_split(test_size=0.05, seed=42)
+
+trainer = SFTTrainer(
+    model=model, tokenizer=tok,
+    train_dataset=ds["train"], eval_dataset=ds["test"],
+    args=SFTConfig(
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=4,
+        warmup_steps=20,
+        num_train_epochs=2,
+        learning_rate=2e-4,
+        bf16=False, fp16=True,
+        logging_steps=20, eval_strategy="steps", eval_steps=100,
+        save_strategy="steps", save_steps=200, save_total_limit=2,
+        output_dir=OUTPUT_DIR,
+        max_seq_length=MAX_SEQ_LENGTH,
+        dataset_text_field="text",
+        report_to="none", seed=42,
+    ),
+)
+trainer.train()
+model.save_pretrained(OUTPUT_DIR); tok.save_pretrained(OUTPUT_DIR)
+print(f"student adapter saved to {OUTPUT_DIR}")</code></pre>
+
+        <h2>Step 5: Evaluate Student vs Teacher</h2>
+
+        <p>The honest comparison is on a held-out set of <em>real</em> inputs, not the synthetic ones. Save as <code>scripts/eval_student.py</code>:</p>
+
+        <pre><code class="language-python">"""Compare student vs teacher on a held-out eval set."""
+import json
+from openai import OpenAI
+
+teacher = OpenAI(api_key="EMPTY", base_url="http://localhost:8001/v1")
+student = OpenAI(api_key="EMPTY", base_url="http://localhost:8002/v1")  # second vLLM, see below
+
+EVAL = [json.loads(l) for l in open("data/real_eval.jsonl")]
+
+
+def gen(client, model: str, prompt: str) -&gt; str:
+    return client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=256, temperature=0.0,
+    ).choices[0].message.content or ""
+
+
+def exact_match(a: str, b: str) -&gt; bool:
+    return a.strip().lower() == b.strip().lower()
+
+
+t_hits, s_hits = 0, 0
+for case in EVAL:
+    expected = case["expected"]
+    t = gen(teacher, "domain", case["prompt"])
+    s = gen(student, "distilled", case["prompt"])
+    t_hits += exact_match(t, expected)
+    s_hits += exact_match(s, expected)
+
+print(f"teacher  EM: {t_hits / len(EVAL):.2%}")
+print(f"student  EM: {s_hits / len(EVAL):.2%}")
+print(f"retained:    {s_hits / max(t_hits, 1):.0%}")</code></pre>
+
+        <p>Run a second vLLM process on a different port for the student:</p>
+
+        <pre><code class="language-bash">vllm serve outputs/qwen3-1.5b-distilled --port 8002 --enable-lora \
+  --lora-modules "distilled=outputs/qwen3-1.5b-distilled" \
+  --gpu-memory-utilization 0.4</code></pre>
+
+        <p><strong>What good looks like:</strong> the student hits 80&ndash;95% of the teacher's task performance. Below that and either your synthetic dataset is too small / too noisy, or the student is too small for the task.</p>
+
+        <h2>When Distillation Fails</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Symptom</th><th>Cause</th></tr></thead>
+          <tbody>
+            <tr><td>Student stuck below 50% of teacher</td><td>Student capacity too small, or synthetic dataset too narrow</td></tr>
+            <tr><td>Student matches teacher on synthetic eval, fails on real</td><td>Synthetic data not representative of real distribution &mdash; expand seed prompts</td></tr>
+            <tr><td>Student inherits teacher mistakes</td><td>The teacher's wrong answers became labels. Fix the teacher first, regenerate</td></tr>
+            <tr><td>Student trained but generates garbage</td><td>Chat-template mismatch between teacher's outputs and student's expectations</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Distillation in the Wild</h2>
+
+        <p>The chain of "GPT-4 &rarr; synthetic data &rarr; small open-source model" is how the entire ecosystem of small instruction-tuned models was built in 2023&ndash;2024. The technique is the same; you're just doing it on your own task with your own teacher. The outputs of distillation can also be quantized (Part 7) and served on vLLM (Part 8) &mdash; the techniques compose.</p>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>Quantization compresses weights. Distillation compresses behaviour. They solve different problems and they compose</li>
+          <li>Response-based distillation is the practical flavour. Generate (input, output) from the teacher, train the student on that</li>
+          <li>Synthetic data quality is the work. Dedup, length sanity, hallucination guards, diversity caps. ~60% retention is normal</li>
+          <li>Pick a student in the same family as the teacher when possible. 4B &rarr; 1.5B usually works; 4B &rarr; 0.5B often doesn't</li>
+          <li>Eval on real inputs, not synthetic ones. The honest metric is "X% of teacher performance retained"</li>
+          <li>Distilled models can themselves be quantized. The compression techniques compose</li>
+        </ul>
+
+        <h2>Next Up</h2>
+
+        <p>Part 10 ties everything together. Concurrency patterns, caching at every layer, structured logging, monitoring, graceful degradation. Plus a one-page checklist for shipping AI to production.</p>
+
+        <p style="margin-top: 24px;"><a href="ai-path-10-scaling-ai-systems.html" class="btn btn-outline-accent">Next: Part 10 &mdash; Scaling AI Systems <i class="fas fa-arrow-right ml-2"></i></a></p>
+      </div>
+
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="ai-path-06-lora-qlora-fine-tuning.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 6: Fine-Tuning with LoRA and QLoRA</h4>
+            <span class="related-post-date">April 29, 2026</span>
+          </a>
+          <a href="ai-path-10-scaling-ai-systems.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 10: Scaling AI Systems</h4>
+            <span class="related-post-date">May 3, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

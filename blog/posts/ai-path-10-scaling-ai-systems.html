@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 10: Scaling AI Systems | Samson Kinyanjui</title>
+  <meta name="description" content="You've built it. Now ten users want to use it at once. The last post in the series covers everything that matters when AI systems leave a single laptop — concurrency patterns, caching, monitoring, and graceful degradation." />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Part 10: Scaling AI Systems" />
+  <meta property="og:description" content="Concurrency patterns, caching at every layer, structured logging, monitoring, graceful degradation, and a shipping checklist." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/ai-path-10-scaling-ai-systems.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Part 10: Scaling AI Systems" />
+  <meta name="twitter:description" content="Concurrency patterns, caching at every layer, structured logging, monitoring, graceful degradation." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+      <p style="margin-top: 16px;"><a href="ai-path-09-knowledge-distillation.html"><i class="fas fa-arrow-left"></i> Previous: Part 9 &mdash; Knowledge Distillation</a></p>
+
+      <header class="post-header">
+        <div class="post-category">Tutorial</div>
+        <h1 class="post-title">Part 10: Scaling AI Systems</h1>
+        <p class="post-subtitle">You've built it. Now ten users want to use it at once. The last post in the series covers everything that matters when AI systems leave a single laptop &mdash; concurrency patterns, caching, monitoring, and graceful degradation.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>May 3, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>16 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">AI Engineer Path</span>
+          <span class="post-tag">Scaling</span>
+          <span class="post-tag">Production</span>
+          <span class="post-tag">MLOps</span>
+          <span class="post-tag">Monitoring</span>
+        </div>
+      </header>
+
+      <nav class="series-nav" aria-label="AI Engineer Path series navigation">
+        <div class="series-nav-header">
+          <p class="series-nav-title"><a href="../../series/ai-engineer-path/index.html">&larr; The AI Engineer's Path</a></p>
+          <span class="series-nav-meta">Part 10 of 10</span>
+        </div>
+        <div class="series-nav-pills">
+          <a class="series-pill" href="ai-path-01-python-foundations.html" title="Python Foundations">1</a>
+          <a class="series-pill" href="ai-path-02-first-llm-api-call.html" title="Your First LLM API Call">2</a>
+          <a class="series-pill" href="ai-path-03-fastapi-for-llms.html" title="Building APIs with FastAPI">3</a>
+          <a class="series-pill" href="ai-path-04-embeddings-vector-search.html" title="Embeddings and Vector Search">4</a>
+          <a class="series-pill" href="ai-path-05-production-rag.html" title="Production RAG">5</a>
+          <a class="series-pill" href="ai-path-06-lora-qlora-fine-tuning.html" title="LoRA and QLoRA Fine-Tuning">6</a>
+          <a class="series-pill" href="ai-path-07-quantization-for-deployment.html" title="Quantization for Deployment">7</a>
+          <a class="series-pill" href="ai-path-08-serving-with-vllm.html" title="Serving with vLLM">8</a>
+          <a class="series-pill" href="ai-path-09-knowledge-distillation.html" title="Knowledge Distillation">9</a>
+          <span class="series-pill is-current" title="Scaling AI Systems">10</span>
+        </div>
+      </nav>
+
+      <div class="post-content">
+
+        <p><strong>Hardware:</strong> the same stack you've built across Parts 3, 5, and 8 &mdash; FastAPI service + Qdrant + vLLM. <strong>Python:</strong> 3.11+.</p>
+
+        <h2>The Threshold</h2>
+
+        <p>Every project in this series so far works for one user. The interesting failures start when you have ten. The interesting <em>engineering</em> starts when you have a thousand. This post is about the patterns that hold the stack up across that gap.</p>
+
+        <h2>Concurrency: Async All the Way</h2>
+
+        <p>LLM calls are I/O-bound. Every wait on the network is wasted CPU on the server side. The default for an LLM service should be <strong>async everywhere</strong>:</p>
+
+        <pre><code class="language-python"># Async wrapper around the OpenAI/Anthropic client.
+from openai import AsyncOpenAI
+
+
+class AsyncOpenAIClient:
+    def __init__(self, model: str, base_url: str | None = None) -&gt; None:
+        self._client = AsyncOpenAI(
+            api_key=os.environ.get("OPENAI_API_KEY", "EMPTY"),
+            base_url=base_url,
+            timeout=30.0,
+        )
+        self._model = model
+
+    async def complete(self, prompt: str, **kw) -&gt; str:
+        resp = await self._client.chat.completions.create(
+            model=self._model,
+            messages=[{"role": "user", "content": prompt}],
+            **kw,
+        )
+        return resp.choices[0].message.content or ""</code></pre>
+
+        <p>For parallelisable subtasks (a fan-out RAG that hits 5 retrievers; an agent that calls 3 tools concurrently), use <code>asyncio.gather</code>:</p>
+
+        <pre><code class="language-python">results = await asyncio.gather(
+    client.complete(prompt_a),
+    client.complete(prompt_b),
+    client.complete(prompt_c),
+)</code></pre>
+
+        <p>Three calls, one wait. Same pattern at the API layer: <code>async def</code> endpoints in FastAPI. Don't slip back to synchronous database calls or file reads inside an async endpoint &mdash; they block the whole event loop.</p>
+
+        <h2>Connection Pooling</h2>
+
+        <p>Naive code creates an HTTP client per request. The setup cost &mdash; DNS, TLS handshake, TCP &mdash; eats into every call. Use a process-wide singleton:</p>
+
+        <pre><code class="language-python">import httpx
+
+_HTTP_CLIENT: httpx.AsyncClient | None = None
+
+
+def http() -&gt; httpx.AsyncClient:
+    global _HTTP_CLIENT
+    if _HTTP_CLIENT is None:
+        _HTTP_CLIENT = httpx.AsyncClient(
+            timeout=httpx.Timeout(30.0, connect=5.0),
+            limits=httpx.Limits(
+                max_keepalive_connections=20,
+                max_connections=100,
+                keepalive_expiry=60.0,
+            ),
+        )
+    return _HTTP_CLIENT
+
+
+# In FastAPI lifespan:
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    if _HTTP_CLIENT is not None:
+        await _HTTP_CLIENT.aclose()</code></pre>
+
+        <p>The <code>max_keepalive_connections</code> is the number of connections kept warm between requests. <code>max_connections</code> is the upper bound. For a service that fans out to multiple downstream APIs, this is the difference between latency that grows linearly with load and latency that stays flat.</p>
+
+        <h2>Caching at Every Layer</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Layer</th><th>What</th><th>How</th></tr></thead>
+          <tbody>
+            <tr><td>HTTP edge</td><td>Identical requests inside a TTL</td><td>Cloudflare / nginx; respects <code>Cache-Control</code> headers from your service</td></tr>
+            <tr><td>Application</td><td>Deterministic prompts (temp 0)</td><td>Redis with prompt-hash key; ~10 ms vs ~2,000 ms LLM call</td></tr>
+            <tr><td>Embedding</td><td>Same query computed twice</td><td>LRU cache or Redis; embedding is small (a few KB) so cache hit ratios are high</td></tr>
+            <tr><td>vLLM prefix cache</td><td>Shared system prompts / RAG context</td><td>One flag in Part 8; reuses KV across calls with same prefix</td></tr>
+          </tbody>
+        </table>
+
+        <p>Each layer multiplies the savings. A cached HTTP response never touches the embedding cache; a cached embedding never enters the LLM cache; a cache miss at every level still benefits from the vLLM prefix cache. The compounding effect is enormous on real workloads.</p>
+
+        <p>Application-level cache, simplest version:</p>
+
+        <pre><code class="language-python">import hashlib
+import redis.asyncio as redis  # uv add redis==5.2.0
+
+_REDIS = redis.from_url("redis://localhost:6379")
+
+
+async def cached_complete(client, prompt: str, *, ttl: int = 86400) -&gt; str:
+    key = "llm:" + hashlib.sha256(prompt.encode()).hexdigest()
+    hit = await _REDIS.get(key)
+    if hit: return hit.decode()
+    result = await client.complete(prompt)
+    await _REDIS.set(key, result, ex=ttl)
+    return result</code></pre>
+
+        <h2>Rate Limiting and Admission Control</h2>
+
+        <p>Rate limiting (Part 3 with <code>slowapi</code>) decides whether a single client is over their quota. <strong>Admission control</strong> decides whether the service can take any more work. They're different problems:</p>
+
+        <ul>
+          <li><strong>Rate limit</strong>: 60 requests / minute / API key. Returns 429</li>
+          <li><strong>Admission</strong>: in-flight LLM calls &gt; threshold &rarr; queue or reject. Protects against thundering herd</li>
+        </ul>
+
+        <pre><code class="language-python">import asyncio
+
+_INFLIGHT = asyncio.Semaphore(50)
+
+
+async def serve(prompt: str) -&gt; str:
+    async with _INFLIGHT:
+        return await client.complete(prompt)</code></pre>
+
+        <p>Past 50 in-flight calls, the next request blocks until one finishes. For a public API you'd want a <em>queue</em> with a timeout instead, so users aren't held indefinitely. For an internal API, the semaphore is enough.</p>
+
+        <h2>Graceful Degradation</h2>
+
+        <p>The LLM call should be enriching, not load-bearing, wherever possible. Detailed treatment in <a href="graceful-degradation-ai-products.html">Designing a Consumer-Tier AI Product That Degrades Gracefully</a>. The pattern in code:</p>
+
+        <pre><code class="language-python">async def enriched_response(query: str) -&gt; dict:
+    base = compute_deterministic_response(query)   # always succeeds
+    try:
+        ai_layer = await asyncio.wait_for(call_llm(query), timeout=5.0)
+        return {**base, "ai_extras": ai_layer}
+    except (asyncio.TimeoutError, Exception):
+        log.warning("ai layer failed; serving deterministic response only")
+        return base</code></pre>
+
+        <p>The user-visible failure mode becomes "AI features missing" rather than "request failed". Where this is appropriate is the architectural decision; where it isn't, fail loudly.</p>
+
+        <h2>Observability</h2>
+
+        <h3>Structured Logging</h3>
+
+        <pre><code class="language-bash">uv add structlog==25.1.0</code></pre>
+
+        <pre><code class="language-python">import structlog
+
+structlog.configure(
+    processors=[
+        structlog.contextvars.merge_contextvars,
+        structlog.processors.add_log_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.JSONRenderer(),
+    ],
+)
+log = structlog.get_logger()
+
+
+# Use it everywhere, with structured fields:
+log.info("rag.query", question_len=len(q), top_k=k, hits=len(hits))
+log.info("llm.call",  model=m, in_tok=in_t, out_tok=out_t, latency_ms=lat)</code></pre>
+
+        <p>JSON output goes to stdout. Pipe to Loki, Datadog, or whatever ingests JSON logs. The fields are queryable, the timestamps are sortable, and there's no string-parsing fragility.</p>
+
+        <h3>Metrics with Prometheus</h3>
+
+        <pre><code class="language-bash">uv add prometheus-client==0.21.0 starlette-exporter==0.23.0</code></pre>
+
+        <pre><code class="language-python">from prometheus_client import Counter, Histogram
+
+LLM_CALLS = Counter("llm_calls_total", "LLM calls", ["model", "status"])
+LLM_LATENCY = Histogram("llm_latency_seconds", "LLM latency", ["model"])
+LLM_TOKENS = Counter("llm_tokens_total", "Tokens used", ["model", "direction"])
+
+
+# Wrap the LLM call:
+async def tracked_complete(client, model: str, prompt: str) -&gt; str:
+    with LLM_LATENCY.labels(model).time():
+        try:
+            result = await client.complete(prompt)
+            LLM_CALLS.labels(model, "ok").inc()
+            return result
+        except Exception:
+            LLM_CALLS.labels(model, "error").inc()
+            raise</code></pre>
+
+        <p>Mount the metrics endpoint:</p>
+
+        <pre><code class="language-python">from starlette_exporter import PrometheusMiddleware, handle_metrics
+app.add_middleware(PrometheusMiddleware)
+app.add_route("/metrics", handle_metrics)</code></pre>
+
+        <p>Scrape <code>/metrics</code> from Prometheus. Build dashboards in Grafana. Alert when:</p>
+
+        <ul>
+          <li>Error rate &gt; 1% over 5 minutes</li>
+          <li>p95 latency &gt; 5s</li>
+          <li>Queue depth (in-flight semaphore) saturated for &gt; 1 minute</li>
+          <li>Daily token spend &gt; threshold</li>
+        </ul>
+
+        <h2>Cost Monitoring</h2>
+
+        <p>The <code>CostTracker</code> from Part 2 logs per-call cost. Aggregate it:</p>
+
+        <pre><code class="language-python">DAILY_USD_BUDGET = 50.0
+_DAILY_SPEND = 0.0
+
+
+def record(cost: float) -&gt; None:
+    global _DAILY_SPEND
+    _DAILY_SPEND += cost
+    if _DAILY_SPEND &gt; DAILY_USD_BUDGET:
+        log.error("daily.budget.exceeded", spent=_DAILY_SPEND, budget=DAILY_USD_BUDGET)
+        # &mdash; trip a circuit breaker, page on-call, etc.</code></pre>
+
+        <p>Cron a daily reset; in a multi-process deployment, use Redis for the counter so all workers share state. The "stop-the-bleed" mechanism on cost &mdash; switching the LLM client to a self-hosted vLLM, returning a static fallback, or rejecting traffic outright &mdash; is the kind of decision you want to make <em>before</em> the bill arrives.</p>
+
+        <h2>Deploy-Time Eval</h2>
+
+        <p>Every deploy runs a small eval set against the new model/config. Catches regressions before users do. Save as <code>scripts/deploy_eval.py</code>:</p>
+
+        <pre><code class="language-python">"""Run the held-out eval against the deployed endpoint. Fail the deploy if quality drops."""
+import json, sys
+from openai import OpenAI
+
+ENDPOINT = sys.argv[1]   # e.g. "http://staging.internal:8000/rag"
+THRESHOLD = 0.85         # required exact-match rate
+EVAL = [json.loads(l) for l in open("data/deploy_eval.jsonl")]
+
+import requests
+hits = 0
+for case in EVAL:
+    r = requests.post(ENDPOINT, json={"question": case["q"], "top_k": 5}, timeout=30)
+    answer = r.json()["answer"].strip().lower()
+    if any(kw.lower() in answer for kw in case["expected_keywords"]):
+        hits += 1
+
+rate = hits / len(EVAL)
+print(f"deploy eval: {hits}/{len(EVAL)} ({rate:.0%})")
+sys.exit(0 if rate &gt;= THRESHOLD else 1)</code></pre>
+
+        <p>Wire this into your CI / deploy pipeline. Exit code drives whether the deploy proceeds.</p>
+
+        <h2>Beyond One Box</h2>
+
+        <p>When you outgrow a single GPU, the patterns:</p>
+
+        <ul>
+          <li><strong>Replicate the vLLM stack horizontally.</strong> Multiple GPUs, multiple processes, a load balancer in front. Sticky routing by request-hash gives prefix-cache locality &mdash; the same conversation lands on the same backend</li>
+          <li><strong>Shard a model across GPUs.</strong> vLLM's <code>--tensor-parallel-size N</code> splits the model across N GPUs. Use when one GPU can't hold the model; otherwise replicate</li>
+          <li><strong>Separate inference targets per workload tier.</strong> Pattern from <a href="graceful-degradation-ai-products.html">the graceful-degradation post</a>: enterprise tier on a 32B AWQ on big GPUs, consumer tier on a 4B on smaller GPUs, separate failure domains</li>
+        </ul>
+
+        <h2>What's Not in This Post</h2>
+
+        <p>Each of these is its own series:</p>
+
+        <ul>
+          <li><strong>Full Kubernetes setups.</strong> Helm charts, autoscaling, GPU operator, NodePool selectors. Use Helm + a managed cluster (EKS / GKE) when you need it; otherwise systemd is fine for a long time</li>
+          <li><strong>Multi-region deployments.</strong> Latency-aware routing, region-local caches, eventual-consistency on KV stores. Most projects don't need this. The ones that do already have a team</li>
+          <li><strong>Regulatory compliance.</strong> Data residency, audit logs, role-based access. Talk to your legal team. Architecture decisions follow what they tell you, not the other way around</li>
+        </ul>
+
+        <h2>Shipping AI to Production: One-Page Checklist</h2>
+
+        <p>Use this as a deploy gate. Each line is a yes/no.</p>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Category</th><th>Check</th></tr></thead>
+          <tbody>
+            <tr><td>API</td><td>Every request body validated by a Pydantic schema</td></tr>
+            <tr><td>API</td><td>Auth required on every non-health endpoint</td></tr>
+            <tr><td>API</td><td>Rate limiting per API key</td></tr>
+            <tr><td>API</td><td>Admission control / inflight semaphore set</td></tr>
+            <tr><td>API</td><td>Streaming endpoints handled, not just batch</td></tr>
+            <tr><td>Async</td><td>All endpoints are <code>async def</code></td></tr>
+            <tr><td>Async</td><td>HTTP client is a process-wide singleton with keepalive</td></tr>
+            <tr><td>LLM</td><td>Wrapper module isolates retries, cost tracking, provider swap</td></tr>
+            <tr><td>LLM</td><td>Timeout set explicitly (not SDK default)</td></tr>
+            <tr><td>LLM</td><td>Cost tracked per call, aggregated per day, alert on budget</td></tr>
+            <tr><td>LLM</td><td>Cache layer for deterministic prompts</td></tr>
+            <tr><td>vLLM</td><td>Prefix caching enabled</td></tr>
+            <tr><td>vLLM</td><td>GPU memory utilisation set, not default</td></tr>
+            <tr><td>vLLM</td><td>Running under systemd with restart-on-failure</td></tr>
+            <tr><td>RAG</td><td>Chunks validated against source documents (no parser bugs)</td></tr>
+            <tr><td>RAG</td><td>Citations returned with answers</td></tr>
+            <tr><td>RAG</td><td>Eval set built; precision@k tracked</td></tr>
+            <tr><td>Logging</td><td>Structured JSON logs, queryable fields</td></tr>
+            <tr><td>Metrics</td><td>Prometheus <code>/metrics</code> endpoint exposed</td></tr>
+            <tr><td>Metrics</td><td>Alerts on error rate, p95 latency, queue saturation, daily spend</td></tr>
+            <tr><td>Reliability</td><td>Graceful degradation: deterministic core ships even when LLM fails (where appropriate)</td></tr>
+            <tr><td>Deploy</td><td>Eval set runs against the new deploy; fails the deploy if quality drops</td></tr>
+            <tr><td>Deploy</td><td>Health endpoint exists, distinguishes liveness from readiness</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Series Wrap-Up</h2>
+
+        <p>Across the 10 parts you've built:</p>
+
+        <ul>
+          <li>A typed, tested CLI scaffold (Part 1)</li>
+          <li>A provider-agnostic LLM wrapper with retries, streaming, structured output, cost tracking (Part 2)</li>
+          <li>A FastAPI service with auth, rate limiting, streaming, and a Dockerfile (Part 3)</li>
+          <li>Embeddings + Qdrant semantic search bolted onto the same service (Part 4)</li>
+          <li>A full RAG pipeline with hybrid retrieval and citations (Part 5)</li>
+          <li>A QLoRA fine-tune of a 4B instruct model on your own dataset (Part 6)</li>
+          <li>AWQ + GGUF quantization with benchmarks (Part 7)</li>
+          <li>A vLLM serving stack with multi-LoRA, prefix caching, and a config-only swap into the RAG (Part 8)</li>
+          <li>A 1.5B distilled student that retains most of the teacher's behaviour (Part 9)</li>
+          <li>A hardened version of the whole stack with metrics, structured logs, deploy-time eval (this part)</li>
+        </ul>
+
+        <h2>Where to Read Next</h2>
+
+        <ul>
+          <li><a href="how-i-build-ai-agents.html">How I Build AI Agents That Actually Work in Production</a> &mdash; agentic patterns that turn this stack into a multi-agent system</li>
+          <li><a href="vllm-gpu-inference-engine.html">How I Get the Best Out of My GPU Using vLLM</a> &mdash; the "why" behind the techniques in Part 8</li>
+          <li><a href="llm-quantization-gptq-awq-gguf.html">Demystifying LLM Quantization</a> &mdash; theory behind Part 7</li>
+          <li><a href="structured-llm-document-generator.html">Generating Long-Form Compliance Documents</a>, <a href="hybrid-rag-statutory-qa.html">Hybrid-RAG over Statute</a>, <a href="graceful-degradation-ai-products.html">Graceful Degradation</a>, <a href="audio-video-diffusion-single-gpu.html">Audio-Video Diffusion on a Single GPU</a> &mdash; case studies of stacks like this one in real production</li>
+        </ul>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>Async everywhere. LLM workloads are I/O-bound; sync code wastes the easy wins</li>
+          <li>Connection pool the HTTP client. Don't pay TLS handshakes per call</li>
+          <li>Cache at every layer: HTTP, application, embedding, vLLM prefix. The savings compound</li>
+          <li>Rate-limit per key. Add admission control on top to protect the service from itself</li>
+          <li>Make the LLM enriching, not load-bearing, where you can. Failure mode becomes "AI missing" not "site down"</li>
+          <li>Structured logs. Prometheus metrics. Alerts on error rate, latency, and spend</li>
+          <li>Deploy-time eval. Catch regressions before users do</li>
+          <li>One vLLM, one base, many adapters; replicate horizontally before sharding</li>
+          <li>The shipping checklist is more useful than any one trick. Run it before every release</li>
+        </ul>
+
+        <h2>The End</h2>
+
+        <p>That's the series. You've gone from a CLI that counts words to a self-hosted, fine-tuned, quantized, distilled, RAG-augmented, monitored AI service. Build something with it.</p>
+      </div>
+
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="ai-path-01-python-foundations.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 1: Python Foundations for AI Engineers</h4>
+            <span class="related-post-date">April 24, 2026</span>
+          </a>
+          <a href="graceful-degradation-ai-products.html" class="related-post-card">
+            <span class="related-post-category">Implementation</span>
+            <h4>Designing a Consumer-Tier AI Product That Degrades Gracefully</h4>
+            <span class="related-post-date">May 3, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

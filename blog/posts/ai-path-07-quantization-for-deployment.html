@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 7: Quantization for Deployment | Samson Kinyanjui</title>
+  <meta name="description" content="Your fine-tuned 7B model is 14 GB in FP16. Quantize it to 4-bit AWQ and it's 4 GB with sub-1% accuracy loss. Here's the full pipeline from merged model to deployment-ready quantized weights." />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Part 7: Quantization for Deployment" />
+  <meta property="og:description" content="From merged checkpoint to deployment-ready AWQ + GGUF artefacts, with benchmarks." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/ai-path-07-quantization-for-deployment.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Part 7: Quantization for Deployment" />
+  <meta name="twitter:description" content="From merged checkpoint to deployment-ready AWQ + GGUF artefacts, with benchmarks." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+      <p style="margin-top: 16px;"><a href="ai-path-06-lora-qlora-fine-tuning.html"><i class="fas fa-arrow-left"></i> Previous: Part 6 &mdash; Fine-Tuning with LoRA and QLoRA</a></p>
+
+      <header class="post-header">
+        <div class="post-category">Tutorial</div>
+        <h1 class="post-title">Part 7: Quantization for Deployment</h1>
+        <p class="post-subtitle">Your fine-tuned 7B model is 14 GB in FP16. Quantize it to 4-bit AWQ and it's 4 GB with sub-1% accuracy loss. Here's the full pipeline from merged model to deployment-ready quantized weights.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>April 30, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>13 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">AI Engineer Path</span>
+          <span class="post-tag">Quantization</span>
+          <span class="post-tag">AWQ</span>
+          <span class="post-tag">GGUF</span>
+          <span class="post-tag">Deployment</span>
+        </div>
+      </header>
+
+      <nav class="series-nav" aria-label="AI Engineer Path series navigation">
+        <div class="series-nav-header">
+          <p class="series-nav-title"><a href="../../series/ai-engineer-path/index.html">&larr; The AI Engineer's Path</a></p>
+          <span class="series-nav-meta">Part 7 of 10</span>
+        </div>
+        <div class="series-nav-pills">
+          <a class="series-pill" href="ai-path-01-python-foundations.html" title="Python Foundations">1</a>
+          <a class="series-pill" href="ai-path-02-first-llm-api-call.html" title="Your First LLM API Call">2</a>
+          <a class="series-pill" href="ai-path-03-fastapi-for-llms.html" title="Building APIs with FastAPI">3</a>
+          <a class="series-pill" href="ai-path-04-embeddings-vector-search.html" title="Embeddings and Vector Search">4</a>
+          <a class="series-pill" href="ai-path-05-production-rag.html" title="Production RAG">5</a>
+          <a class="series-pill" href="ai-path-06-lora-qlora-fine-tuning.html" title="LoRA and QLoRA Fine-Tuning">6</a>
+          <span class="series-pill is-current" title="Quantization for Deployment">7</span>
+          <a class="series-pill" href="ai-path-08-serving-with-vllm.html" title="Serving with vLLM">8</a>
+          <a class="series-pill" href="ai-path-09-knowledge-distillation.html" title="Knowledge Distillation">9</a>
+          <a class="series-pill" href="ai-path-10-scaling-ai-systems.html" title="Scaling AI Systems">10</a>
+        </div>
+      </nav>
+
+      <div class="post-content">
+
+        <p><strong>Hardware:</strong> a CUDA GPU with at least 24 GB VRAM for AWQ calibration of a 7B model. Colab Pro A100 works. CPU is enough for GGUF conversion, slower. <strong>Python:</strong> 3.11+.</p>
+
+        <h2>Quantization Is a Deployment Tactic</h2>
+
+        <p>Quantization sounds like a research topic. It's a deployment tactic. The reason to learn it is that it's the difference between needing an A100 and needing a 4090. Or between needing a 4090 and running on a M-series MacBook.</p>
+
+        <p>What we'll build: take the merged 4B (or 7B) model from Part 6 and produce three deployment-ready artefacts:</p>
+
+        <ul>
+          <li><strong>AWQ</strong> &mdash; for vLLM serving (Part 8)</li>
+          <li><strong>GGUF</strong> &mdash; for llama.cpp / Ollama / Apple Silicon</li>
+          <li>A <strong>benchmark</strong> table comparing FP16 / AWQ / GGUF on size, latency, and quality</li>
+        </ul>
+
+        <h2>The 2026 Quantization Landscape</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Format</th><th>Bits</th><th>Best for</th><th>Hardware</th></tr></thead>
+          <tbody>
+            <tr><td>FP16 / BF16</td><td>16</td><td>Training, baseline serving</td><td>Any CUDA</td></tr>
+            <tr><td>FP8 (e4m3fn)</td><td>8</td><td>High-throughput serving when supported</td><td>Hopper / Blackwell</td></tr>
+            <tr><td><strong>AWQ</strong></td><td>4</td><td>GPU serving with vLLM (Marlin kernel)</td><td>Any modern CUDA</td></tr>
+            <tr><td>GPTQ</td><td>4</td><td>Legacy compat; AWQ is generally better now</td><td>Any modern CUDA</td></tr>
+            <tr><td><strong>GGUF</strong></td><td>2&ndash;8</td><td>CPU / Apple Silicon / mixed setups</td><td>Anything &mdash; that's the point</td></tr>
+            <tr><td>NF4 (bitsandbytes)</td><td>4</td><td>Training (QLoRA), occasional inference</td><td>Any CUDA</td></tr>
+          </tbody>
+        </table>
+
+        <p>For a deeper conceptual treatment of how AWQ, GPTQ, and GGUF actually compress the weights, see <a href="llm-quantization-gptq-awq-gguf.html">Demystifying LLM Quantization</a>. This post is the operational pipeline.</p>
+
+        <h2>Why Calibration Data Matters</h2>
+
+        <p>AWQ and GPTQ both pick which weights to compress aggressively and which to preserve carefully by looking at activations on a small calibration dataset. <strong>Garbage calibration set, garbage quant.</strong></p>
+
+        <p>Rules of thumb:</p>
+
+        <ul>
+          <li>~128 examples is the standard. More doesn't help much; less can hurt</li>
+          <li>Examples should look like real production prompts. If you'll serve customer-support replies, calibrate on customer-support replies. Don't use Wikipedia just because it's available</li>
+          <li>Cover the prompt-length distribution. If real prompts are 500 tokens, don't calibrate on 50-token snippets</li>
+        </ul>
+
+        <h2>Make AWQ</h2>
+
+        <p>Install:</p>
+
+        <pre><code class="language-bash">uv add autoawq==0.2.10 transformers==4.50.0 torch==2.5.0 datasets==3.2.0</code></pre>
+
+        <p>Save as <code>scripts/make_awq.py</code>:</p>
+
+        <pre><code class="language-python">"""Quantize a merged HuggingFace checkpoint to 4-bit AWQ for vLLM."""
+from __future__ import annotations
+import json
+from pathlib import Path
+
+from awq import AutoAWQForCausalLM
+from transformers import AutoTokenizer
+
+MODEL_IN = "outputs/qwen3-4b-domain-merged"
+MODEL_OUT = "outputs/qwen3-4b-domain-awq"
+CALIB_FILE = "data/calibration.jsonl"  # 128 representative prompts
+
+
+def load_calibration(path: str) -&gt; list[str]:
+    samples = []
+    with open(path) as f:
+        for line in f:
+            obj = json.loads(line)
+            # Use the same shape as production traffic: instruction + input
+            text = obj["instruction"]
+            if obj.get("input"):
+                text += "\n\n" + obj["input"]
+            samples.append(text)
+    return samples
+
+
+def main() -&gt; None:
+    quant_config = {
+        "zero_point": True,
+        "q_group_size": 128,
+        "w_bit": 4,
+        "version": "GEMM",   # Marlin in vLLM uses this
+    }
+
+    model = AutoAWQForCausalLM.from_pretrained(MODEL_IN, safetensors=True, device_map="auto")
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_IN, trust_remote_code=True)
+
+    calib_data = load_calibration(CALIB_FILE)
+    model.quantize(tokenizer, quant_config=quant_config, calib_data=calib_data)
+
+    Path(MODEL_OUT).mkdir(parents=True, exist_ok=True)
+    model.save_quantized(MODEL_OUT)
+    tokenizer.save_pretrained(MODEL_OUT)
+    print(f"AWQ model saved to {MODEL_OUT}")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+        <p>Run it:</p>
+
+        <pre><code class="language-bash">uv run python scripts/make_awq.py</code></pre>
+
+        <p>The output directory contains <code>model.safetensors</code> (the quantized weights) and <code>config.json</code> with the AWQ metadata. vLLM will autodetect both in Part 8.</p>
+
+        <h2>Make GGUF</h2>
+
+        <p>GGUF is llama.cpp's container format. Install llama.cpp once:</p>
+
+        <pre><code class="language-bash">git clone https://github.com/ggerganov/llama.cpp
+cd llama.cpp
+make -j</code></pre>
+
+        <p>Save as <code>scripts/make_gguf.sh</code>:</p>
+
+        <pre><code class="language-bash">#!/usr/bin/env bash
+set -euo pipefail
+
+LLAMA_CPP=./llama.cpp
+MODEL_IN=outputs/qwen3-4b-domain-merged
+OUT_DIR=outputs/qwen3-4b-domain-gguf
+mkdir -p "$OUT_DIR"
+
+# 1. Convert HF checkpoint to f16 GGUF
+python "$LLAMA_CPP/convert_hf_to_gguf.py" \
+  "$MODEL_IN" --outfile "$OUT_DIR/model-f16.gguf" --outtype f16
+
+# 2. Quantize to Q4_K_M (the safe default)
+"$LLAMA_CPP/llama-quantize" "$OUT_DIR/model-f16.gguf" "$OUT_DIR/model-Q4_K_M.gguf" Q4_K_M
+
+# 3. Optionally also produce Q5_K_M (higher quality) and Q8_0 (very low loss)
+"$LLAMA_CPP/llama-quantize" "$OUT_DIR/model-f16.gguf" "$OUT_DIR/model-Q5_K_M.gguf" Q5_K_M
+"$LLAMA_CPP/llama-quantize" "$OUT_DIR/model-f16.gguf" "$OUT_DIR/model-Q8_0.gguf"   Q8_0</code></pre>
+
+        <p>Run:</p>
+
+        <pre><code class="language-bash">chmod +x scripts/make_gguf.sh && ./scripts/make_gguf.sh</code></pre>
+
+        <p><strong>Quant level cheat sheet:</strong></p>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Level</th><th>Bits</th><th>Use when</th></tr></thead>
+          <tbody>
+            <tr><td>Q4_K_M</td><td>~4.5</td><td>Default. Best size/quality trade for most apps</td></tr>
+            <tr><td>Q5_K_M</td><td>~5.5</td><td>Quality matters more than size; ~25% larger</td></tr>
+            <tr><td>Q8_0</td><td>8</td><td>Near-lossless; deploy when size doesn't matter much</td></tr>
+            <tr><td>Q3_K_S, Q2_K</td><td>2&ndash;3</td><td>Aggressive compression; quality degrades visibly. Test first</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Benchmarking</h2>
+
+        <p>You quantized the model. Did it still work? Build a tiny benchmark.</p>
+
+        <p>Save as <code>scripts/benchmark.py</code>:</p>
+
+        <pre><code class="language-python">"""Compare FP16, AWQ, and GGUF on size, latency, and quality."""
+from __future__ import annotations
+import json, os, time
+from pathlib import Path
+from statistics import mean
+
+# 1. Size on disk
+def dir_size(path: str) -&gt; float:
+    total = 0
+    for root, _, files in os.walk(path):
+        for f in files:
+            total += os.path.getsize(os.path.join(root, f))
+    return total / (1024 ** 3)
+
+
+# 2. Latency: time-to-first-token + tokens/sec on a fixed prompt
+def run_hf(model_path: str, prompt: str, n_new: int = 100) -&gt; dict:
+    import torch
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    tok = AutoTokenizer.from_pretrained(model_path)
+    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16, device_map="auto")
+    inputs = tok(prompt, return_tensors="pt").to(model.device)
+
+    # Warmup
+    model.generate(**inputs, max_new_tokens=10)
+    torch.cuda.synchronize()
+
+    t0 = time.perf_counter()
+    out = model.generate(**inputs, max_new_tokens=n_new, do_sample=False)
+    torch.cuda.synchronize()
+    elapsed = time.perf_counter() - t0
+    tok_per_sec = n_new / elapsed
+    return {"elapsed_s": elapsed, "tok_per_sec": tok_per_sec}
+
+
+# 3. Perplexity on a held-out set (lower = better)
+def perplexity(model_path: str, eval_path: str) -&gt; float:
+    import torch
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    tok = AutoTokenizer.from_pretrained(model_path)
+    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16, device_map="auto")
+    losses = []
+    with open(eval_path) as f:
+        for line in f:
+            text = json.loads(line)["text"]
+            inputs = tok(text, return_tensors="pt", truncation=True, max_length=1024).to(model.device)
+            with torch.no_grad():
+                loss = model(**inputs, labels=inputs["input_ids"]).loss
+            losses.append(loss.item())
+    return float(torch.tensor(mean(losses)).exp())
+
+
+def main() -&gt; None:
+    PROMPT = "Convert temperature.\n\n75 F"
+    EVAL = "data/eval.jsonl"
+
+    rows = []
+    for label, path in [
+        ("FP16",  "outputs/qwen3-4b-domain-merged"),
+        ("AWQ-4", "outputs/qwen3-4b-domain-awq"),
+    ]:
+        size = dir_size(path)
+        lat = run_hf(path, PROMPT)
+        ppl = perplexity(path, EVAL)
+        rows.append((label, size, lat["tok_per_sec"], ppl))
+
+    print(f"{'Format':&lt;8} {'Size GB':&gt;8} {'tok/s':&gt;8} {'PPL':&gt;8}")
+    for label, size, tps, ppl in rows:
+        print(f"{label:&lt;8} {size:&gt;8.2f} {tps:&gt;8.1f} {ppl:&gt;8.2f}")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+        <p>Typical numbers for a 4B model on a single GPU:</p>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Format</th><th>Size</th><th>Throughput</th><th>Perplexity (lower is better)</th></tr></thead>
+          <tbody>
+            <tr><td>FP16</td><td>~8 GB</td><td>~40 tok/s</td><td>baseline</td></tr>
+            <tr><td>AWQ-4</td><td>~2.5 GB</td><td>~110 tok/s</td><td>baseline + 0.3%</td></tr>
+            <tr><td>Q4_K_M (GGUF, llama.cpp)</td><td>~2.5 GB</td><td>varies (CPU vs GPU)</td><td>baseline + 0.5%</td></tr>
+          </tbody>
+        </table>
+
+        <p>The numbers will vary with model and hardware. The shape is what matters: AWQ buys you ~3.2&times; the size compression and ~2.5&times; the throughput for under 1% perplexity loss.</p>
+
+        <h2>The "Trained FP16, Served INT4" Trade-off</h2>
+
+        <p>You trained the LoRA against the FP16 base in Part 6. You're now serving against an AWQ base. There's a quality drift here that depends on how much the AWQ-quantized base diverges from the FP16 base on the directions the LoRA learned.</p>
+
+        <p>For most applications this drift is small. For applications where structural adherence matters (one of mine, the structured document generator from <a href="structured-llm-document-generator.html">that post</a>, runs exactly this trade-off), the cleaner path is to re-train the LoRA against the AWQ base directly. If you have GPU budget, do this. If you don't, document the trade-off in your code with a comment so future-you remembers it's there.</p>
+
+        <h2>When Not to Quantize</h2>
+
+        <ul>
+          <li><strong>Small models (&lt;3B).</strong> You're already past the "needs an A100" threshold. The compression doesn't justify the perplexity hit, and inference is GPU-fast either way</li>
+          <li><strong>Very long context.</strong> Some quantization techniques degrade more on long contexts. Test before deploying</li>
+          <li><strong>Your bottleneck is CPU/network, not GPU memory.</strong> Quantization helps memory; if memory isn't the constraint, you're not gaining anything</li>
+        </ul>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>Quantization is operational, not academic. The reason to do it is to fit a model on smaller hardware</li>
+          <li>AWQ for GPU serving with vLLM. GGUF for CPU / Apple Silicon / mixed deployment</li>
+          <li>Calibration data must look like production prompts. The default mistake (calibrate on Wikipedia) gives a worse quant for your task</li>
+          <li>Q4_K_M is the safe GGUF default. Q5_K_M when quality matters; Q8_0 when size doesn't</li>
+          <li>Always benchmark size, throughput, perplexity, and a task metric. A quant that loses 5% perplexity may be unusable for your task even if it sounds reasonable</li>
+          <li>Re-training the LoRA against the quantized base is the cleanest deployment path. If GPU budget doesn't allow, document the FP16-trained / INT4-served gap explicitly</li>
+        </ul>
+
+        <h2>Next Up</h2>
+
+        <p>Part 8 takes the AWQ artefact from this post and serves it with vLLM &mdash; multi-user concurrency, multi-LoRA support, prefix caching. Then we swap the vLLM endpoint into the Part 5 RAG system, completing the loop.</p>
+
+        <p style="margin-top: 24px;"><a href="ai-path-08-serving-with-vllm.html" class="btn btn-outline-accent">Next: Part 8 &mdash; Serving Quantized Models with vLLM <i class="fas fa-arrow-right ml-2"></i></a></p>
+      </div>
+
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="llm-quantization-gptq-awq-gguf.html" class="related-post-card">
+            <span class="related-post-category">Paper Breakdown</span>
+            <h4>Demystifying LLM Quantization: GPTQ, AWQ &amp; GGUF</h4>
+            <span class="related-post-date">April 14, 2026</span>
+          </a>
+          <a href="ai-path-08-serving-with-vllm.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 8: Serving Quantized Models with vLLM</h4>
+            <span class="related-post-date">May 1, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

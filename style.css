@@ -2495,3 +2495,139 @@ body.light-mode .hljs-title.class_ {
     padding: 5px 12px;
   }
 }
+
+/* ===================================
+   Series Navigation (AI Engineer Path)
+=================================== */
+.series-nav {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 24px 0 32px;
+}
+
+.series-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.series-nav-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.series-nav-title a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.series-nav-title a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.series-nav-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.series-nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.series-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.series-pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.series-pill.is-current {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  cursor: default;
+}
+
+.series-pill.is-current:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Homepage banner pointing at the series landing page */
+.series-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 32px;
+}
+
+.series-banner-text {
+  flex: 1 1 320px;
+}
+
+.series-banner-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.series-banner-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.series-banner-desc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .series-nav-pills {
+    gap: 5px;
+  }
+  .series-pill {
+    font-size: 0.78rem;
+    padding: 5px 10px;
+  }
+}
+

@@ -435,7 +435,268 @@
       <p class="text-muted">AI/ML paper breakdowns, implementations, and research notes.</p>
     </div>
 
+    <a href="series/ai-engineer-path/index.html" class="series-banner" data-aos="fade-up" style="text-decoration:none;">
+      <div class="series-banner-text">
+        <p class="series-banner-eyebrow">10-part series</p>
+        <h3 class="series-banner-title">The AI Engineer's Path</h3>
+        <p class="series-banner-desc">Python fundamentals through to a self-hosted, fine-tuned, quantized RAG service. Each part builds on the last.</p>
+      </div>
+      <span class="btn btn-outline-accent">View series <i class="fas fa-arrow-right ml-2"></i></span>
+    </a>
+
     <div class="blog-grid">
+      <!-- AI Engineer Path: Part 10 -->
+      <a href="blog/posts/ai-path-10-scaling-ai-systems.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">May 3, 2026</span>
+            <span class="blog-category">Tutorial</span>
+          </div>
+          <h3 class="blog-card-title">Part 10: Scaling AI Systems</h3>
+          <p class="blog-card-excerpt">The series finale: concurrency patterns, caching at every layer, structured logging, monitoring, graceful degradation, and a shipping checklist.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">AI Engineer Path</span>
+            <span class="blog-tag">Scaling</span>
+            <span class="blog-tag">Production</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- Blog Card: Audio-Video Diffusion -->
+      <a href="blog/posts/audio-video-diffusion-single-gpu.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">May 3, 2026</span>
+            <span class="blog-category">Deep Dive</span>
+          </div>
+          <h3 class="blog-card-title">Running a 22B Audio-Video Diffusion Model on a Single GPU</h3>
+          <p class="blog-card-excerpt">Fitting a 22B audio-video diffusion model into a GPU budget shared with an LLM stack &mdash; FP8 quantisation, tiled VAE decode, subprocess VRAM isolation.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">Diffusion</span>
+            <span class="blog-tag">FP8</span>
+            <span class="blog-tag">Blackwell</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- Blog Card: Graceful Degradation -->
+      <a href="blog/posts/graceful-degradation-ai-products.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">May 3, 2026</span>
+            <span class="blog-category">Implementation</span>
+          </div>
+          <h3 class="blog-card-title">Designing a Consumer-Tier AI Product That Degrades Gracefully</h3>
+          <p class="blog-card-excerpt">The default LLM product pattern propagates inference failures to the user. For consumer purchase flows, that's the wrong default. Here's the inversion.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">AI Products</span>
+            <span class="blog-tag">System Design</span>
+            <span class="blog-tag">LLM</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- Blog Card: Hybrid-RAG -->
+      <a href="blog/posts/hybrid-rag-statutory-qa.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">May 3, 2026</span>
+            <span class="blog-category">Implementation</span>
+          </div>
+          <h3 class="blog-card-title">Building a Hybrid-RAG Assistant That Doesn't Hallucinate Statute</h3>
+          <p class="blog-card-excerpt">A chat assistant grounded in ~1,600 chunks of primary legislation &mdash; hybrid retrieval, careful chunking, and the parser bug that taught me to validate chunks first.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">RAG</span>
+            <span class="blog-tag">Qdrant</span>
+            <span class="blog-tag">Hybrid Retrieval</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- Blog Card: Structured Document Generator -->
+      <a href="blog/posts/structured-llm-document-generator.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">May 3, 2026</span>
+            <span class="blog-category">Implementation</span>
+          </div>
+          <h3 class="blog-card-title">Generating Long-Form Compliance Documents with a Single LLM Call Pipeline</h3>
+          <p class="blog-card-excerpt">Why big-prompt generation breaks at scale, and how I rebuilt my document generator as a pipeline of small typed LLM calls.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">LLM</span>
+            <span class="blog-tag">vLLM</span>
+            <span class="blog-tag">LoRA</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- AI Engineer Path: Part 9 -->
+      <a href="blog/posts/ai-path-09-knowledge-distillation.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">May 2, 2026</span>
+            <span class="blog-category">Tutorial</span>
+          </div>
+          <h3 class="blog-card-title">Part 9: Knowledge Distillation</h3>
+          <p class="blog-card-excerpt">Distil a fine-tuned 4B teacher into a 1.5B student via synthetic data &mdash; with quality-control filters and an honest eval against the teacher.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">AI Engineer Path</span>
+            <span class="blog-tag">Distillation</span>
+            <span class="blog-tag">Synthetic Data</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- AI Engineer Path: Part 8 -->
+      <a href="blog/posts/ai-path-08-serving-with-vllm.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">May 1, 2026</span>
+            <span class="blog-category">Tutorial</span>
+          </div>
+          <h3 class="blog-card-title">Part 8: Serving Quantized Models with vLLM</h3>
+          <p class="blog-card-excerpt">From AWQ checkpoint to a production endpoint. Multi-LoRA hot-swapping, prefix caching, and swapping the local endpoint into the Part 5 RAG.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">AI Engineer Path</span>
+            <span class="blog-tag">vLLM</span>
+            <span class="blog-tag">Serving</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- AI Engineer Path: Part 7 -->
+      <a href="blog/posts/ai-path-07-quantization-for-deployment.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">April 30, 2026</span>
+            <span class="blog-category">Tutorial</span>
+          </div>
+          <h3 class="blog-card-title">Part 7: Quantization for Deployment</h3>
+          <p class="blog-card-excerpt">14 GB FP16 down to 4 GB AWQ with sub-1% accuracy loss. Full pipeline from merged checkpoint to AWQ + GGUF artefacts, with benchmarks.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">AI Engineer Path</span>
+            <span class="blog-tag">Quantization</span>
+            <span class="blog-tag">AWQ</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- AI Engineer Path: Part 6 -->
+      <a href="blog/posts/ai-path-06-lora-qlora-fine-tuning.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">April 29, 2026</span>
+            <span class="blog-category">Tutorial</span>
+          </div>
+          <h3 class="blog-card-title">Part 6: Fine-Tuning with LoRA and QLoRA</h3>
+          <p class="blog-card-excerpt">QLoRA + Unsloth on a free Colab T4. Dataset prep, hyperparameters, training, evaluation, common failure modes &mdash; end to end.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">AI Engineer Path</span>
+            <span class="blog-tag">LoRA</span>
+            <span class="blog-tag">Unsloth</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- AI Engineer Path: Part 5 -->
+      <a href="blog/posts/ai-path-05-production-rag.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">April 28, 2026</span>
+            <span class="blog-category">Tutorial</span>
+          </div>
+          <h3 class="blog-card-title">Part 5: Building a Production RAG System</h3>
+          <p class="blog-card-excerpt">Bolting search onto an LLM endpoint isn't RAG yet &mdash; it's the first 30%. Chunking, hybrid retrieval, prompt construction, citations, and eval.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">AI Engineer Path</span>
+            <span class="blog-tag">RAG</span>
+            <span class="blog-tag">Hybrid Search</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- AI Engineer Path: Part 4 -->
+      <a href="blog/posts/ai-path-04-embeddings-vector-search.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">April 27, 2026</span>
+            <span class="blog-category">Tutorial</span>
+          </div>
+          <h3 class="blog-card-title">Part 4: Embeddings and Vector Search</h3>
+          <p class="blog-card-excerpt">How embeddings work, which model to pick, and how to add semantic search to the FastAPI service from Part 3.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">AI Engineer Path</span>
+            <span class="blog-tag">Embeddings</span>
+            <span class="blog-tag">Qdrant</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- AI Engineer Path: Part 3 -->
+      <a href="blog/posts/ai-path-03-fastapi-for-llms.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">April 26, 2026</span>
+            <span class="blog-category">Tutorial</span>
+          </div>
+          <h3 class="blog-card-title">Part 3: Building APIs with FastAPI</h3>
+          <p class="blog-card-excerpt">Wrapping the Part 2 client in a production FastAPI service: validation, streaming, auth, rate limiting, and a Dockerfile.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">AI Engineer Path</span>
+            <span class="blog-tag">FastAPI</span>
+            <span class="blog-tag">Authentication</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- AI Engineer Path: Part 2 -->
+      <a href="blog/posts/ai-path-02-first-llm-api-call.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">April 25, 2026</span>
+            <span class="blog-category">Tutorial</span>
+          </div>
+          <h3 class="blog-card-title">Part 2: Your First LLM API Call</h3>
+          <p class="blog-card-excerpt">From four lines of OpenAI SDK to a production-grade client wrapper with retries, streaming, structured output, and cost tracking.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">AI Engineer Path</span>
+            <span class="blog-tag">LLM API</span>
+            <span class="blog-tag">Streaming</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- AI Engineer Path: Part 1 -->
+      <a href="blog/posts/ai-path-01-python-foundations.html" class="blog-card" data-aos="fade-up">
+        <div class="blog-card-content">
+          <div class="blog-card-meta">
+            <span class="blog-date">April 24, 2026</span>
+            <span class="blog-category">Tutorial</span>
+          </div>
+          <h3 class="blog-card-title">Part 1: Python Foundations for AI Engineers</h3>
+          <p class="blog-card-excerpt">The Python skills that actually matter when you start building AI systems &mdash; type hints, async, context managers, and tests.</p>
+          <div class="blog-card-tags">
+            <span class="blog-tag">AI Engineer Path</span>
+            <span class="blog-tag">Python</span>
+            <span class="blog-tag">Fundamentals</span>
+          </div>
+          <span class="blog-read-more">Read more <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
       <!-- Blog Card: AI Agents (Latest) -->
       <a href="blog/posts/how-i-build-ai-agents.html" class="blog-card" data-aos="fade-up">
         <div class="blog-card-content">

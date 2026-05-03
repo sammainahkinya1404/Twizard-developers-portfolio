@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Running a 22B Audio-Video Diffusion Model on a Single GPU | Samson Kinyanjui</title>
+  <meta name="description" content="Fitting a 22B-parameter audio-video diffusion model into a GPU budget shared with an LLM serving stack — with FP8 quantisation, tiled VAE decode, and subprocess-per-job VRAM isolation." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Running a 22B Audio-Video Diffusion Model on a Single GPU" />
+  <meta property="og:description" content="FP8 quantisation, tiled VAE decode, and subprocess-per-job VRAM isolation on a single Blackwell GPU shared with LLM serving." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/audio-video-diffusion-single-gpu.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <!-- X / Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Running a 22B Audio-Video Diffusion Model on a Single GPU" />
+  <meta name="twitter:description" content="FP8 quantisation, tiled VAE decode, and subprocess-per-job VRAM isolation on a single Blackwell GPU shared with LLM serving." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Post -->
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+      <!-- Post Header -->
+      <header class="post-header">
+        <div class="post-category">Deep Dive</div>
+        <h1 class="post-title">Running a 22B Audio-Video Diffusion Model on a Single GPU</h1>
+        <p class="post-subtitle">Fitting a 22B-parameter audio-video diffusion model into a GPU budget shared with an LLM serving stack &mdash; with FP8 quantisation, tiled VAE decode, and subprocess-per-job VRAM isolation.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>May 3, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>10 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">Diffusion</span>
+          <span class="post-tag">Video Generation</span>
+          <span class="post-tag">FP8</span>
+          <span class="post-tag">VRAM Optimization</span>
+          <span class="post-tag">Blackwell</span>
+          <span class="post-tag">Self-Hosted</span>
+        </div>
+      </header>
+
+      <!-- Post Content -->
+      <div class="post-content">
+
+        <p>You can rent video generation as an API. It works, it's expensive, and your prompts go through someone else's infrastructure. For one of my recent projects, neither of those was acceptable &mdash; the workload was high-volume and the prompts contained pre-release product material that had to stay on my hardware. So I built a self-hosted browser portal around an open-source 22B-parameter audio-video diffusion model, running on a single Blackwell-class GPU with ~96 GB of VRAM.</p>
+
+        <p>This post is about how to fit a model that wants ~50 GB just for its decode pass into a budget where another LLM serving stack is already holding 34 GB on the same GPU. Most of it is about VRAM accounting.</p>
+
+        <h2>The Model Class</h2>
+
+        <p>The diffusion model used is a <strong>Diffusion Transformer (DiT)</strong>, not U-Net based. It does joint audio + video in one forward pass over a single token sequence that mixes video patches and audio mel patches with cross-modal attention. That architecture is the reason lip-synced dialogue and motion-synced foley fall out of one inference run rather than requiring separate audio post-processing.</p>
+
+        <p>The downside is VRAM. The joint sequence is long, and naive decoding of long outputs blows past the GPU budget catastrophically.</p>
+
+        <h2>Three Models, Sequentially Loaded</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th>Model</th><th>Role</th><th>Size</th><th>When</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Text encoder (12B)</td><td>Encodes prompt to per-token embeddings</td><td>~25 GB BF16</td><td>Loaded &rarr; encoded &rarr; <strong>freed</strong></td></tr>
+            <tr><td>Diffusion transformer (22B)</td><td>Denoises the latent audio-video stream</td><td>~22 GB after FP8 cast</td><td>Loaded after encoder freed</td></tr>
+            <tr><td>Video VAE + audio VAE + vocoder</td><td>Decodes latents &rarr; frames + waveform</td><td>~3 GB</td><td>Bundled with diffusion checkpoint</td></tr>
+          </tbody>
+        </table>
+
+        <p>The non-obvious move is freeing the text encoder before loading the diffusion transformer. The temptation is to keep the encoder warm &mdash; you'll need it again on the next job. But the encoder is 25 GB and the diffusion model is 22 GB. Holding both means you've spent ~47 GB before you've decoded a single frame. Free aggressively.</p>
+
+        <h2>FP8-Cast Quantisation</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th></th><th>BF16</th><th>FP8-cast</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Weight storage</td><td>~44 GB</td><td>~22 GB</td></tr>
+            <tr><td>Compute</td><td>BF16</td><td>Upcast to BF16 only for active matmul</td></tr>
+            <tr><td>Accuracy delta</td><td>baseline</td><td>&lt;1% measured loss</td></tr>
+            <tr><td>Hardware requirement</td><td>Any</td><td>Blackwell (compute capability 12.0)</td></tr>
+          </tbody>
+        </table>
+
+        <p>At load time, weights of selected linear layers (attention <code>to_q/k/v/out</code>, FF projections) are cast BF16 &rarr; FP8 (e4m3fn). During the forward pass, they're upcast back to BF16 only for the active matmul. The savings: ~5.5 GB on the 22B model, sub-1% measured accuracy loss.</p>
+
+        <p>This is hardware-specific. It requires Blackwell. On older silicon, FP8-cast either doesn't work or doesn't save you anything because the upcast cost eats the memory win.</p>
+
+        <h2>Tiled VAE Decode: The Unblocker for Long Outputs</h2>
+
+        <p>The first version of the portal capped output at ~5 seconds. I wanted 20.</p>
+
+        <p>The problem: the stock one-stage CLI tries to decode all frames in a single <code>conv3d</code>. At 361 frames, that requires ~50 GB in <em>one allocation</em> &mdash; and OOMs on a 96 GB GPU because nothing else can fit alongside it.</p>
+
+        <p>The fix: a wrapper that builds a <code>TilingConfig</code> and feeds explicit chunk count to the decoder.</p>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th>Tile parameter</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Spatial tile</td><td>512 px</td></tr>
+            <tr><td>Temporal tile</td><td>64 frames</td></tr>
+            <tr><td>Overlap</td><td>24 frames</td></tr>
+          </tbody>
+        </table>
+
+        <p>Same algorithm, smaller per-step buffers. Adds ~30 s of decode wall-clock but raises the practical output ceiling from ~5 s to 20 s.</p>
+
+        <p>The pipeline class itself supports tiling. The upstream one-stage CLI just hardcodes <code>video_chunks_number=1</code>. Wrapping rather than forking the upstream code keeps the install lean and the upgrade path clean &mdash; when upstream releases a new version, I rebase the wrapper instead of merging a fork.</p>
+
+        <h2>Subprocess-Per-Job VRAM Isolation</h2>
+
+        <p>Every generation forks a fresh Python process with the diffusion venv. When the job finishes &mdash; or is cancelled, or crashes &mdash; the OS reclaims all VRAM. <strong>An idle portal uses 0 GPU.</strong></p>
+
+        <p>This matters enormously when other workloads share the GPU continuously. A vLLM serving stack on the same machine holds 34 GB constantly. If the diffusion subprocess leaked even a couple of GB between jobs, the LLM stack would OOM by the third generation.</p>
+
+        <p>The cost: ~12 s warmup per job (Python startup + model load). The benefit: GPU memory accounting becomes the OS's job rather than a Python reference-counting problem. For a workload where jobs take 50 s to 7 minutes, 12 s warmup is acceptable.</p>
+
+        <h2>Sequential Job Queue</h2>
+
+        <p>A single worker thread drains a <code>queue.Queue</code>. No two diffusion subprocesses ever fight for VRAM. No concurrency above the GPU layer.</p>
+
+        <p>Adding queueing infrastructure (Celery, Redis) for a single-worker case is overhead with no benefit. The right design when one GPU serves one workload type is the simplest queue that works.</p>
+
+        <h2>Image Conditioning, Done Correctly</h2>
+
+        <p>Uploaded stills go through <code>ImageOps.exif_transpose</code> &rarr; <code>ImageOps.fit(target_aspect, LANCZOS)</code> &rarr; strip EXIF on save, <strong>before</strong> reaching the diffusion subprocess.</p>
+
+        <p>Three reasons:</p>
+
+        <ul>
+          <li>Stops the model's internal padding pass from leaving black-border artefacts on non-matching aspect ratios</li>
+          <li>Saves a few hundred MB of activation memory at decode time by not making the model handle the resize</li>
+          <li>EXIF strip is a quiet privacy win &mdash; uploaded photos often carry GPS and camera metadata users don't intend to share</li>
+        </ul>
+
+        <h2>Validation as a First-Class Constraint</h2>
+
+        <p>Pydantic v2 field validators enforce the model's hard rules before any subprocess is spawned:</p>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th>Constraint</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>width % 32 == 0</code> and <code>height % 32 == 0</code></td><td>DiT patch size requirement</td></tr>
+            <tr><td><code>(num_frames - 1) % 8 == 0</code></td><td>Temporal compression requirement</td></tr>
+            <tr><td><code>num_frames &isin; [9, 481]</code></td><td>Empirical floor and ceiling</td></tr>
+          </tbody>
+        </table>
+
+        <p>Failing validation at the API boundary is much cheaper than failing 12 seconds into a subprocess warmup. Every failure mode the model has, the API knows about and rejects with a useful message.</p>
+
+        <h2>Upload Security</h2>
+
+        <p>Three independent layers, because filesystem-adjacent code is the wrong place to rely on a single guard:</p>
+
+        <ul>
+          <li><strong>Two-layer size guard.</strong> Content-Length header rejection (cheap, but the header is forgeable) plus a chunked-write accumulator that catches the actual bytes</li>
+          <li><strong>MIME allowlist.</strong> Only <code>image/jpeg</code>, <code>image/png</code>, <code>image/webp</code> accepted</li>
+          <li><strong>Path-traversal check.</strong> <code>Path.resolve()</code> plus <code>is_relative_to(uploads_dir)</code> before any path reaches the subprocess</li>
+        </ul>
+
+        <p>The subprocess receives a path string from the parent process. Any vulnerability that lets a user influence that path is a vulnerability that lets them touch arbitrary files. Three layers because one layer is one bug away from disaster.</p>
+
+        <h2>Empirical Performance</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th>Scenario</th><th>Wall clock</th><th>Peak VRAM</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>49 frames @ 768&times;448, 30 steps</td><td>~50 s</td><td>~25 GB</td><td>Default 2-second clip</td></tr>
+            <tr><td>121 frames</td><td>~2 min</td><td>~26 GB</td><td>Original cap before tiled-decode work</td></tr>
+            <tr><td>361 frames (15 s @ 24 fps)</td><td>~5 min</td><td>~26 GB</td><td>Validated via tiled-decode wrapper</td></tr>
+            <tr><td>481 frames (20 s @ 24 fps)</td><td>~7 min</td><td>~27 GB</td><td>Slider cap</td></tr>
+          </tbody>
+        </table>
+
+        <p>Per-step cost at 768&times;448 fits <code>0.025 + 0.026 &times; num_frames</code> seconds &mdash; sub-linear in frame count, no cliff on this model size.</p>
+
+        <p>The flat VRAM curve is the payoff of tiled decode. Wall-clock grows roughly linearly with frame count, but peak memory grows barely at all because the tiled decode caps the per-step buffer regardless of output length.</p>
+
+        <h2>What I Skipped</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th>Feature</th><th>Why skipped</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Celery / Redis</td><td>Overkill for one GPU, one worker</td></tr>
+            <tr><td>Two-stage upscaler pipeline</td><td>Use case didn't need it; saved ~3 GB of weights</td></tr>
+            <tr><td>Distilled LoRA</td><td>Same</td></tr>
+            <tr><td>In-process model invocation</td><td>Subprocess buys VRAM release for ~12 s warmup cost &mdash; correct trade for a shared GPU</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>On constrained VRAM, free aggressively. Don't keep models warm "just in case"</li>
+          <li>FP8-cast on Blackwell is a measurable memory win for sub-1% accuracy loss</li>
+          <li>If your decoder OOMs on long outputs, look for a tiling config before throwing more GPU at it</li>
+          <li>Subprocess-per-job VRAM isolation is worth the warmup cost on any GPU shared with continuous-load workloads</li>
+          <li>Validate model constraints at the API boundary, not in the model's error messages</li>
+          <li>For filesystem-adjacent code, three independent guards is the minimum</li>
+        </ul>
+      </div>
+
+      <!-- Post Footer -->
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <!-- Related Posts -->
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="vllm-gpu-inference-engine.html" class="related-post-card">
+            <span class="related-post-category">Deep Dive</span>
+            <h4>How I Get the Best Out of My GPU Using vLLM</h4>
+            <span class="related-post-date">April 16, 2026</span>
+          </a>
+          <a href="llm-quantization-gptq-awq-gguf.html" class="related-post-card">
+            <span class="related-post-category">Paper Breakdown</span>
+            <h4>Demystifying LLM Quantization: GPTQ, AWQ &amp; GGUF</h4>
+            <span class="related-post-date">April 14, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 2: Your First LLM API Call | Samson Kinyanjui</title>
+  <meta name="description" content="From print('hello') to a production-grade LLM client wrapper with retries, streaming, structured output, and cost tracking. Built on top of Part 1." />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Part 2: Your First LLM API Call" />
+  <meta property="og:description" content="A production-grade LLM client wrapper with retries, streaming, structured output, and cost tracking." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/ai-path-02-first-llm-api-call.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Part 2: Your First LLM API Call" />
+  <meta name="twitter:description" content="A production-grade LLM client wrapper with retries, streaming, structured output, and cost tracking." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+      <p style="margin-top: 16px;"><a href="ai-path-01-python-foundations.html"><i class="fas fa-arrow-left"></i> Previous: Part 1 &mdash; Python Foundations</a></p>
+
+      <header class="post-header">
+        <div class="post-category">Tutorial</div>
+        <h1 class="post-title">Part 2: Your First LLM API Call</h1>
+        <p class="post-subtitle">From <code>print('hello')</code> to a production-grade LLM client wrapper with retries, streaming, structured output, and cost tracking. Built on top of Part 1.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>April 25, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>15 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">AI Engineer Path</span>
+          <span class="post-tag">LLM API</span>
+          <span class="post-tag">OpenAI</span>
+          <span class="post-tag">Anthropic</span>
+          <span class="post-tag">Streaming</span>
+        </div>
+      </header>
+
+      <nav class="series-nav" aria-label="AI Engineer Path series navigation">
+        <div class="series-nav-header">
+          <p class="series-nav-title"><a href="../../series/ai-engineer-path/index.html">&larr; The AI Engineer's Path</a></p>
+          <span class="series-nav-meta">Part 2 of 10</span>
+        </div>
+        <div class="series-nav-pills">
+          <a class="series-pill" href="ai-path-01-python-foundations.html" title="Python Foundations">1</a>
+          <span class="series-pill is-current" title="Your First LLM API Call">2</span>
+          <a class="series-pill" href="ai-path-03-fastapi-for-llms.html" title="Building APIs with FastAPI">3</a>
+          <a class="series-pill" href="ai-path-04-embeddings-vector-search.html" title="Embeddings and Vector Search">4</a>
+          <a class="series-pill" href="ai-path-05-production-rag.html" title="Production RAG">5</a>
+          <a class="series-pill" href="ai-path-06-lora-qlora-fine-tuning.html" title="LoRA and QLoRA Fine-Tuning">6</a>
+          <a class="series-pill" href="ai-path-07-quantization-for-deployment.html" title="Quantization for Deployment">7</a>
+          <a class="series-pill" href="ai-path-08-serving-with-vllm.html" title="Serving with vLLM">8</a>
+          <a class="series-pill" href="ai-path-09-knowledge-distillation.html" title="Knowledge Distillation">9</a>
+          <a class="series-pill" href="ai-path-10-scaling-ai-systems.html" title="Scaling AI Systems">10</a>
+        </div>
+      </nav>
+
+      <div class="post-content">
+
+        <p><strong>Hardware required:</strong> any laptop. <strong>Python:</strong> 3.11+. <strong>API key:</strong> you'll need either an OpenAI or Anthropic key, or both.</p>
+
+        <h2>The Lesson Isn't the Four-Line Baseline</h2>
+
+        <p>Calling an LLM API is <code>pip install openai</code> and four lines of code. That's not the lesson. The lesson is everything that goes wrong in production &mdash; rate limits, timeouts, malformed JSON, bills you didn't expect &mdash; and how to handle each.</p>
+
+        <p>This post is about building <code>llm_client.py</code>: a wrapper module that the rest of the series imports. By the end, calling an LLM looks like:</p>
+
+        <pre><code class="language-python">from text_tool.llm_client import get_client
+
+client = get_client()
+result = client.complete("Summarise this paragraph: ...", max_tokens=200)</code></pre>
+
+        <p>And under the hood: retries on transient failures, optional streaming, optional structured output, automatic cost tracking, easy provider swap.</p>
+
+        <h2>The Four-Line Baseline (and Why It Isn't Enough)</h2>
+
+        <p>Install the SDKs:</p>
+
+        <pre><code class="language-bash">uv add openai==2.5.0 anthropic==1.5.0 tenacity==9.0.0 pydantic==2.10.0 httpx==0.28.0</code></pre>
+
+        <p>The naive call:</p>
+
+        <pre><code class="language-python">import os
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+resp = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": "Hello"}],
+)
+print(resp.choices[0].message.content)</code></pre>
+
+        <p>This works once. It does not work in production. It has no timeout, no retries, no cost tracking, no error handling, no streaming, no way to swap to Anthropic without rewriting it.</p>
+
+        <h2>The Wrapper Interface</h2>
+
+        <p>I want one interface, two backends. The shape:</p>
+
+        <pre><code class="language-python">class LLMClient(Protocol):
+    def complete(self, prompt: str, *, max_tokens: int = 512, temperature: float = 0.0) -&gt; CompletionResult: ...
+    def stream(self, prompt: str, *, max_tokens: int = 512, temperature: float = 0.0) -&gt; Iterator[str]: ...
+    def complete_structured[T: BaseModel](self, prompt: str, schema: type[T], *, max_tokens: int = 1024) -&gt; T: ...</code></pre>
+
+        <p>Three methods cover ~95% of LLM use. <code>complete</code> for batch, <code>stream</code> for chat UX, <code>complete_structured</code> for anywhere the output goes into another piece of code.</p>
+
+        <h2>Build It: <code>llm_client.py</code></h2>
+
+        <p>Save this as <code>src/text_tool/llm_client.py</code>. It's longer than a snippet because the wrapper has to actually work; copy it whole.</p>
+
+        <pre><code class="language-python">"""Provider-agnostic LLM client. OpenAI + Anthropic. Retries, streaming, structured output."""
+from __future__ import annotations
+
+import json
+import logging
+import os
+from dataclasses import dataclass, field
+from typing import Iterator, Protocol, TypeVar
+
+import httpx
+from openai import OpenAI, APIError, APITimeoutError, RateLimitError
+from anthropic import Anthropic, APIError as AnthropicAPIError
+from pydantic import BaseModel
+from tenacity import (
+    retry, stop_after_attempt, wait_exponential, retry_if_exception_type,
+)
+
+logger = logging.getLogger(__name__)
+T = TypeVar("T", bound=BaseModel)
+
+
+# Per-1M-token prices, USD. Update when models change.
+PRICING = {
+    "gpt-4o-mini":     {"in": 0.15,  "out": 0.60},
+    "gpt-4o":          {"in": 2.50,  "out": 10.00},
+    "claude-haiku-4-5": {"in": 1.00,  "out": 5.00},
+    "claude-sonnet-4-6": {"in": 3.00, "out": 15.00},
+}
+
+
+@dataclass
+class CompletionResult:
+    text: str
+    model: str
+    input_tokens: int
+    output_tokens: int
+
+    @property
+    def cost_usd(self) -&gt; float:
+        p = PRICING.get(self.model, {"in": 0.0, "out": 0.0})
+        return (self.input_tokens * p["in"] + self.output_tokens * p["out"]) / 1_000_000
+
+
+@dataclass
+class CostTracker:
+    """Accumulates spend across a session. Singleton-friendly."""
+    calls: int = 0
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cost_usd: float = 0.0
+
+    def record(self, r: CompletionResult) -&gt; None:
+        self.calls += 1
+        self.input_tokens += r.input_tokens
+        self.output_tokens += r.output_tokens
+        self.cost_usd += r.cost_usd
+
+    def report(self) -&gt; str:
+        return (f"calls={self.calls} in={self.input_tokens} out={self.output_tokens} "
+                f"cost=${self.cost_usd:.4f}")
+
+
+class LLMClient(Protocol):
+    def complete(self, prompt: str, *, max_tokens: int = 512, temperature: float = 0.0) -&gt; CompletionResult: ...
+    def stream(self, prompt: str, *, max_tokens: int = 512, temperature: float = 0.0) -&gt; Iterator[str]: ...
+    def complete_structured(self, prompt: str, schema: type[T], *, max_tokens: int = 1024) -&gt; T: ...
+
+
+# ---------- OpenAI backend ----------
+class OpenAIClient:
+    def __init__(self, model: str = "gpt-4o-mini", tracker: CostTracker | None = None) -&gt; None:
+        self._client = OpenAI(
+            api_key=os.environ["OPENAI_API_KEY"],
+            timeout=httpx.Timeout(30.0, connect=5.0),
+        )
+        self._model = model
+        self._tracker = tracker or CostTracker()
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=20),
+        retry=retry_if_exception_type((RateLimitError, APITimeoutError, APIError)),
+    )
+    def complete(self, prompt: str, *, max_tokens: int = 512, temperature: float = 0.0) -&gt; CompletionResult:
+        resp = self._client.chat.completions.create(
+            model=self._model,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        result = CompletionResult(
+            text=resp.choices[0].message.content or "",
+            model=self._model,
+            input_tokens=resp.usage.prompt_tokens,
+            output_tokens=resp.usage.completion_tokens,
+        )
+        self._tracker.record(result)
+        logger.info("openai call: %s", self._tracker.report())
+        return result
+
+    def stream(self, prompt: str, *, max_tokens: int = 512, temperature: float = 0.0) -&gt; Iterator[str]:
+        with self._client.chat.completions.stream(
+            model=self._model,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature,
+        ) as stream:
+            for event in stream:
+                if event.type == "content.delta":
+                    yield event.delta
+
+    def complete_structured(self, prompt: str, schema: type[T], *, max_tokens: int = 1024) -&gt; T:
+        resp = self._client.chat.completions.parse(
+            model=self._model,
+            messages=[{"role": "user", "content": prompt}],
+            response_format=schema,
+            max_tokens=max_tokens,
+        )
+        return resp.choices[0].message.parsed  # type: ignore[return-value]
+
+
+# ---------- Anthropic backend ----------
+class AnthropicClient:
+    def __init__(self, model: str = "claude-haiku-4-5", tracker: CostTracker | None = None) -&gt; None:
+        self._client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"], timeout=30.0)
+        self._model = model
+        self._tracker = tracker or CostTracker()
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=20),
+        retry=retry_if_exception_type(AnthropicAPIError),
+    )
+    def complete(self, prompt: str, *, max_tokens: int = 512, temperature: float = 0.0) -&gt; CompletionResult:
+        resp = self._client.messages.create(
+            model=self._model,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        result = CompletionResult(
+            text=resp.content[0].text if resp.content else "",
+            model=self._model,
+            input_tokens=resp.usage.input_tokens,
+            output_tokens=resp.usage.output_tokens,
+        )
+        self._tracker.record(result)
+        logger.info("anthropic call: %s", self._tracker.report())
+        return result
+
+    def stream(self, prompt: str, *, max_tokens: int = 512, temperature: float = 0.0) -&gt; Iterator[str]:
+        with self._client.messages.stream(
+            model=self._model,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature,
+        ) as stream:
+            for delta in stream.text_stream:
+                yield delta
+
+    def complete_structured(self, prompt: str, schema: type[T], *, max_tokens: int = 1024) -&gt; T:
+        # Anthropic doesn't have native parsed-response yet; do JSON-mode + parse.
+        instructions = (
+            f"Respond with JSON matching this schema:\n{schema.model_json_schema()}\n"
+            f"No prose, no code fences, just JSON."
+        )
+        resp = self._client.messages.create(
+            model=self._model,
+            messages=[{"role": "user", "content": f"{instructions}\n\n{prompt}"}],
+            max_tokens=max_tokens,
+        )
+        raw = resp.content[0].text.strip()
+        # Defensive: strip ```json fences if the model adds them
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+        return schema.model_validate(json.loads(raw))
+
+
+# ---------- Factory ----------
+_TRACKER = CostTracker()
+
+
+def get_client(provider: str | None = None) -&gt; LLMClient:
+    """Pick a provider. Default: env LLM_PROVIDER, fallback OpenAI."""
+    provider = (provider or os.environ.get("LLM_PROVIDER", "openai")).lower()
+    if provider == "openai":
+        return OpenAIClient(tracker=_TRACKER)
+    if provider == "anthropic":
+        return AnthropicClient(tracker=_TRACKER)
+    raise ValueError(f"unknown provider: {provider}")
+
+
+def session_cost() -&gt; CostTracker:
+    return _TRACKER</code></pre>
+
+        <h2>What Each Piece Buys You</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th>Concern</th><th>Mechanism</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Rate limits / 5xx</td><td><code>tenacity</code> retry with exponential backoff</td><td>Transient errors retry automatically; permanent errors raise after 3 attempts</td></tr>
+            <tr><td>Timeouts</td><td><code>httpx.Timeout(30.0, connect=5.0)</code></td><td>Default SDK timeout is too long &mdash; you want to fail fast and retry</td></tr>
+            <tr><td>Cost</td><td><code>CostTracker</code> singleton</td><td>Every call updates the running total. Log it; alert on it; don't get billed in the dark</td></tr>
+            <tr><td>Streaming</td><td><code>stream()</code> generator</td><td>Token-by-token rendering for chat UX. Doesn't change the integration shape</td></tr>
+            <tr><td>Structured output</td><td>OpenAI <code>parse</code>; Anthropic JSON-mode + Pydantic <code>model_validate</code></td><td>Schema goes in, validated object comes out, no <code>json.loads</code> in your business logic</td></tr>
+            <tr><td>Provider swap</td><td><code>get_client(provider)</code> + <code>LLMClient</code> Protocol</td><td>One env var change moves you between OpenAI, Anthropic, and (in Part 8) self-hosted vLLM</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Use It from the CLI</h2>
+
+        <p>Add a <code>--summarise</code> flag to the Part 1 CLI. Save as <code>src/text_tool/cli.py</code> (replacing the previous version):</p>
+
+        <pre><code class="language-python">from __future__ import annotations
+import argparse, logging, sys
+from pathlib import Path
+
+from text_tool.llm_client import get_client, session_cost
+from text_tool.processing import top_words, read_text, FileNotReadable  # from Part 1
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+log = logging.getLogger(__name__)
+
+
+def main(argv: list[str] | None = None) -&gt; int:
+    p = argparse.ArgumentParser()
+    p.add_argument("path", type=Path)
+    p.add_argument("-n", "--top", type=int, default=10)
+    p.add_argument("--summarise", action="store_true")
+    p.add_argument("--stream", action="store_true")
+    args = p.parse_args(argv)
+
+    try:
+        text = read_text(args.path)
+    except FileNotReadable as e:
+        log.error("%s", e); return 2
+
+    if args.summarise:
+        client = get_client()
+        prompt = f"Summarise the following text in 3 bullet points:\n\n{text[:8000]}"
+        if args.stream:
+            for chunk in client.stream(prompt, max_tokens=300):
+                print(chunk, end="", flush=True)
+            print()
+        else:
+            result = client.complete(prompt, max_tokens=300)
+            print(result.text)
+        log.info("session %s", session_cost().report())
+    else:
+        for word, count in top_words(text, args.top):
+            print(f"{count:6d}  {word}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())</code></pre>
+
+        <p>Run it:</p>
+
+        <pre><code class="language-bash">export OPENAI_API_KEY=sk-...
+uv run python -m text_tool.cli sample.txt --summarise --stream</code></pre>
+
+        <h2>Caching: When and Why</h2>
+
+        <p>For deterministic prompts (temperature 0, same input), repeated calls return the same output and you're paying twice. A simple in-memory cache:</p>
+
+        <pre><code class="language-python">from functools import lru_cache
+
+
+@lru_cache(maxsize=512)
+def cached_complete(prompt: str) -&gt; str:
+    return get_client().complete(prompt).text</code></pre>
+
+        <p>This is fine for development. For production you want a disk-backed cache (so cache survives restarts) or a Redis cache (so cache shares across processes). Don't cache creative generations &mdash; the user is paying for novelty, not a stale answer.</p>
+
+        <h2>Common Failure Modes (and What They Look Like)</h2>
+
+        <ul>
+          <li><strong>Truncation.</strong> The model hits <code>max_tokens</code> and stops mid-sentence. Always set max_tokens high enough &mdash; or detect <code>finish_reason == "length"</code> and continue</li>
+          <li><strong>Malformed JSON.</strong> Even with structured output, sometimes the model emits a code fence around it. The wrapper above strips fences defensively. Always parse via Pydantic, never <code>json.loads</code> directly</li>
+          <li><strong>Rate-limit cascades.</strong> One slow request triggers a queue of retries that triggers more rate limits. Exponential backoff is the only correct response</li>
+          <li><strong>Surprise bills.</strong> Big context + big output + lots of calls = lots of dollars. Always log per-call cost. Always set a daily ceiling somewhere upstream</li>
+        </ul>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>Wrap every LLM call. Never use the raw SDK in business logic. The wrapper is the seam where retries, cost tracking, streaming, and provider swap all live</li>
+          <li>Use <code>tenacity</code> for retries with exponential backoff. The defaults will save you</li>
+          <li>Always set explicit timeouts. The SDK defaults are too long</li>
+          <li>Track cost every call. Log it. Alert on it</li>
+          <li>For structured output: schema in, validated Pydantic object out. The wrapper handles both native (OpenAI) and prompted (Anthropic) JSON modes</li>
+          <li>Hide the provider behind a Protocol. Part 8 swaps OpenAI for self-hosted vLLM by changing one env var</li>
+        </ul>
+
+        <h2>Next Up</h2>
+
+        <p>Part 3 wraps this client in a FastAPI service so other applications can call it over HTTP &mdash; with auth, rate limiting, streaming responses, and a Dockerfile.</p>
+
+        <p style="margin-top: 24px;"><a href="ai-path-03-fastapi-for-llms.html" class="btn btn-outline-accent">Next: Part 3 &mdash; Building APIs with FastAPI <i class="fas fa-arrow-right ml-2"></i></a></p>
+      </div>
+
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="ai-path-01-python-foundations.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 1: Python Foundations for AI Engineers</h4>
+            <span class="related-post-date">April 24, 2026</span>
+          </a>
+          <a href="ai-path-03-fastapi-for-llms.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 3: Building APIs with FastAPI</h4>
+            <span class="related-post-date">April 26, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 4: Embeddings and Vector Search | Samson Kinyanjui</title>
+  <meta name="description" content="Embeddings turn text into vectors you can search semantically. Here's how they actually work, which model to pick, and how to add semantic search to the FastAPI service from Part 3." />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Part 4: Embeddings and Vector Search" />
+  <meta property="og:description" content="How embeddings work, which model to pick, and how to add semantic search to the Part 3 service." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/ai-path-04-embeddings-vector-search.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Part 4: Embeddings and Vector Search" />
+  <meta name="twitter:description" content="How embeddings work, which model to pick, and how to add semantic search to the Part 3 service." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+      <p style="margin-top: 16px;"><a href="ai-path-03-fastapi-for-llms.html"><i class="fas fa-arrow-left"></i> Previous: Part 3 &mdash; Building APIs with FastAPI</a></p>
+
+      <header class="post-header">
+        <div class="post-category">Tutorial</div>
+        <h1 class="post-title">Part 4: Embeddings and Vector Search</h1>
+        <p class="post-subtitle">Embeddings turn text into vectors you can search semantically. Here's how they actually work, which model to pick, and how to add semantic search to the FastAPI service from Part 3.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>April 27, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>13 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">AI Engineer Path</span>
+          <span class="post-tag">Embeddings</span>
+          <span class="post-tag">Qdrant</span>
+          <span class="post-tag">Vector Search</span>
+          <span class="post-tag">Sentence Transformers</span>
+        </div>
+      </header>
+
+      <nav class="series-nav" aria-label="AI Engineer Path series navigation">
+        <div class="series-nav-header">
+          <p class="series-nav-title"><a href="../../series/ai-engineer-path/index.html">&larr; The AI Engineer's Path</a></p>
+          <span class="series-nav-meta">Part 4 of 10</span>
+        </div>
+        <div class="series-nav-pills">
+          <a class="series-pill" href="ai-path-01-python-foundations.html" title="Python Foundations">1</a>
+          <a class="series-pill" href="ai-path-02-first-llm-api-call.html" title="Your First LLM API Call">2</a>
+          <a class="series-pill" href="ai-path-03-fastapi-for-llms.html" title="Building APIs with FastAPI">3</a>
+          <span class="series-pill is-current" title="Embeddings and Vector Search">4</span>
+          <a class="series-pill" href="ai-path-05-production-rag.html" title="Production RAG">5</a>
+          <a class="series-pill" href="ai-path-06-lora-qlora-fine-tuning.html" title="LoRA and QLoRA Fine-Tuning">6</a>
+          <a class="series-pill" href="ai-path-07-quantization-for-deployment.html" title="Quantization for Deployment">7</a>
+          <a class="series-pill" href="ai-path-08-serving-with-vllm.html" title="Serving with vLLM">8</a>
+          <a class="series-pill" href="ai-path-09-knowledge-distillation.html" title="Knowledge Distillation">9</a>
+          <a class="series-pill" href="ai-path-10-scaling-ai-systems.html" title="Scaling AI Systems">10</a>
+        </div>
+      </nav>
+
+      <div class="post-content">
+
+        <p><strong>Hardware:</strong> 8 GB RAM minimum. CPU is fine for the embedding sizes we use here. <strong>Python:</strong> 3.11+.</p>
+
+        <h2>The Pitch</h2>
+
+        <p>Search by exact keyword matches "machine learning" but misses "ML"; embeddings match both. That's the whole pitch. The interesting questions are which embedding model to use, how to store the vectors, and how to retrieve quickly.</p>
+
+        <p>By the end of this part the Part 3 service has a <code>/search</code> endpoint that semantically searches a corpus of documents. We use <code>sentence-transformers</code> for embeddings and Qdrant in file-backed mode as the vector store.</p>
+
+        <h2>What an Embedding Actually Is</h2>
+
+        <p>An embedding is a fixed-size vector (typically 384, 768, or 1024 floats) where similar meaning &rarr; similar vectors. Two examples and their cosine similarity score:</p>
+
+        <pre><code class="language-python">from sentence_transformers import SentenceTransformer
+import numpy as np
+
+m = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+
+a = m.encode("Machine learning models need lots of data.")
+b = m.encode("ML algorithms are data-hungry.")
+c = m.encode("I had eggs for breakfast.")
+
+def cos(x, y): return float(np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y)))
+
+print(f"a vs b: {cos(a, b):.3f}")  # ~0.78 &mdash; close meaning, close vectors
+print(f"a vs c: {cos(a, c):.3f}")  # ~0.05 &mdash; unrelated, near-orthogonal</code></pre>
+
+        <p>That's the whole intuition. Skip the linear-algebra deep dive unless you're training the embedding model itself. For using one, this is enough.</p>
+
+        <h2>Choosing an Embedding Model</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Model</th><th>Dim</th><th>Size</th><th>Speed</th><th>MTEB</th><th>When</th></tr></thead>
+          <tbody>
+            <tr><td><code>all-MiniLM-L6-v2</code></td><td>384</td><td>90 MB</td><td>fastest</td><td>56</td><td>Default for prototyping; English only</td></tr>
+            <tr><td><code>BAAI/bge-large-en-v1.5</code></td><td>1024</td><td>1.3 GB</td><td>medium</td><td>64</td><td>Quality matters; English</td></tr>
+            <tr><td><code>Qwen3-Embedding-0.6B</code></td><td>1024</td><td>1.2 GB</td><td>medium</td><td>67</td><td>Multilingual; current SOTA-ish</td></tr>
+            <tr><td>OpenAI <code>text-embedding-3-small</code></td><td>1536</td><td>API</td><td>API latency</td><td>62</td><td>Don't want to host; happy to pay per token</td></tr>
+          </tbody>
+        </table>
+
+        <p><strong>Rule of thumb:</strong> start with <code>all-MiniLM-L6-v2</code>. If quality is the bottleneck (you're missing relevant results), upgrade to BGE or Qwen. If you can't host a model, use the API. Don't agonise over the choice on day one &mdash; the chunking strategy (Part 5) matters more than the embedding model.</p>
+
+        <h2>Distance Metrics</h2>
+
+        <ul>
+          <li><strong>Cosine similarity.</strong> Measures angle between vectors, ignores magnitude. Default for most embedding models because they're trained with cosine</li>
+          <li><strong>Dot product.</strong> Same as cosine if vectors are unit-normalised. Faster on some hardware</li>
+          <li><strong>Euclidean.</strong> Measures distance in space. Almost never the right choice for text embeddings &mdash; embeddings are direction-meaningful, not magnitude-meaningful</li>
+        </ul>
+
+        <p>Use cosine. Move on.</p>
+
+        <h2>Vector Stores</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Store</th><th>Hosted</th><th>File-backed local</th><th>Good for</th></tr></thead>
+          <tbody>
+            <tr><td>Qdrant</td><td>yes</td><td>yes</td><td>One server or self-hosted; great DX</td></tr>
+            <tr><td>Pinecone</td><td>yes</td><td>no</td><td>"I never want to think about infra"</td></tr>
+            <tr><td>Weaviate</td><td>yes</td><td>partial</td><td>Hybrid search out-of-box</td></tr>
+            <tr><td>pgvector</td><td>self-hosted Postgres</td><td>n/a</td><td>You already have Postgres</td></tr>
+          </tbody>
+        </table>
+
+        <p>For this series we use file-backed Qdrant. It's a single process, zero config, the data lives in a directory you can <code>tar</code> up. When you outgrow it, the same client code talks to a hosted Qdrant cluster.</p>
+
+        <h2>Install</h2>
+
+        <pre><code class="language-bash">uv add sentence-transformers==3.4.0 qdrant-client==1.13.0 numpy==2.1.0</code></pre>
+
+        <h2>The Search Module</h2>
+
+        <p>Save as <code>src/text_tool/vector_store.py</code>:</p>
+
+        <pre><code class="language-python">"""File-backed Qdrant + sentence-transformers wrapper."""
+from __future__ import annotations
+
+import logging
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Iterable
+
+from qdrant_client import QdrantClient
+from qdrant_client.http.models import Distance, PointStruct, VectorParams, Filter, FieldCondition, MatchValue
+from sentence_transformers import SentenceTransformer
+
+log = logging.getLogger(__name__)
+
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_DIM = 384
+COLLECTION = "documents"
+
+
+@dataclass
+class Document:
+    id: str
+    text: str
+    metadata: dict[str, str]
+
+
+@dataclass
+class SearchHit:
+    id: str
+    score: float
+    text: str
+    metadata: dict[str, str]
+
+
+class VectorStore:
+    def __init__(self, db_path: str = "./qdrant_data") -&gt; None:
+        Path(db_path).mkdir(parents=True, exist_ok=True)
+        self._client = QdrantClient(path=db_path)
+        self._model: SentenceTransformer | None = None  # lazy load
+        self._ensure_collection()
+
+    @property
+    def model(self) -&gt; SentenceTransformer:
+        if self._model is None:
+            log.info("loading embedding model %s", EMBEDDING_MODEL)
+            self._model = SentenceTransformer(EMBEDDING_MODEL)
+        return self._model
+
+    def _ensure_collection(self) -&gt; None:
+        existing = [c.name for c in self._client.get_collections().collections]
+        if COLLECTION not in existing:
+            self._client.create_collection(
+                collection_name=COLLECTION,
+                vectors_config=VectorParams(size=EMBEDDING_DIM, distance=Distance.COSINE),
+            )
+
+    def index(self, docs: Iterable[Document], batch_size: int = 64) -&gt; int:
+        docs = list(docs)
+        if not docs: return 0
+        # Embed in batches so we don't OOM on large corpora.
+        n = 0
+        for i in range(0, len(docs), batch_size):
+            batch = docs[i:i + batch_size]
+            vectors = self.model.encode([d.text for d in batch], normalize_embeddings=True)
+            points = [
+                PointStruct(id=d.id, vector=v.tolist(), payload={"text": d.text, **d.metadata})
+                for d, v in zip(batch, vectors)
+            ]
+            self._client.upsert(collection_name=COLLECTION, points=points)
+            n += len(batch)
+        log.info("indexed %d docs", n)
+        return n
+
+    def search(
+        self, query: str, *, top_k: int = 5, score_threshold: float | None = None,
+        filter_metadata: dict[str, str] | None = None,
+    ) -&gt; list[SearchHit]:
+        qv = self.model.encode(query, normalize_embeddings=True)
+        qfilter = None
+        if filter_metadata:
+            qfilter = Filter(
+                must=[FieldCondition(key=k, match=MatchValue(value=v))
+                       for k, v in filter_metadata.items()]
+            )
+        hits = self._client.search(
+            collection_name=COLLECTION,
+            query_vector=qv.tolist(),
+            limit=top_k,
+            score_threshold=score_threshold,
+            query_filter=qfilter,
+        )
+        return [
+            SearchHit(id=str(h.id), score=h.score,
+                      text=h.payload["text"],
+                      metadata={k: v for k, v in h.payload.items() if k != "text"})
+            for h in hits
+        ]</code></pre>
+
+        <h2>Index a Sample Corpus</h2>
+
+        <p>Use this script to index 50 short documents (use your own corpus once you have one). Save as <code>scripts/build_index.py</code>:</p>
+
+        <pre><code class="language-python">from uuid import uuid4
+from text_tool.vector_store import VectorStore, Document
+
+CORPUS = [
+    ("Machine learning is a subfield of AI focused on data-driven prediction.", "ai-101"),
+    ("FastAPI is a modern Python web framework with async support.", "python-web"),
+    ("Transformers use self-attention to process sequences in parallel.", "nlp"),
+    ("Docker containers package applications with their dependencies.", "devops"),
+    ("Postgres pgvector enables vector similarity search inside SQL.", "databases"),
+    # ... add more lines, ~50 total in the real script
+]
+
+def main():
+    store = VectorStore(db_path="./qdrant_data")
+    docs = [Document(id=str(uuid4()), text=t, metadata={"category": c}) for t, c in CORPUS]
+    n = store.index(docs)
+    print(f"indexed {n} documents")
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+        <p>Run it once:</p>
+
+        <pre><code class="language-bash">uv run python scripts/build_index.py</code></pre>
+
+        <h2>Add <code>/search</code> to the FastAPI Service</h2>
+
+        <p>Patch <code>server.py</code> from Part 3 with these additions:</p>
+
+        <pre><code class="language-python">from text_tool.vector_store import VectorStore
+
+
+# In lifespan, alongside the LLM client:
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.client = get_client()
+    app.state.store = VectorStore(db_path="./qdrant_data")
+    yield
+
+
+class SearchRequest(BaseModel):
+    query: str = Field(..., min_length=1, max_length=2000)
+    top_k: int = Field(5, ge=1, le=50)
+    score_threshold: float | None = Field(None, ge=0.0, le=1.0)
+    category: str | None = None
+
+
+class SearchHitOut(BaseModel):
+    id: str
+    score: float
+    text: str
+    metadata: dict[str, str]
+
+
+class SearchResponse(BaseModel):
+    hits: list[SearchHitOut]
+
+
+@app.post("/search", response_model=SearchResponse)
+@limiter.limit("120/minute")
+async def search(request: Request, body: SearchRequest, _key: str = Depends(get_caller_key)):
+    store = request.app.state.store
+    filter_md = {"category": body.category} if body.category else None
+    hits = await run_in_thread(
+        store.search, body.query,
+        top_k=body.top_k, score_threshold=body.score_threshold,
+        filter_metadata=filter_md,
+    )
+    return SearchResponse(hits=[SearchHitOut(**h.__dict__) for h in hits])</code></pre>
+
+        <p>Restart the service and hit it:</p>
+
+        <pre><code class="language-bash">curl -X POST http://localhost:8000/search \
+  -H "X-API-Key: dev-key-001" \
+  -H "Content-Type: application/json" \
+  -d '{"query":"how does FastAPI handle async?","top_k":3}'</code></pre>
+
+        <p>You'll get back semantically-ranked hits, even though "FastAPI" doesn't textually appear in some of the relevant chunks.</p>
+
+        <h2>Lazy Loading and Why It Matters</h2>
+
+        <p>The <code>VectorStore</code> above doesn't load the embedding model until the first call. That's deliberate. When the <code>/complete</code> endpoint is hit but <code>/search</code> isn't, you don't pay the ~90 MB memory cost. It also makes the boot fast &mdash; the service responds to <code>/health</code> in under 100ms even though warm-loading the model takes several seconds.</p>
+
+        <h2>Batch Sizes That Don't OOM</h2>
+
+        <p>The <code>index</code> method batches at 64 by default. For a 384-dim model on CPU, this is comfortable. Things to know:</p>
+
+        <ul>
+          <li>Larger batch &rarr; better throughput, more peak memory</li>
+          <li>On a 1024-dim model with long docs, drop batch size to 16 or 32</li>
+          <li>If you OOM mid-batch, the partial state is in Qdrant; rerun from the failed offset rather than starting over</li>
+        </ul>
+
+        <h2>The Chunking Setup for Part 5</h2>
+
+        <p>Notice we embedded one-sentence "documents". On a real corpus, "embed the whole document" rarely works because:</p>
+
+        <ul>
+          <li>Long documents have multiple topics; their embedding is the average and matches nothing well</li>
+          <li>Models have token limits (512 for MiniLM, often 8192 for newer ones) &mdash; long inputs are truncated silently</li>
+          <li>You want to retrieve the relevant <em>passage</em>, not the document &mdash; so you can fit it in the LLM's prompt</li>
+        </ul>
+
+        <p>Part 5 is the chunking strategy in detail. The teaser: chunk on header boundaries with <code>MarkdownHeaderTextSplitter</code> when you can. Fixed-size chunks with overlap when you can't. Try 500-1000 tokens per chunk as a starting point.</p>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>Embeddings are fixed-size vectors where similar meaning maps to similar vectors. Cosine similarity is the default metric</li>
+          <li>Start with <code>all-MiniLM-L6-v2</code>. Upgrade to BGE or Qwen3 only if quality is the bottleneck</li>
+          <li>File-backed Qdrant is right for one host. The same client code scales to a Qdrant cluster when you outgrow it</li>
+          <li>Lazy-load the embedding model. Boot stays fast; memory cost paid only when needed</li>
+          <li>Always normalise embeddings (<code>normalize_embeddings=True</code>). It makes cosine and dot product equivalent and avoids silent bugs</li>
+          <li>Batch your indexing. 64 is a reasonable default for small models; drop on bigger ones</li>
+        </ul>
+
+        <h2>Next Up</h2>
+
+        <p>Part 5 combines retrieval and generation into a full RAG system &mdash; chunking, hybrid retrieval, prompt construction, citations, and evaluation. The bug at the end of that post is the same parser bug from <a href="hybrid-rag-statutory-qa.html">Building a Hybrid-RAG Assistant</a>.</p>
+
+        <p style="margin-top: 24px;"><a href="ai-path-05-production-rag.html" class="btn btn-outline-accent">Next: Part 5 &mdash; Building a Production RAG System <i class="fas fa-arrow-right ml-2"></i></a></p>
+      </div>
+
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="ai-path-05-production-rag.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 5: Building a Production RAG System</h4>
+            <span class="related-post-date">April 28, 2026</span>
+          </a>
+          <a href="hybrid-rag-statutory-qa.html" class="related-post-card">
+            <span class="related-post-category">Implementation</span>
+            <h4>Building a Hybrid-RAG Assistant That Doesn't Hallucinate Statute</h4>
+            <span class="related-post-date">May 3, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

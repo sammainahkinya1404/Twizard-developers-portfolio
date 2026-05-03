@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 8: Serving Quantized Models with vLLM | Samson Kinyanjui</title>
+  <meta name="description" content="From AWQ checkpoint to a production endpoint serving multiple users — vLLM configuration, LoRA hot-swapping, prefix caching, and swapping the new model into the Part 5 RAG system." />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Part 8: Serving Quantized Models with vLLM" />
+  <meta property="og:description" content="vLLM config, multi-LoRA, prefix caching, and swapping the local endpoint into the Part 5 RAG system." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/ai-path-08-serving-with-vllm.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Part 8: Serving Quantized Models with vLLM" />
+  <meta name="twitter:description" content="vLLM config, multi-LoRA, prefix caching, and swapping the local endpoint into the Part 5 RAG system." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+      <p style="margin-top: 16px;"><a href="ai-path-07-quantization-for-deployment.html"><i class="fas fa-arrow-left"></i> Previous: Part 7 &mdash; Quantization for Deployment</a></p>
+
+      <header class="post-header">
+        <div class="post-category">Tutorial</div>
+        <h1 class="post-title">Part 8: Serving Quantized Models with vLLM</h1>
+        <p class="post-subtitle">From AWQ checkpoint to a production endpoint serving multiple users &mdash; vLLM configuration, LoRA hot-swapping, prefix caching, and swapping the new model into the Part 5 RAG system.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>May 1, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>14 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">AI Engineer Path</span>
+          <span class="post-tag">vLLM</span>
+          <span class="post-tag">Serving</span>
+          <span class="post-tag">Deployment</span>
+          <span class="post-tag">Production</span>
+        </div>
+      </header>
+
+      <nav class="series-nav" aria-label="AI Engineer Path series navigation">
+        <div class="series-nav-header">
+          <p class="series-nav-title"><a href="../../series/ai-engineer-path/index.html">&larr; The AI Engineer's Path</a></p>
+          <span class="series-nav-meta">Part 8 of 10</span>
+        </div>
+        <div class="series-nav-pills">
+          <a class="series-pill" href="ai-path-01-python-foundations.html" title="Python Foundations">1</a>
+          <a class="series-pill" href="ai-path-02-first-llm-api-call.html" title="Your First LLM API Call">2</a>
+          <a class="series-pill" href="ai-path-03-fastapi-for-llms.html" title="Building APIs with FastAPI">3</a>
+          <a class="series-pill" href="ai-path-04-embeddings-vector-search.html" title="Embeddings and Vector Search">4</a>
+          <a class="series-pill" href="ai-path-05-production-rag.html" title="Production RAG">5</a>
+          <a class="series-pill" href="ai-path-06-lora-qlora-fine-tuning.html" title="LoRA and QLoRA Fine-Tuning">6</a>
+          <a class="series-pill" href="ai-path-07-quantization-for-deployment.html" title="Quantization for Deployment">7</a>
+          <span class="series-pill is-current" title="Serving with vLLM">8</span>
+          <a class="series-pill" href="ai-path-09-knowledge-distillation.html" title="Knowledge Distillation">9</a>
+          <a class="series-pill" href="ai-path-10-scaling-ai-systems.html" title="Scaling AI Systems">10</a>
+        </div>
+      </nav>
+
+      <div class="post-content">
+
+        <p><strong>Hardware:</strong> a CUDA GPU with at least 8 GB VRAM for a 4-bit AWQ 4B model, 24 GB for a 7B. <strong>Python:</strong> 3.11+.</p>
+
+        <h2>Why vLLM</h2>
+
+        <p>You can serve an LLM with <code>transformers.pipeline()</code>. You'll handle exactly one user at a time, and your GPU will sit at 30% utilisation. vLLM's job is to make the same hardware do 10&times; the work via continuous batching, paged attention, and prefix caching.</p>
+
+        <p>The deeper dive on <em>why</em> these techniques work lives at <a href="vllm-gpu-inference-engine.html">How I Get the Best Out of My GPU Using vLLM</a>. This post is the operational pipeline: install, launch, configure, integrate.</p>
+
+        <h2>Install</h2>
+
+        <pre><code class="language-bash"># vLLM brings its own pinned torch
+uv venv --python 3.11
+uv pip install vllm==0.7.0</code></pre>
+
+        <p>vLLM doesn't run on Windows natively; use WSL2 or a Linux box. Mac M-series users: vLLM doesn't target Apple Silicon &mdash; use Ollama or llama.cpp with the GGUF artefact from Part 7 instead.</p>
+
+        <h2>Launch the Server</h2>
+
+        <p>Save as <code>scripts/launch_vllm.sh</code>:</p>
+
+        <pre><code class="language-bash">#!/usr/bin/env bash
+set -euo pipefail
+
+MODEL_PATH=${MODEL_PATH:-./outputs/qwen3-4b-domain-awq}
+LORA_PATH=${LORA_PATH:-./outputs/qwen3-4b-domain-adapter}
+PORT=${PORT:-8001}
+
+vllm serve "$MODEL_PATH" \
+  --port "$PORT" \
+  --quantization awq_marlin \
+  --gpu-memory-utilization 0.85 \
+  --max-model-len 4096 \
+  --max-num-seqs 16 \
+  --enable-prefix-caching \
+  --enable-lora \
+  --max-loras 4 \
+  --max-lora-rank 16 \
+  --lora-modules "domain=$LORA_PATH"</code></pre>
+
+        <p>Run it:</p>
+
+        <pre><code class="language-bash">chmod +x scripts/launch_vllm.sh && ./scripts/launch_vllm.sh</code></pre>
+
+        <p>vLLM exposes an OpenAI-compatible API at <code>http://localhost:8001</code>. Test it:</p>
+
+        <pre><code class="language-bash">curl http://localhost:8001/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "domain",
+    "messages": [{"role":"user","content":"Convert temperature.\n\n75 F"}],
+    "max_tokens": 50
+  }'</code></pre>
+
+        <p>Use <code>"model": "domain"</code> to hit the LoRA-adapted alias, or the base model path for un-adapted base behaviour. One process, two endpoints.</p>
+
+        <h2>The Flags That Matter</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Flag</th><th>What it controls</th><th>What goes wrong if you skip it</th></tr></thead>
+          <tbody>
+            <tr><td><code>--quantization awq_marlin</code></td><td>Tells vLLM to use the Marlin INT4 kernel for AWQ weights</td><td>Loads in slow path or fails outright</td></tr>
+            <tr><td><code>--gpu-memory-utilization 0.85</code></td><td>Fraction of VRAM vLLM reserves for weights + KV cache</td><td>Default 0.9 OOMs on shared GPUs; lower to share with other workloads</td></tr>
+            <tr><td><code>--max-model-len 4096</code></td><td>Context window. Smaller = larger KV cache budget = more concurrent users</td><td>Set this to your real workload, not the model's max</td></tr>
+            <tr><td><code>--max-num-seqs 16</code></td><td>Concurrency cap</td><td>Default is high; cap to your KV-cache budget. Set lower if you OOM mid-batch</td></tr>
+            <tr><td><code>--enable-prefix-caching</code></td><td>KV cache reuse for stable prefixes</td><td>You leave free latency on the table for any workload with shared system prompts</td></tr>
+            <tr><td><code>--enable-lora</code></td><td>Allows LoRA modules to be loaded on top of the base</td><td>Can't serve adapters at all without this</td></tr>
+            <tr><td><code>--max-loras 4 --max-lora-rank 16</code></td><td>Per-process LoRA slot count and max rank</td><td>Adapters with rank &gt; this are rejected</td></tr>
+            <tr><td><code>--lora-modules name=path</code></td><td>Pre-load adapters at startup; reference by name in requests</td><td>Without this you can serve only the base</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Multi-LoRA Serving</h2>
+
+        <p>The single biggest operational win vLLM gives you: one base model, many specialised adapters, near-zero memory cost per adapter. Add more <code>--lora-modules</code> entries:</p>
+
+        <pre><code class="language-bash">--lora-modules \
+  "support=./adapters/customer-support" \
+  "code-review=./adapters/code-review" \
+  "summariser=./adapters/summariser"</code></pre>
+
+        <p>Then in requests:</p>
+
+        <pre><code class="language-bash">curl http://localhost:8001/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"code-review","messages":[{"role":"user","content":"Review this PR..."}]}'</code></pre>
+
+        <p>vLLM swaps the active LoRA per-request based on the <code>model</code> field. The base weights stay loaded once. This is how you serve 10 specialised models on a single GPU without 10&times; the memory.</p>
+
+        <h2>Prefix Caching: The Free Win</h2>
+
+        <p>Most LLM workloads have a stable system prompt &mdash; "You are a helpful assistant ..." or a multi-page RAG context that's the same across many calls in a session. Prefix caching means vLLM keeps the KV cache for that shared prefix and reuses it on every subsequent call. Latency on calls with shared prefixes drops by 30&ndash;70%.</p>
+
+        <p>The flag costs nothing. Always enable it.</p>
+
+        <h2>Continuous Batching (One Paragraph)</h2>
+
+        <p>Static batching: gather N requests, run them together, return all responses when the slowest finishes. Wasteful because short requests block on long ones. Continuous batching: as soon as one request finishes a token, slot the next request's first token in. The GPU is constantly full, no request waits for an unrelated long request to finish. This is the biggest single reason vLLM beats <code>transformers.pipeline()</code> by an order of magnitude. Deeper treatment in the <a href="vllm-gpu-inference-engine.html">vLLM deep-dive post</a>.</p>
+
+        <h2>Swap vLLM into the Part 5 RAG System</h2>
+
+        <p>The wrapper from Part 2 was built provider-agnostic on purpose. Swapping in vLLM is a config change, not a code change. Add a self-hosted backend to <code>llm_client.py</code>:</p>
+
+        <pre><code class="language-python">from openai import OpenAI
+
+class VLLMClient(OpenAIClient):
+    """Same as OpenAIClient but talks to a local vLLM endpoint."""
+    def __init__(self, model: str = "domain", tracker: CostTracker | None = None,
+                 base_url: str = "http://localhost:8001/v1") -&gt; None:
+        # vLLM's API is OpenAI-compatible &mdash; reuse the OpenAI SDK
+        self._client = OpenAI(api_key="EMPTY", base_url=base_url, timeout=30.0)
+        self._model = model
+        self._tracker = tracker or CostTracker()
+
+
+def get_client(provider: str | None = None) -&gt; LLMClient:
+    provider = (provider or os.environ.get("LLM_PROVIDER", "openai")).lower()
+    if provider == "openai":   return OpenAIClient(tracker=_TRACKER)
+    if provider == "anthropic": return AnthropicClient(tracker=_TRACKER)
+    if provider == "vllm":      return VLLMClient(tracker=_TRACKER)
+    raise ValueError(f"unknown provider: {provider}")</code></pre>
+
+        <p>Now switch the FastAPI service to use it:</p>
+
+        <pre><code class="language-bash">export LLM_PROVIDER=vllm
+uv run uvicorn text_tool.server:app --host 0.0.0.0 --port 8000</code></pre>
+
+        <p>The <code>/rag</code> endpoint from Part 5 now grounds answers via your own quantised, fine-tuned model. Zero downstream API spend. The same Pydantic schemas, the same retrieval, the same FastAPI endpoint &mdash; only the LLM provider has changed. <strong>That is the whole point of the wrapper from Part 2.</strong></p>
+
+        <h2>Update the Pricing Map</h2>
+
+        <p>The <code>CostTracker</code> from Part 2 prices OpenAI/Anthropic per token. Self-hosted vLLM has a different cost model &mdash; GPU-hour cost amortised over throughput. Add a flat zero entry so you don't get bogus dollar figures:</p>
+
+        <pre><code class="language-python">PRICING = {
+    "domain":   {"in": 0.0, "out": 0.0},  # self-hosted; cost lives in the GPU bill
+    "gpt-4o-mini": {"in": 0.15, "out": 0.60},
+    # ...
+}</code></pre>
+
+        <p>For real cost accounting on a self-hosted endpoint, divide GPU $/hour by tokens/hour. That's the per-token cost. Track it separately from API spend &mdash; the right comparison metric is GPU $/hour, not $/token.</p>
+
+        <h2>Operational Concerns</h2>
+
+        <h3>systemd Unit</h3>
+
+        <p>Save as <code>/etc/systemd/system/vllm.service</code>:</p>
+
+        <pre><code class="language-bash">[Unit]
+Description=vLLM serving stack
+After=network.target
+
+[Service]
+Type=simple
+User=ai
+WorkingDirectory=/opt/text-tool
+Environment="HF_HOME=/opt/cache/hf"
+ExecStart=/opt/text-tool/scripts/launch_vllm.sh
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:/var/log/vllm/stdout.log
+StandardError=append:/var/log/vllm/stderr.log
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+
+        <pre><code class="language-bash">sudo systemctl daemon-reload
+sudo systemctl enable --now vllm
+sudo journalctl -u vllm -f</code></pre>
+
+        <h3>Log Rotation</h3>
+
+        <p>Drop into <code>/etc/logrotate.d/vllm</code>:</p>
+
+        <pre><code class="language-bash">/var/log/vllm/*.log {
+    daily
+    rotate 14
+    compress
+    missingok
+    notifempty
+    copytruncate
+}</code></pre>
+
+        <h3>GPU Monitoring</h3>
+
+        <p>Quick check from the host:</p>
+
+        <pre><code class="language-bash">watch -n 1 nvidia-smi</code></pre>
+
+        <p>For Prometheus-style metrics: <code>--otlp-traces-endpoint</code> exports vLLM internals. Pair with Grafana for a real dashboard. Detailed setup is in Part 10.</p>
+
+        <h2>When vLLM Is the Wrong Choice</h2>
+
+        <ul>
+          <li><strong>Very small models (&lt;1B).</strong> vLLM's overhead dominates; raw <code>transformers</code> or llama.cpp wins</li>
+          <li><strong>CPU-only deployment.</strong> Use llama.cpp with the GGUF from Part 7</li>
+          <li><strong>Single-user workload.</strong> Use Ollama. It's friendlier and the multi-user advantage doesn't matter</li>
+          <li><strong>Apple Silicon.</strong> vLLM doesn't target it; llama.cpp / Ollama do, natively and well</li>
+        </ul>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>vLLM is the default GPU serving stack in 2026 because continuous batching + paged attention + prefix caching is exactly what an LLM workload needs</li>
+          <li>One vLLM process, one base model, many LoRA adapters &mdash; pick the adapter per request via the <code>model</code> field</li>
+          <li>Always enable prefix caching. It's free latency reduction</li>
+          <li>The Part 2 client wrapper makes the swap from API to self-hosted a one-line config change</li>
+          <li>Run it under systemd with log rotation. <code>nvidia-smi</code> is a crude but effective monitoring loop</li>
+          <li>vLLM is the wrong tool for tiny models, CPU-only deployment, or Apple Silicon. Use llama.cpp / Ollama there</li>
+        </ul>
+
+        <h2>Next Up</h2>
+
+        <p>Part 9 takes a different optimisation angle: distillation. Use the Part 6 fine-tuned model as a teacher; train a much smaller student that runs on a laptop. The student plus the AWQ quantization compose &mdash; you can have both.</p>
+
+        <p style="margin-top: 24px;"><a href="ai-path-09-knowledge-distillation.html" class="btn btn-outline-accent">Next: Part 9 &mdash; Knowledge Distillation <i class="fas fa-arrow-right ml-2"></i></a></p>
+      </div>
+
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="vllm-gpu-inference-engine.html" class="related-post-card">
+            <span class="related-post-category">Deep Dive</span>
+            <h4>How I Get the Best Out of My GPU Using vLLM</h4>
+            <span class="related-post-date">April 16, 2026</span>
+          </a>
+          <a href="ai-path-09-knowledge-distillation.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 9: Knowledge Distillation</h4>
+            <span class="related-post-date">May 2, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

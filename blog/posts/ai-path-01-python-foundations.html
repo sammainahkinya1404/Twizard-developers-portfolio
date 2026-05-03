@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 1: Python Foundations for AI Engineers | Samson Kinyanjui</title>
+  <meta name="description" content="The Python skills that actually matter when you start building AI systems — type hints, async, context managers, and tests. Built around a CLI tool you'll extend across the series." />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Part 1: Python Foundations for AI Engineers" />
+  <meta property="og:description" content="Type hints, async, context managers, and tests — the Python that holds up under production AI load." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/ai-path-01-python-foundations.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Part 1: Python Foundations for AI Engineers" />
+  <meta name="twitter:description" content="Type hints, async, context managers, and tests — the Python that holds up under production AI load." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+      <header class="post-header">
+        <div class="post-category">Tutorial</div>
+        <h1 class="post-title">Part 1: Python Foundations for AI Engineers</h1>
+        <p class="post-subtitle">The Python skills that actually matter when you start building AI systems &mdash; type hints, async, context managers, and tests. Built around a CLI tool you'll extend across the series.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>April 24, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>14 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">AI Engineer Path</span>
+          <span class="post-tag">Python</span>
+          <span class="post-tag">Fundamentals</span>
+          <span class="post-tag">Testing</span>
+        </div>
+      </header>
+
+      <nav class="series-nav" aria-label="AI Engineer Path series navigation">
+        <div class="series-nav-header">
+          <p class="series-nav-title"><a href="../../series/ai-engineer-path/index.html">&larr; The AI Engineer's Path</a></p>
+          <span class="series-nav-meta">Part 1 of 10</span>
+        </div>
+        <div class="series-nav-pills">
+          <span class="series-pill is-current" title="Python Foundations">1</span>
+          <a class="series-pill" href="ai-path-02-first-llm-api-call.html" title="Your First LLM API Call">2</a>
+          <a class="series-pill" href="ai-path-03-fastapi-for-llms.html" title="Building APIs with FastAPI">3</a>
+          <a class="series-pill" href="ai-path-04-embeddings-vector-search.html" title="Embeddings and Vector Search">4</a>
+          <a class="series-pill" href="ai-path-05-production-rag.html" title="Production RAG">5</a>
+          <a class="series-pill" href="ai-path-06-lora-qlora-fine-tuning.html" title="LoRA and QLoRA Fine-Tuning">6</a>
+          <a class="series-pill" href="ai-path-07-quantization-for-deployment.html" title="Quantization for Deployment">7</a>
+          <a class="series-pill" href="ai-path-08-serving-with-vllm.html" title="Serving with vLLM">8</a>
+          <a class="series-pill" href="ai-path-09-knowledge-distillation.html" title="Knowledge Distillation">9</a>
+          <a class="series-pill" href="ai-path-10-scaling-ai-systems.html" title="Scaling AI Systems">10</a>
+        </div>
+      </nav>
+
+      <div class="post-content">
+
+        <p><strong>Series:</strong> The AI Engineer's Path. This is Part 1 of 10. Each part builds on the last, ending with a full self-hosted RAG stack you've trained, quantized, and deployed yourself.</p>
+
+        <p><strong>Hardware required for this part:</strong> Any laptop. No GPU needed.</p>
+
+        <p><strong>Python version:</strong> 3.11+.</p>
+
+        <h2>Why Most "Python for AI" Tutorials Miss the Point</h2>
+
+        <p>Most "Python for AI" tutorials teach Python like it's a scripting language. AI engineering is software engineering with AI components. The parts of Python that matter are the parts that hold up under production load: type hints, async, context managers, dependency management, tests. Without those, your "AI app" is a notebook that breaks the moment a second user shows up.</p>
+
+        <p>This post is the foundation the rest of the series stands on. We won't touch an LLM in this part &mdash; that's Part 2. Here we build a CLI tool that processes text. Then Parts 2 through 10 extend the same project: an LLM call, a FastAPI service, embeddings, RAG, fine-tuning, quantization, serving, distillation, and finally scaling.</p>
+
+        <h2>What You'll Build</h2>
+
+        <p>A CLI tool, <code>text_tool.py</code>, that reads a text file and prints word-frequency statistics. Trivial as a project, but the scaffolding around it &mdash; structure, types, errors, tests &mdash; is the same scaffolding every part of the series uses.</p>
+
+        <h2>Project Structure</h2>
+
+        <p>Every project I ship looks like this:</p>
+
+        <pre><code class="language-bash">ai-engineer-path/
+&#9500;&#9472;&#9472; pyproject.toml
+&#9500;&#9472;&#9472; src/
+&#9474;   &#9492;&#9472;&#9472; text_tool/
+&#9474;       &#9500;&#9472;&#9472; __init__.py
+&#9474;       &#9500;&#9472;&#9472; cli.py
+&#9474;       &#9492;&#9472;&#9472; processing.py
+&#9492;&#9472;&#9472; tests/
+    &#9492;&#9472;&#9472; test_processing.py</code></pre>
+
+        <p>Use <a href="https://docs.astral.sh/uv/" target="_blank"><code>uv</code></a> for dependency management. It's faster than pip and the tooling is sharper. Install once:</p>
+
+        <pre><code class="language-bash">curl -LsSf https://astral.sh/uv/install.sh | sh
+uv init ai-engineer-path
+cd ai-engineer-path
+uv add --dev pytest==8.4.0</code></pre>
+
+        <p>Your <code>pyproject.toml</code> ends up like this:</p>
+
+        <pre><code class="language-bash">[project]
+name = "ai-engineer-path"
+version = "0.1.0"
+requires-python = "&gt;=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest==8.4.0"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]</code></pre>
+
+        <h2>Type Hints &mdash; Use Them Everywhere</h2>
+
+        <p>Type hints are not bureaucracy. They're documentation that the language can check. Modern Python (3.11+) lets you write them naturally:</p>
+
+        <pre><code class="language-python">from __future__ import annotations
+from typing import TypedDict
+
+
+class WordCount(TypedDict):
+    word: str
+    count: int
+
+
+def top_words(text: str, n: int = 10) -&gt; list[WordCount]:
+    """Return the top-n most frequent words in text."""
+    from collections import Counter
+    words = text.lower().split()
+    counts = Counter(words).most_common(n)
+    return [{"word": w, "count": c} for w, c in counts]
+
+
+def is_empty(text: str | None) -&gt; bool:
+    return text is None or text.strip() == ""</code></pre>
+
+        <p><code>from __future__ import annotations</code> makes all annotations evaluated lazily, which lets you use modern syntax (<code>list[str]</code>, <code>str | None</code>) on every supported Python version without quotes. Use it on every file.</p>
+
+        <h2>Dataclasses vs Pydantic v2 &mdash; Rule of Thumb</h2>
+
+        <p><strong>Pydantic at API boundaries. Dataclasses internally.</strong></p>
+
+        <p>Pydantic validates and coerces. That's expensive but necessary anywhere data crosses a trust boundary &mdash; HTTP request body, LLM JSON output, config file. Dataclasses are cheap and structural. Use them inside your own code where you control the inputs.</p>
+
+        <pre><code class="language-python">from dataclasses import dataclass
+from pydantic import BaseModel, Field
+
+
+# Internal state &mdash; no validation needed, your code controls it
+@dataclass
+class ProcessedDocument:
+    word_count: int
+    top_words: list[tuple[str, int]]
+    source_path: str
+
+
+# API boundary &mdash; validates input from the outside world
+class ProcessRequest(BaseModel):
+    file_path: str = Field(..., description="Path to the text file")
+    top_n: int = Field(10, ge=1, le=100)
+    lowercase: bool = True</code></pre>
+
+        <p>We'll use <code>ProcessRequest</code> for real in Part 3 when we put a FastAPI in front of this code.</p>
+
+        <h2>Context Managers &mdash; Beyond File Handles</h2>
+
+        <p>The pattern <code>with open(...) as f:</code> guarantees the file closes even if an exception fires. The same pattern matters for anything with a finite lifetime: HTTP clients, GPU memory, database connections.</p>
+
+        <pre><code class="language-python">from pathlib import Path
+from contextlib import contextmanager
+import time
+
+
+def read_text(path: Path) -&gt; str:
+    """Read a UTF-8 text file. Closes the file even on error."""
+    with open(path, encoding="utf-8") as f:
+        return f.read()
+
+
+@contextmanager
+def timed(label: str):
+    """Time a block of code. Use as: `with timed("loading"): load_thing()`."""
+    start = time.perf_counter()
+    try:
+        yield
+    finally:
+        elapsed = time.perf_counter() - start
+        print(f"[{label}] {elapsed:.3f}s")
+
+
+# Usage
+with timed("file read"):
+    content = read_text(Path("input.txt"))</code></pre>
+
+        <p>You'll see the <code>timed</code> pattern again in Part 2 around LLM calls and Part 8 around vLLM startup.</p>
+
+        <h2>Async &mdash; Just Enough for Part 2</h2>
+
+        <p>I'm not going to over-explain async. The thing to internalise: any code that spends time waiting on I/O (network, disk, an LLM API call) should be <code>async</code>. The thread doesn't sit idle &mdash; it goes off and does other work until the response arrives. For LLM workloads, this is huge: ten requests in flight cost the same wall-clock as one.</p>
+
+        <pre><code class="language-python">import asyncio
+
+
+async def fake_llm_call(prompt: str) -&gt; str:
+    """Pretend to be an LLM. Sleep for 1s, return a string."""
+    await asyncio.sleep(1.0)
+    return f"Echo: {prompt}"
+
+
+async def main() -&gt; None:
+    # These run concurrently &mdash; total wall-clock is ~1s, not 3s
+    results = await asyncio.gather(
+        fake_llm_call("first"),
+        fake_llm_call("second"),
+        fake_llm_call("third"),
+    )
+    for r in results:
+        print(r)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())</code></pre>
+
+        <p>Run it. You'll see three lines printed after roughly one second &mdash; not three. That's the entire reason async matters for AI work.</p>
+
+        <h2>Errors &mdash; Custom Exceptions, Not String Comparisons</h2>
+
+        <p>If you find yourself writing <code>if "rate limit" in str(e):</code>, you've already lost. Define exception classes. Catch by class. Log structured.</p>
+
+        <pre><code class="language-python">import logging
+
+logger = logging.getLogger(__name__)
+
+
+class TextToolError(Exception):
+    """Base error for this tool."""
+
+
+class FileNotReadable(TextToolError):
+    """Raised when the input file can't be read."""
+
+
+def safe_read(path: str) -&gt; str:
+    try:
+        with open(path, encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError as e:
+        logger.error("file not found", extra={"path": path})
+        raise FileNotReadable(f"no such file: {path}") from e
+    except UnicodeDecodeError as e:
+        logger.error("not utf-8", extra={"path": path})
+        raise FileNotReadable(f"file is not valid UTF-8: {path}") from e</code></pre>
+
+        <p><strong>Use <code>logging</code>, not <code>print</code>.</strong> Logs you can filter, aggregate, search; print you can only stare at. The <code>extra={...}</code> dict is the seed of structured logging, which Part 10 expands into <code>structlog</code>.</p>
+
+        <h2>The Complete CLI Tool</h2>
+
+        <p>Save this as <code>src/text_tool/cli.py</code>:</p>
+
+        <pre><code class="language-python">"""text_tool: a CLI that prints word-frequency stats for a text file."""
+from __future__ import annotations
+
+import argparse
+import logging
+import sys
+from pathlib import Path
+from collections import Counter
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+
+class TextToolError(Exception):
+    """Base error."""
+
+
+class FileNotReadable(TextToolError):
+    """Input file unreadable."""
+
+
+def read_text(path: Path) -&gt; str:
+    try:
+        with open(path, encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError as e:
+        raise FileNotReadable(f"no such file: {path}") from e
+    except UnicodeDecodeError as e:
+        raise FileNotReadable(f"not valid UTF-8: {path}") from e
+
+
+def top_words(text: str, n: int = 10) -&gt; list[tuple[str, int]]:
+    """Return the n most frequent lowercased words."""
+    words = [w.strip(".,!?;:\"'()[]") for w in text.lower().split()]
+    words = [w for w in words if w]
+    return Counter(words).most_common(n)
+
+
+def main(argv: list[str] | None = None) -&gt; int:
+    parser = argparse.ArgumentParser(description="Word-frequency CLI.")
+    parser.add_argument("path", type=Path, help="UTF-8 text file to analyse")
+    parser.add_argument("-n", "--top", type=int, default=10, help="how many top words to print")
+    args = parser.parse_args(argv)
+
+    try:
+        text = read_text(args.path)
+    except FileNotReadable as e:
+        logger.error("read failed: %s", e)
+        return 2
+
+    for word, count in top_words(text, args.top):
+        print(f"{count:6d}  {word}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())</code></pre>
+
+        <p>Try it:</p>
+
+        <pre><code class="language-bash">echo "the quick brown fox jumps over the lazy dog the fox" &gt; sample.txt
+uv run python -m text_tool.cli sample.txt -n 5</code></pre>
+
+        <p>Output:</p>
+
+        <pre><code class="language-bash">     3  the
+     2  fox
+     1  quick
+     1  brown
+     1  jumps</code></pre>
+
+        <h2>Tests &mdash; pytest, Not "I Ran It Once"</h2>
+
+        <p>Save this as <code>tests/test_processing.py</code>:</p>
+
+        <pre><code class="language-python">from pathlib import Path
+import pytest
+
+from text_tool.cli import top_words, read_text, FileNotReadable
+
+
+def test_top_words_basic():
+    text = "the the the quick brown fox"
+    result = top_words(text, n=2)
+    assert result == [("the", 3), ("quick", 1)]
+
+
+def test_top_words_strips_punctuation():
+    text = "Hello, hello! Hello?"
+    result = top_words(text, n=1)
+    assert result == [("hello", 3)]
+
+
+def test_top_words_empty_string():
+    assert top_words("", n=5) == []
+
+
+def test_read_text_missing_file_raises(tmp_path: Path):
+    with pytest.raises(FileNotReadable):
+        read_text(tmp_path / "does-not-exist.txt")
+
+
+def test_read_text_returns_content(tmp_path: Path):
+    p = tmp_path / "input.txt"
+    p.write_text("hello world", encoding="utf-8")
+    assert read_text(p) == "hello world"</code></pre>
+
+        <p>Run them:</p>
+
+        <pre><code class="language-bash">uv run pytest -v</code></pre>
+
+        <p>You'll see five passing tests. The <code>tmp_path</code> fixture is one of pytest's quiet wins &mdash; it gives every test its own throwaway directory, so your tests can write real files without polluting the repo or stepping on each other.</p>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>Type hints are documentation the language checks. Use <code>from __future__ import annotations</code> and modern syntax (<code>list[str]</code>, <code>str | None</code>) on every file</li>
+          <li>Pydantic at trust boundaries (HTTP, LLM JSON, config). Dataclasses inside your own code</li>
+          <li>Context managers for everything with a finite lifetime &mdash; not just files</li>
+          <li>Async whenever you wait on I/O. LLM calls are I/O. Most of your code in this series will be async</li>
+          <li>Custom exception classes, never string-matching on error messages. <code>logging</code>, never <code>print</code></li>
+          <li>Tests with pytest, with <code>tmp_path</code> for filesystem work. If a function is worth writing, it's worth one test</li>
+        </ul>
+
+        <h2>Next Up</h2>
+
+        <p>Part 2 takes this CLI and gives it an LLM. We'll build a provider-agnostic client wrapper with retries, streaming, structured output, and cost tracking &mdash; the module the rest of the series imports.</p>
+
+        <p style="margin-top: 24px;"><a href="ai-path-02-first-llm-api-call.html" class="btn btn-outline-accent">Next: Part 2 &mdash; Your First LLM API Call <i class="fas fa-arrow-right ml-2"></i></a></p>
+      </div>
+
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="ai-path-02-first-llm-api-call.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 2: Your First LLM API Call</h4>
+            <span class="related-post-date">April 25, 2026</span>
+          </a>
+          <a href="how-i-build-ai-agents.html" class="related-post-card">
+            <span class="related-post-category">Implementation</span>
+            <h4>How I Build AI Agents That Actually Work in Production</h4>
+            <span class="related-post-date">April 16, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

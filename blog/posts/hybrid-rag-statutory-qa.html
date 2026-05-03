@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building a Hybrid-RAG Assistant That Doesn't Hallucinate Statute | Samson Kinyanjui</title>
+  <meta name="description" content="How I built a chat assistant grounded in ~1,600 chunks of primary legislation — with hybrid retrieval, careful chunking, and one parser bug that taught me to validate chunks before tuning anything else." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Building a Hybrid-RAG Assistant That Doesn't Hallucinate Statute" />
+  <meta property="og:description" content="Hybrid retrieval, careful chunking, and the parser bug that taught me to validate chunks before tuning anything else." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/hybrid-rag-statutory-qa.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <!-- X / Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Building a Hybrid-RAG Assistant That Doesn't Hallucinate Statute" />
+  <meta name="twitter:description" content="Hybrid retrieval, careful chunking, and the parser bug that taught me to validate chunks before tuning anything else." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Post -->
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+
+      <!-- Post Header -->
+      <header class="post-header">
+        <div class="post-category">Implementation</div>
+        <h1 class="post-title">Building a Hybrid-RAG Assistant That Doesn't Hallucinate Statute</h1>
+        <p class="post-subtitle">How I built a chat assistant grounded in ~1,600 chunks of primary legislation &mdash; with hybrid retrieval, careful chunking, and one parser bug that taught me to validate chunks before tuning anything else.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>May 3, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>5 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">RAG</span>
+          <span class="post-tag">Qdrant</span>
+          <span class="post-tag">BM25</span>
+          <span class="post-tag">Embeddings</span>
+          <span class="post-tag">Hybrid Retrieval</span>
+          <span class="post-tag">LLM</span>
+        </div>
+      </header>
+
+      <!-- Post Content -->
+      <div class="post-content">
+
+        <p>The promise of LLM chat over a legal corpus is huge. A user asks a question, the model retrieves the relevant law, and produces a grounded answer with citations. The reality is that most attempts at this hallucinate. They invent section numbers. They confidently misstate thresholds. They produce answers that <em>look</em> like statute but aren't.</p>
+
+        <p>I spent a lot of time getting this right because the use case demanded it. This post is about what actually worked: hybrid retrieval, careful chunking, and one specific bug that taught me to validate parsers before tuning anything else.</p>
+
+        <h2>Why Statutory QA Is Hard</h2>
+
+        <p>Three reasons general-purpose LLMs fail on statute:</p>
+
+        <ul>
+          <li><strong>Section numbers are tokenised badly.</strong> "Rule 5-13" gets split into several tokens that don't carry meaning, so dense embeddings don't reliably retrieve the chunk containing that exact reference</li>
+          <li><strong>Plausible is not correct.</strong> The model has seen enough legal text in pretraining to produce confidently-shaped wrong answers</li>
+          <li><strong>Paraphrase gaps.</strong> A user asks about "regulated activities"; the law says "designated services". Lexical search misses the connection; dense search sometimes does too</li>
+        </ul>
+
+        <p>Each of these breaks a different part of the retrieval-and-generation chain. You can't fix them with a better prompt.</p>
+
+        <h2>The Corpus</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th>Source</th><th>Chunks</th><th>Share</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Primary legislation (future-law compilation)</td><td>~950</td><td>~60%</td></tr>
+            <tr><td>Regulator-issued rules</td><td>~500</td><td>~31%</td></tr>
+            <tr><td>Regulator's published implementation kits</td><td>~140</td><td>~9%</td></tr>
+          </tbody>
+        </table>
+
+        <p>~1,600 chunks total. Heavily weighted toward statute, with regulator guidance as a small but high-value minority. This split is the moat. Answers ground in the actual law and the regulator's own materials, not in whatever the base model absorbed during pretraining.</p>
+
+        <h2>Embeddings</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th>Component</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Model</td><td>A 0.6B embedding model</td></tr>
+            <tr><td>Dimension</td><td>1024</td></tr>
+            <tr><td>Distance</td><td>Cosine</td></tr>
+            <tr><td>Loading</td><td>Lazy (on first query)</td></tr>
+            <tr><td>Vector store</td><td>Qdrant, file-backed, single collection</td></tr>
+          </tbody>
+        </table>
+
+        <p>The lazy load matters. The generator workload doesn't need embeddings, and loading them at process start would waste memory on every server that doesn't run a chat query. First-query latency takes a one-time hit; everything after is hot.</p>
+
+        <p>File-backed Qdrant is the right choice for one host with zero operational overhead. It's the wrong choice the moment you need failover. The migration path to a clustered Qdrant deployment is well-understood, so I made the call to start simple and scale later.</p>
+
+        <h2>Why Hybrid Retrieval</h2>
+
+        <p>I tested three configurations on a held-out question set drawn from the regulator's own worked examples:</p>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead>
+            <tr><th>Retrieval</th><th>Recall@3</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Pure dense</td><td>Low on section-number queries</td><td>Misses "Rule 5-13"</td></tr>
+            <tr><td>Pure BM25</td><td>Low on paraphrase queries</td><td>Misses "designated services" &harr; "regulated activities"</td></tr>
+            <tr><td><strong>Hybrid: 0.7 dense + 0.3 BM25</strong></td><td>Best on both</td><td>Tuned empirically</td></tr>
+          </tbody>
+        </table>
+
+        <p>The 70/30 split wasn't picked from a tutorial. It came out of running the retrieval against a question set drawn from the regulator's own worked examples and tuning until both classes of query landed in the top-3.</p>
+
+        <h2>The Bug That Taught Me Everything</h2>
+
+        <p>The first version of the RAG store used a popular document parser. It looked correct. Chunks came out the right length. Metadata was attached properly. Embeddings indexed cleanly. By every visible signal, it worked.</p>
+
+        <p>But the chat assistant would occasionally produce confidently wrong answers &mdash; not vague ones, <em>specific</em> ones. It would cite "Section 84(2)(b)" with content that didn't match the actual text of that section.</p>
+
+        <p>The cause: the parser mishandled the two-column layout of the source PDFs. Chunks ended up with text from adjacent columns interleaved. To the embedding model, the chunk read as syntactically coherent (because each column individually was fluent legal English). But semantically, the chunk was scrambled &mdash; a sentence from column 1 followed by a sentence from column 2 followed by a sentence from column 1.</p>
+
+        <p>The fix:</p>
+
+        <ul>
+          <li>Parser: switched to <code>pymupdf4llm</code></li>
+          <li>Chunking: switched to <code>MarkdownHeaderTextSplitter</code> so chunks respected section boundaries</li>
+        </ul>
+
+        <p>The hallucination rate dropped substantially after the rebuild. <strong>The lesson: when RAG quality is bad, the model is rarely the problem. The parser is.</strong> Validate chunks against the source document before tuning anything else.</p>
+
+        <h2>Inference Path</h2>
+
+        <p>Same vLLM process as the structured generator, different alias. The chat assistant uses the base 32B model &mdash; no LoRA. For chat, the LoRA's domain bias is a liability rather than an asset: chat questions span a broader surface than the generator's narrow output schema, and the unadapted base behaves more predictably across that surface.</p>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>Pure dense retrieval misses lexical anchors like section numbers; pure BM25 misses paraphrase. Hybrid solves both</li>
+          <li>Tune retrieval weights against questions drawn from your domain, not from generic IR benchmarks</li>
+          <li>When RAG quality is bad, the parser is almost always the problem. Validate chunks against source documents</li>
+          <li>Lazy-load embedding models so workloads that don't need them don't pay the memory cost</li>
+          <li>For chat over a corpus, the unadapted base often beats the LoRA-adapted alias</li>
+        </ul>
+      </div>
+
+      <!-- Post Footer -->
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <!-- Related Posts -->
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="structured-llm-document-generator.html" class="related-post-card">
+            <span class="related-post-category">Implementation</span>
+            <h4>Generating Long-Form Compliance Documents with a Single LLM Call Pipeline</h4>
+            <span class="related-post-date">May 3, 2026</span>
+          </a>
+          <a href="Automating-Financial-Statement-Audits-with-LLMs.html" class="related-post-card">
+            <span class="related-post-category">Implementation</span>
+            <h4>Automating Financial Statement Audits with LLMs</h4>
+            <span class="related-post-date">February 15, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 3: Building APIs with FastAPI | Samson Kinyanjui</title>
+  <meta name="description" content="Wrapping an LLM client in a production-ready FastAPI service — request validation, streaming responses, auth, rate limiting, and a Docker file you can deploy." />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Part 3: Building APIs with FastAPI" />
+  <meta property="og:description" content="A production-ready FastAPI service for LLMs: validation, streaming, auth, rate limiting, Docker." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/ai-path-03-fastapi-for-llms.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Part 3: Building APIs with FastAPI" />
+  <meta name="twitter:description" content="A production-ready FastAPI service for LLMs: validation, streaming, auth, rate limiting, Docker." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+      <p style="margin-top: 16px;"><a href="ai-path-02-first-llm-api-call.html"><i class="fas fa-arrow-left"></i> Previous: Part 2 &mdash; Your First LLM API Call</a></p>
+
+      <header class="post-header">
+        <div class="post-category">Tutorial</div>
+        <h1 class="post-title">Part 3: Building APIs with FastAPI</h1>
+        <p class="post-subtitle">Wrapping an LLM client in a production-ready FastAPI service &mdash; request validation, streaming responses, auth, rate limiting, and a Dockerfile you can deploy.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>April 26, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>14 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">AI Engineer Path</span>
+          <span class="post-tag">FastAPI</span>
+          <span class="post-tag">API Design</span>
+          <span class="post-tag">Authentication</span>
+        </div>
+      </header>
+
+      <nav class="series-nav" aria-label="AI Engineer Path series navigation">
+        <div class="series-nav-header">
+          <p class="series-nav-title"><a href="../../series/ai-engineer-path/index.html">&larr; The AI Engineer's Path</a></p>
+          <span class="series-nav-meta">Part 3 of 10</span>
+        </div>
+        <div class="series-nav-pills">
+          <a class="series-pill" href="ai-path-01-python-foundations.html" title="Python Foundations">1</a>
+          <a class="series-pill" href="ai-path-02-first-llm-api-call.html" title="Your First LLM API Call">2</a>
+          <span class="series-pill is-current" title="Building APIs with FastAPI">3</span>
+          <a class="series-pill" href="ai-path-04-embeddings-vector-search.html" title="Embeddings and Vector Search">4</a>
+          <a class="series-pill" href="ai-path-05-production-rag.html" title="Production RAG">5</a>
+          <a class="series-pill" href="ai-path-06-lora-qlora-fine-tuning.html" title="LoRA and QLoRA Fine-Tuning">6</a>
+          <a class="series-pill" href="ai-path-07-quantization-for-deployment.html" title="Quantization for Deployment">7</a>
+          <a class="series-pill" href="ai-path-08-serving-with-vllm.html" title="Serving with vLLM">8</a>
+          <a class="series-pill" href="ai-path-09-knowledge-distillation.html" title="Knowledge Distillation">9</a>
+          <a class="series-pill" href="ai-path-10-scaling-ai-systems.html" title="Scaling AI Systems">10</a>
+        </div>
+      </nav>
+
+      <div class="post-content">
+
+        <p><strong>Hardware:</strong> any laptop. <strong>Python:</strong> 3.11+. Docker if you want to containerise (optional).</p>
+
+        <h2>From Toy to Product</h2>
+
+        <p>A Python script that calls an LLM is a toy. A FastAPI service that exposes that LLM behind validated endpoints, with auth and rate limiting, is a product. The gap is smaller than people think.</p>
+
+        <p>What we'll build in this part:</p>
+
+        <ul>
+          <li><code>POST /complete</code> &mdash; non-streaming completion</li>
+          <li><code>POST /stream</code> &mdash; Server-Sent Events streaming</li>
+          <li><code>GET /health</code> &mdash; liveness check</li>
+          <li>API-key auth via header</li>
+          <li>Per-key rate limiting</li>
+          <li>A Dockerfile that builds in under a minute</li>
+        </ul>
+
+        <h2>Why FastAPI</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Framework</th><th>Async</th><th>Auto docs</th><th>Pydantic native</th><th>Verdict</th></tr></thead>
+          <tbody>
+            <tr><td>FastAPI</td><td>yes</td><td>yes (Swagger + ReDoc)</td><td>yes</td><td>default for LLM services</td></tr>
+            <tr><td>Flask</td><td>partial</td><td>no</td><td>no</td><td>fine if you already know it</td></tr>
+            <tr><td>Django</td><td>partial</td><td>no (admin yes)</td><td>no</td><td>overkill for an LLM API</td></tr>
+            <tr><td><code>http.server</code></td><td>no</td><td>no</td><td>no</td><td>do not</td></tr>
+          </tbody>
+        </table>
+
+        <p>LLM calls are I/O-bound. FastAPI's native async support means a single uvicorn worker can have hundreds of in-flight LLM calls without breaking a sweat. That's the whole game for an LLM proxy.</p>
+
+        <h2>Install</h2>
+
+        <pre><code class="language-bash">uv add fastapi==0.118.0 uvicorn==0.34.0 slowapi==0.1.9 python-dotenv==1.1.0
+uv add httpx==0.28.0  # already added in Part 2 but keep it pinned</code></pre>
+
+        <h2>The Service: <code>main.py</code></h2>
+
+        <p>Save as <code>src/text_tool/server.py</code>. It imports the Part 2 client wrapper, validates requests with Pydantic, supports streaming, and gates everything behind an API key.</p>
+
+        <pre><code class="language-python">"""FastAPI LLM service. Wraps the Part 2 client wrapper."""
+from __future__ import annotations
+
+import logging
+import os
+from contextlib import asynccontextmanager
+from typing import AsyncIterator
+
+from fastapi import Depends, FastAPI, HTTPException, Request, Security, status
+from fastapi.responses import StreamingResponse
+from fastapi.security.api_key import APIKeyHeader
+from pydantic import BaseModel, Field
+from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
+
+from text_tool.llm_client import get_client, session_cost
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+
+
+# ----- Auth -----
+API_KEYS = {k.strip() for k in os.environ.get("API_KEYS", "").split(",") if k.strip()}
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+
+def get_caller_key(api_key: str | None = Security(api_key_header)) -&gt; str:
+    if not api_key or api_key not in API_KEYS:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid api key")
+    return api_key
+
+
+# ----- Rate limiting (per API key) -----
+def key_for_limit(request: Request) -&gt; str:
+    return request.headers.get("X-API-Key") or get_remote_address(request)
+
+
+limiter = Limiter(key_func=key_for_limit)
+
+
+# ----- Lifespan: warm the LLM client -----
+@asynccontextmanager
+async def lifespan(app: FastAPI) -&gt; AsyncIterator[None]:
+    log.info("starting up; provider=%s", os.environ.get("LLM_PROVIDER", "openai"))
+    app.state.client = get_client()
+    yield
+    log.info("shutting down; %s", session_cost().report())
+
+
+app = FastAPI(title="text-tool LLM service", version="0.1.0", lifespan=lifespan)
+app.state.limiter = limiter
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return StreamingResponse(
+        iter([f'{{"error":"rate limit exceeded: {exc.detail}"}}']),
+        media_type="application/json",
+        status_code=429,
+    )
+
+
+# ----- Schemas -----
+class CompleteRequest(BaseModel):
+    prompt: str = Field(..., min_length=1, max_length=20000)
+    max_tokens: int = Field(512, ge=1, le=4096)
+    temperature: float = Field(0.0, ge=0.0, le=2.0)
+
+
+class CompleteResponse(BaseModel):
+    text: str
+    model: str
+    input_tokens: int
+    output_tokens: int
+    cost_usd: float
+
+
+# ----- Endpoints -----
+@app.get("/health")
+async def health() -&gt; dict[str, str]:
+    return {"status": "ok"}
+
+
+@app.post("/complete", response_model=CompleteResponse)
+@limiter.limit("60/minute")
+async def complete(request: Request, body: CompleteRequest, _key: str = Depends(get_caller_key)):
+    client = request.app.state.client
+    result = await run_in_thread(client.complete, body.prompt,
+                                  max_tokens=body.max_tokens, temperature=body.temperature)
+    return CompleteResponse(
+        text=result.text, model=result.model,
+        input_tokens=result.input_tokens, output_tokens=result.output_tokens,
+        cost_usd=result.cost_usd,
+    )
+
+
+@app.post("/stream")
+@limiter.limit("60/minute")
+async def stream(request: Request, body: CompleteRequest, _key: str = Depends(get_caller_key)):
+    client = request.app.state.client
+
+    async def event_source() -&gt; AsyncIterator[str]:
+        # SDK streams are sync iterators; wrap to async to keep the event loop happy.
+        for chunk in client.stream(body.prompt,
+                                    max_tokens=body.max_tokens,
+                                    temperature=body.temperature):
+            yield f"data: {chunk}\n\n"
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(event_source(), media_type="text/event-stream")
+
+
+# ----- Helper: run sync SDK in a thread so the event loop stays free -----
+import asyncio
+
+
+async def run_in_thread(fn, /, *args, **kwargs):
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, lambda: fn(*args, **kwargs))</code></pre>
+
+        <h2>Why <code>run_in_thread</code></h2>
+
+        <p>The OpenAI and Anthropic Python SDKs have async clients (<code>AsyncOpenAI</code>, <code>AsyncAnthropic</code>). For this series I'm using the sync clients in the wrapper to keep the wrapper interface single. To keep the FastAPI event loop unblocked, the sync call runs in a worker thread via <code>loop.run_in_executor</code>. Once you commit fully to async, swap the wrapper for the async SDK and drop this helper.</p>
+
+        <h2>Run It</h2>
+
+        <pre><code class="language-bash">export OPENAI_API_KEY=sk-...
+export API_KEYS="dev-key-001,dev-key-002"
+
+uv run uvicorn text_tool.server:app --host 0.0.0.0 --port 8000 --reload</code></pre>
+
+        <p>Visit <code>http://localhost:8000/docs</code> for the auto-generated Swagger UI &mdash; that's free with FastAPI.</p>
+
+        <p>Hit it with curl:</p>
+
+        <pre><code class="language-bash">curl -X POST http://localhost:8000/complete \
+  -H "X-API-Key: dev-key-001" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Write one haiku about Nairobi.","max_tokens":80}'</code></pre>
+
+        <p>And the streaming endpoint:</p>
+
+        <pre><code class="language-bash">curl -N -X POST http://localhost:8000/stream \
+  -H "X-API-Key: dev-key-001" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Tell me a story in 3 sentences.","max_tokens":200}'</code></pre>
+
+        <p>The <code>-N</code> flag tells curl not to buffer &mdash; you'll see tokens print as they arrive.</p>
+
+        <h2>Health Checks: Liveness vs Readiness</h2>
+
+        <p>One pattern that bites every team that skips it:</p>
+
+        <ul>
+          <li><strong>Liveness</strong> = "is the process alive?" Always returns 200 unless the process is wedged. Used by Kubernetes / Docker / load balancer to decide whether to kill and restart you</li>
+          <li><strong>Readiness</strong> = "can I take traffic?" Returns 503 during warmup or when downstream is dead. Used to decide whether to send requests</li>
+        </ul>
+
+        <p>The <code>/health</code> above is liveness. A real readiness check would do a tiny LLM call (or check the cached client status). For most LLM services, liveness alone is fine because the LLM provider is the dependency that matters, and you can't usefully probe it from inside a request without paying for it.</p>
+
+        <h2>Dockerfile (Multi-Stage)</h2>
+
+        <p>Save as <code>Dockerfile</code> in the repo root:</p>
+
+        <pre><code class="language-bash">FROM python:3.11-slim AS build
+RUN pip install --no-cache-dir uv==0.5.10
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
+COPY src ./src
+RUN uv pip install --no-deps --no-cache-dir ./src
+
+FROM python:3.11-slim
+WORKDIR /app
+COPY --from=build /app/.venv /app/.venv
+COPY --from=build /app/src /app/src
+ENV PATH="/app/.venv/bin:$PATH" PYTHONPATH=/app/src
+EXPOSE 8000
+CMD ["uvicorn", "text_tool.server:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+
+        <p>Build and run:</p>
+
+        <pre><code class="language-bash">docker build -t text-tool:0.1 .
+docker run --rm -p 8000:8000 \
+  -e OPENAI_API_KEY=sk-... \
+  -e API_KEYS=dev-key-001 \
+  text-tool:0.1</code></pre>
+
+        <h2>One-Liner Deploy</h2>
+
+        <p>Both Fly.io and Railway accept the same Dockerfile:</p>
+
+        <pre><code class="language-bash"># Fly.io
+fly launch --image text-tool:0.1 --name my-llm-api
+
+# Railway
+railway up</code></pre>
+
+        <p>Set <code>OPENAI_API_KEY</code> and <code>API_KEYS</code> as secrets in their dashboards. The endpoint is live in &lt;5 minutes. Don't deploy production traffic to a free tier &mdash; but for "give the API to one collaborator", this is enough.</p>
+
+        <h2>Errors as Clean JSON</h2>
+
+        <p>FastAPI's defaults emit reasonable JSON for <code>HTTPException</code>. For internal errors you don't want stack traces leaking. Add this:</p>
+
+        <pre><code class="language-python">from fastapi.responses import JSONResponse
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception(request: Request, exc: Exception):
+    log.exception("unhandled error")
+    return JSONResponse(status_code=500, content={"error": "internal server error"})</code></pre>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>FastAPI is the default for LLM services because async + Pydantic + auto-docs lines up exactly with what an LLM API needs</li>
+          <li>Validate every request body with a Pydantic schema. Bad input never reaches your business logic</li>
+          <li>API-key auth is one Security dependency away. Store keys in env or a secret manager &mdash; never in code</li>
+          <li>Rate-limit per API key, not per IP. Per IP punishes shared clients (corporate proxies, classrooms)</li>
+          <li>Streaming uses <code>StreamingResponse</code> + an async generator. The SDK's sync stream wraps fine via <code>run_in_executor</code></li>
+          <li>Multi-stage Dockerfile keeps the image small. Final stage is just the venv and the source &mdash; ~150 MB</li>
+          <li>Use <code>lifespan</code> to construct expensive clients once at startup; reuse via <code>app.state</code></li>
+        </ul>
+
+        <h2>Next Up</h2>
+
+        <p>Part 4 adds embeddings and vector search to this service so it can do more than completion. By the end of Part 4 the service has a <code>/search</code> endpoint over a sample corpus, ready for Part 5 to combine with retrieval-augmented generation.</p>
+
+        <p style="margin-top: 24px;"><a href="ai-path-04-embeddings-vector-search.html" class="btn btn-outline-accent">Next: Part 4 &mdash; Embeddings and Vector Search <i class="fas fa-arrow-right ml-2"></i></a></p>
+      </div>
+
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="ai-path-02-first-llm-api-call.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 2: Your First LLM API Call</h4>
+            <span class="related-post-date">April 25, 2026</span>
+          </a>
+          <a href="ai-path-04-embeddings-vector-search.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 4: Embeddings and Vector Search</h4>
+            <span class="related-post-date">April 27, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

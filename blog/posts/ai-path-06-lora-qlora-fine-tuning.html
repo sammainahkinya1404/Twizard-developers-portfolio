@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 6: Fine-Tuning with LoRA and QLoRA | Samson Kinyanjui</title>
+  <meta name="description" content="Two years ago you needed a rack of A100s. Today an 8 GB GPU and 500 examples is enough. Here's how to fine-tune a 7B model with QLoRA + Unsloth, end to end." />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Part 6: Fine-Tuning with LoRA and QLoRA" />
+  <meta property="og:description" content="QLoRA + Unsloth on a Colab T4. Dataset prep, hyperparameters, training, evaluation, common failure modes." />
+  <meta property="og:image" content="https://sammainah.com/assets/Prof.png" />
+  <meta property="og:url" content="https://sammainah.com/blog/posts/ai-path-06-lora-qlora-fine-tuning.html" />
+  <meta property="og:site_name" content="Samson Kinyanjui" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Part 6: Fine-Tuning with LoRA and QLoRA" />
+  <meta name="twitter:description" content="QLoRA + Unsloth on a Colab T4. Dataset prep, hyperparameters, training, evaluation, common failure modes." />
+  <meta name="twitter:image" content="https://sammainah.com/assets/Prof.png" />
+
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="../../assets/favicon.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+
+<body>
+  <div class="reading-progress-bar" id="reading-progress"></div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="../../index.html">Samson Kinyanjui</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase">
+          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#my-works">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#research">Implementations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#publications">Publications</a></li>
+          <li class="nav-item"><a class="nav-link active" href="../index.html">Posts</a></li>
+          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item">
+            <button id="darkToggle" class="btn btn-sm btn-outline-light ml-3">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+      <a href="../index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+      <p style="margin-top: 16px;"><a href="ai-path-05-production-rag.html"><i class="fas fa-arrow-left"></i> Previous: Part 5 &mdash; Building a Production RAG System</a></p>
+
+      <header class="post-header">
+        <div class="post-category">Tutorial</div>
+        <h1 class="post-title">Part 6: Fine-Tuning with LoRA and QLoRA</h1>
+        <p class="post-subtitle">Two years ago you needed a rack of A100s. Today an 8 GB GPU and 500 examples is enough. Here's how to fine-tune a 7B model with QLoRA + Unsloth, end to end.</p>
+
+        <div class="post-meta">
+          <div class="post-meta-item"><i class="fas fa-user"></i><span>Samson Kinyanjui</span></div>
+          <div class="post-meta-item"><i class="fas fa-calendar"></i><span>April 29, 2026</span></div>
+          <div class="post-meta-item"><i class="fas fa-clock"></i><span>17 min read</span></div>
+        </div>
+
+        <div class="post-tags">
+          <span class="post-tag">AI Engineer Path</span>
+          <span class="post-tag">Fine-Tuning</span>
+          <span class="post-tag">LoRA</span>
+          <span class="post-tag">QLoRA</span>
+          <span class="post-tag">Unsloth</span>
+          <span class="post-tag">Training</span>
+        </div>
+      </header>
+
+      <nav class="series-nav" aria-label="AI Engineer Path series navigation">
+        <div class="series-nav-header">
+          <p class="series-nav-title"><a href="../../series/ai-engineer-path/index.html">&larr; The AI Engineer's Path</a></p>
+          <span class="series-nav-meta">Part 6 of 10</span>
+        </div>
+        <div class="series-nav-pills">
+          <a class="series-pill" href="ai-path-01-python-foundations.html" title="Python Foundations">1</a>
+          <a class="series-pill" href="ai-path-02-first-llm-api-call.html" title="Your First LLM API Call">2</a>
+          <a class="series-pill" href="ai-path-03-fastapi-for-llms.html" title="Building APIs with FastAPI">3</a>
+          <a class="series-pill" href="ai-path-04-embeddings-vector-search.html" title="Embeddings and Vector Search">4</a>
+          <a class="series-pill" href="ai-path-05-production-rag.html" title="Production RAG">5</a>
+          <span class="series-pill is-current" title="LoRA and QLoRA Fine-Tuning">6</span>
+          <a class="series-pill" href="ai-path-07-quantization-for-deployment.html" title="Quantization for Deployment">7</a>
+          <a class="series-pill" href="ai-path-08-serving-with-vllm.html" title="Serving with vLLM">8</a>
+          <a class="series-pill" href="ai-path-09-knowledge-distillation.html" title="Knowledge Distillation">9</a>
+          <a class="series-pill" href="ai-path-10-scaling-ai-systems.html" title="Scaling AI Systems">10</a>
+        </div>
+      </nav>
+
+      <div class="post-content">
+
+        <p><strong>Hardware required:</strong> a CUDA GPU with at least 8 GB VRAM. <strong>Free Colab T4</strong> works for everything in this post &mdash; that's the fallback path. <strong>Python:</strong> 3.11+.</p>
+
+        <h2>The Real Lesson</h2>
+
+        <p>The thing every "fine-tune your LLM" tutorial gets wrong: starting with the code. The first 70% of a successful fine-tune is the dataset. The last 30% is the training run. Most people invert this and wonder why their adapter is useless.</p>
+
+        <p>This post is the full pipeline, dataset to deployment-ready adapter. We'll fine-tune <code>Qwen/Qwen3-4B-Instruct</code> on a small domain-specific instruction set, save the adapter, smoke-test it. Part 7 quantizes the merged model; Part 8 serves it via vLLM.</p>
+
+        <h2>When to Fine-Tune</h2>
+
+        <p>Decision flowchart:</p>
+
+        <ul>
+          <li>The model is missing <strong>knowledge</strong> &mdash; recent events, your private docs &rarr; <strong>RAG</strong> (Part 5)</li>
+          <li>The model is missing <strong>behaviour</strong> &mdash; a specific output format, tone, code style &rarr; <strong>fine-tune</strong></li>
+          <li>The model is making a <strong>style</strong> mistake on every call &rarr; try <strong>prompt engineering</strong> first; fine-tune only if prompts can't fix it</li>
+          <li>You need <strong>both</strong> &mdash; fine-tune the behaviour, RAG the knowledge. They compose</li>
+        </ul>
+
+        <h2>LoRA in One Paragraph</h2>
+
+        <p>Freeze the base model's weights. Add small trainable matrices (low-rank decomposition: A is <code>r &times; d</code>, B is <code>d &times; r</code>) on top of selected linear layers. Only those matrices train. Inference adds <code>A @ B</code> to the original output. Result: an adapter file 50&ndash;500 MB instead of a 14 GB model, trains in hours instead of days, deploys by swapping which adapter is loaded on top of one shared base.</p>
+
+        <h2>QLoRA in One Paragraph</h2>
+
+        <p>Same as LoRA but the frozen base is loaded in 4-bit. Training compute happens in higher precision but the giant base weight matrix is compressed in memory. Result: you can fine-tune a 7B model on 8 GB of VRAM. The whole reason a Colab T4 is enough.</p>
+
+        <h2>Dataset Preparation (the 70%)</h2>
+
+        <p><strong>Quality &gt; quantity.</strong> 500 clean instruction/output pairs beats 5,000 noisy ones every time. Format depends on the model's chat template, but the canonical instruction shape is:</p>
+
+        <pre><code class="language-python">{
+  "instruction": "Convert this temperature to Celsius.",
+  "input": "98.6 F",
+  "output": "37.0 C"
+}</code></pre>
+
+        <p>Save as JSONL, one example per line. The conversion script:</p>
+
+        <pre><code class="language-python">"""Turn a CSV of (instruction, input, output) into a JSONL training file."""
+import csv, json, sys
+from pathlib import Path
+
+
+def main(csv_path: str, out_path: str) -&gt; None:
+    with open(csv_path) as f, open(out_path, "w") as g:
+        reader = csv.DictReader(f)
+        for row in reader:
+            example = {
+                "instruction": row["instruction"].strip(),
+                "input": (row.get("input") or "").strip(),
+                "output": row["output"].strip(),
+            }
+            if not example["instruction"] or not example["output"]:
+                continue
+            g.write(json.dumps(example) + "\n")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1], sys.argv[2])</code></pre>
+
+        <h2>Hyperparameters That Matter</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Parameter</th><th>Default</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td>Rank <code>r</code></td><td>16</td><td>How expressive the adapter is. Higher = more capacity, larger file. 8&ndash;32 covers most cases</td></tr>
+            <tr><td>Alpha</td><td>16</td><td>Scaling factor. Effective LR is multiplied by <code>alpha / r</code>. Set alpha = r as a starting point</td></tr>
+            <tr><td>Learning rate</td><td>2e-4</td><td>QLoRA tolerates higher LR than full fine-tunes. 1e-4 to 5e-4 is the safe range</td></tr>
+            <tr><td>Target modules</td><td><code>all-linear</code></td><td>Train all attention + MLP projections. Attention-only is cheaper but worse for structural adherence</td></tr>
+            <tr><td>Dropout</td><td>0</td><td>QLoRA is regularised by quantisation noise; extra dropout usually hurts</td></tr>
+            <tr><td>Epochs</td><td>1&ndash;3</td><td>Stop when eval loss flattens. More epochs = overfit</td></tr>
+            <tr><td>Batch size</td><td>1 &times; grad accum 4</td><td>On a T4, real batch is 1; gradient accumulation simulates 4. Bigger if VRAM allows</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Setting Up Unsloth on Colab T4</h2>
+
+        <p>The whole training run fits in a Colab notebook. Cells in order:</p>
+
+        <pre><code class="language-bash">!pip install -q unsloth==2026.4 trl==0.12.0 peft==0.13.0 datasets==3.2.0 bitsandbytes==0.45.0</code></pre>
+
+        <h2>Complete Training Script</h2>
+
+        <p>Save as <code>train.py</code>. This runs locally on an 8 GB GPU or in a Colab cell:</p>
+
+        <pre><code class="language-python">"""QLoRA fine-tune of Qwen3-4B-Instruct on a small instruction dataset."""
+from __future__ import annotations
+import os
+from datasets import load_dataset
+from unsloth import FastLanguageModel
+from trl import SFTTrainer, SFTConfig
+
+MODEL_NAME = "unsloth/Qwen3-4B-Instruct"
+MAX_SEQ_LENGTH = 2048
+DATASET_PATH = "data/train.jsonl"
+OUTPUT_DIR = "outputs/qwen3-4b-domain-adapter"
+
+# 1. Load model in 4-bit
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name=MODEL_NAME,
+    max_seq_length=MAX_SEQ_LENGTH,
+    dtype=None,             # auto: bf16 on Hopper, fp16 on T4
+    load_in_4bit=True,
+)
+
+# 2. Add LoRA adapters
+model = FastLanguageModel.get_peft_model(
+    model,
+    r=16,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
+                    "gate_proj", "up_proj", "down_proj"],
+    lora_alpha=16,
+    lora_dropout=0,
+    bias="none",
+    use_gradient_checkpointing="unsloth",   # ~30% less VRAM, no quality loss
+    random_state=42,
+)
+
+
+# 3. Format examples to the model's chat template
+def format_example(example: dict) -&gt; dict:
+    messages = []
+    user_text = example["instruction"]
+    if example.get("input"):
+        user_text += "\n\n" + example["input"]
+    messages.append({"role": "user", "content": user_text})
+    messages.append({"role": "assistant", "content": example["output"]})
+    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
+    return {"text": text}
+
+
+dataset = load_dataset("json", data_files=DATASET_PATH, split="train")
+dataset = dataset.map(format_example, remove_columns=dataset.column_names)
+dataset = dataset.train_test_split(test_size=0.05, seed=42)
+
+# 4. Train
+trainer = SFTTrainer(
+    model=model,
+    tokenizer=tokenizer,
+    train_dataset=dataset["train"],
+    eval_dataset=dataset["test"],
+    args=SFTConfig(
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=4,
+        warmup_steps=10,
+        num_train_epochs=2,
+        learning_rate=2e-4,
+        bf16=False,                # T4 doesn't have bf16; use fp16
+        fp16=True,
+        logging_steps=10,
+        eval_strategy="steps",
+        eval_steps=50,
+        save_strategy="steps",
+        save_steps=100,
+        save_total_limit=2,
+        output_dir=OUTPUT_DIR,
+        max_seq_length=MAX_SEQ_LENGTH,
+        dataset_text_field="text",
+        report_to="none",
+        seed=42,
+    ),
+)
+
+trainer.train()
+
+# 5. Save adapter
+model.save_pretrained(OUTPUT_DIR)
+tokenizer.save_pretrained(OUTPUT_DIR)
+print(f"adapter saved to {OUTPUT_DIR}")</code></pre>
+
+        <h2>Sample Dataset</h2>
+
+        <p>50 examples in a domain you care about. Save as <code>data/train.jsonl</code>:</p>
+
+        <pre><code class="language-python">{"instruction": "Summarise in one sentence.", "input": "FastAPI is a Python web framework with async support, automatic OpenAPI docs, and Pydantic validation built in.", "output": "FastAPI is an async Python web framework that auto-generates docs and validates with Pydantic."}
+{"instruction": "Convert temperature.", "input": "98.6 F", "output": "37.0 C"}
+{"instruction": "Format as JSON.", "input": "name=Alice age=30", "output": "{\"name\": \"Alice\", \"age\": 30}"}
+// ... 47 more pairs in the same domain</code></pre>
+
+        <p>Replace these examples with whatever your actual task is. Customer-support replies, code reviews, classification labels &mdash; the format is the same.</p>
+
+        <h2>Monitoring the Run</h2>
+
+        <p>Watch two numbers:</p>
+
+        <ul>
+          <li><strong>Train loss</strong> &mdash; should decrease smoothly. If it's spiky, your LR is too high. If it plateaus instantly, something's wrong with your data formatting</li>
+          <li><strong>Eval loss</strong> &mdash; should decrease, then plateau. When it starts going <em>up</em>, you're overfitting; stop now</li>
+        </ul>
+
+        <p>The Unsloth trainer prints both every 10 steps. A healthy small-dataset QLoRA run looks like train loss falling from ~2.0 to ~0.6 over a few hundred steps, eval loss following at a slight gap.</p>
+
+        <h2>Smoke-Test the Adapter</h2>
+
+        <pre><code class="language-python">"""Generate a few outputs from the trained adapter to eyeball quality."""
+from unsloth import FastLanguageModel
+
+model, tok = FastLanguageModel.from_pretrained(
+    model_name="outputs/qwen3-4b-domain-adapter",
+    max_seq_length=2048,
+    load_in_4bit=True,
+)
+FastLanguageModel.for_inference(model)
+
+prompts = [
+    "Convert temperature.\n\n75 F",
+    "Format as JSON.\n\nname=Bob age=42",
+]
+for p in prompts:
+    inputs = tok.apply_chat_template(
+        [{"role": "user", "content": p}],
+        tokenize=True, add_generation_prompt=True, return_tensors="pt",
+    ).to("cuda")
+    out = model.generate(input_ids=inputs, max_new_tokens=80, temperature=0.0)
+    print(tok.decode(out[0], skip_special_tokens=True))
+    print("---")</code></pre>
+
+        <h2>Evaluating Properly</h2>
+
+        <p>Eyeballing a few outputs is fine for "did training do anything?" but you need a real eval before you trust the adapter:</p>
+
+        <ul>
+          <li><strong>Task metric.</strong> The thing the model is supposed to do. Exact-match for classifications. ROUGE for summarisation. Pass-rate for code. Build this from a held-out set you didn't train on</li>
+          <li><strong>Sanity check on a general benchmark.</strong> Run MMLU subset (or a 100-example sample). If general capability has collapsed, you've overfit</li>
+          <li><strong>Compared to the base model.</strong> If your fine-tune isn't measurably better than the base, the fine-tune is a failed run. This catches "I trained for 5 hours and changed nothing" silently</li>
+        </ul>
+
+        <h2>Adapter or Merged?</h2>
+
+        <p>For deployment you have two choices:</p>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Option</th><th>When</th></tr></thead>
+          <tbody>
+            <tr><td>Keep adapter separate; load on top of base at runtime</td><td>You serve multiple specialised adapters from one base (vLLM does this natively &mdash; see Part 8)</td></tr>
+            <tr><td>Merge adapter into base, save as a single model</td><td>You deploy one specialised model. Quantize the merged result &mdash; that's Part 7</td></tr>
+          </tbody>
+        </table>
+
+        <p>For this series we merge, because Part 7 quantizes the merged model. The merge is one line:</p>
+
+        <pre><code class="language-python">model = model.merge_and_unload()
+model.save_pretrained("outputs/qwen3-4b-domain-merged")
+tok.save_pretrained("outputs/qwen3-4b-domain-merged")</code></pre>
+
+        <h2>Common Failure Modes</h2>
+
+        <table class="table table-bordered" style="color: var(--text-secondary);">
+          <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr><td>Model parrots training data verbatim</td><td>Overfit (loss went to ~0)</td><td>Fewer epochs or more data</td></tr>
+            <tr><td>Loss flat from step 1</td><td>Wrong chat template; tokenizer mismatch</td><td>Verify <code>apply_chat_template</code> output matches what the base model expects</td></tr>
+            <tr><td>Eval loss climbs</td><td>Overfitting or LR too high</td><td>Lower LR, early-stop at the eval-loss minimum</td></tr>
+            <tr><td>Output is garbage post-training</td><td>Stop tokens wrong, or you trained on the wrong field</td><td>Print formatted training examples; confirm the assistant turn ends correctly</td></tr>
+            <tr><td>Adapter is trained but saved poorly</td><td>Forgot <code>save_pretrained</code>, saved checkpoint dir instead</td><td>Always save to a clean output dir; verify the dir contains <code>adapter_model.safetensors</code></td></tr>
+          </tbody>
+        </table>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+          <li>Fine-tune for behaviour. RAG for knowledge. Don't fine-tune to add facts &mdash; it works badly and takes forever</li>
+          <li>Dataset is 70% of the work. 500 clean examples beat 5,000 noisy ones</li>
+          <li>QLoRA + Unsloth fits 7B fine-tunes on a free Colab T4</li>
+          <li>Default to <code>r=16, alpha=16, all-linear, dropout=0, lr=2e-4, epochs=1-3</code>. Tune one knob at a time</li>
+          <li>Monitor train and eval loss. Stop early when eval loss plateaus or rises</li>
+          <li>Always evaluate against a held-out set <em>and</em> against the base model. A fine-tune that doesn't beat the base is a failed run</li>
+          <li>Merge for single-model deployment; keep adapter separate for multi-adapter serving</li>
+        </ul>
+
+        <h2>Next Up</h2>
+
+        <p>Part 7 takes the merged model from this part and quantizes it &mdash; AWQ for vLLM serving, GGUF for Ollama / llama.cpp / Apple Silicon. The deeper dive on quantization theory lives at <a href="llm-quantization-gptq-awq-gguf.html">Demystifying LLM Quantization</a>.</p>
+
+        <p style="margin-top: 24px;"><a href="ai-path-07-quantization-for-deployment.html" class="btn btn-outline-accent">Next: Part 7 &mdash; Quantization for Deployment <i class="fas fa-arrow-right ml-2"></i></a></p>
+      </div>
+
+      <footer class="post-footer">
+        <div class="post-share">
+          <span>Share this post:</span>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on WhatsApp" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="share-btn" aria-label="Share on X" onclick="shareOnX()"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="share-btn" aria-label="Copy link" onclick="copyLink()"><i class="fas fa-link"></i></a>
+        </div>
+      </footer>
+
+      <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+          <a href="ai-path-07-quantization-for-deployment.html" class="related-post-card">
+            <span class="related-post-category">Tutorial</span>
+            <h4>Part 7: Quantization for Deployment</h4>
+            <span class="related-post-date">April 30, 2026</span>
+          </a>
+          <a href="llm-quantization-gptq-awq-gguf.html" class="related-post-card">
+            <span class="related-post-category">Paper Breakdown</span>
+            <h4>Demystifying LLM Quantization: GPTQ, AWQ &amp; GGUF</h4>
+            <span class="related-post-date">April 14, 2026</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="text-center mt-5 mb-4">
+        <a href="../index.html" class="btn btn-outline-accent"><i class="fas fa-arrow-left mr-2"></i> Back to Blog</a>
+      </div>
+    </div>
+  </article>
+
+  <footer class="footer bg-dark text-white pt-4 pb-3">
+    <div class="container text-center">
+      <p class="mb-2">&copy; 2026 <strong>Samson Kinyanjui</strong>. All rights reserved.</p>
+      <div class="mb-3">
+        <a href="https://www.linkedin.com/in/samson-kinyanjui-49051b23a/" target="_blank" class="text-white mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="https://github.com/sammainahkinya1404" target="_blank" class="text-white mx-2"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://x.com/MainahKinya" target="_blank" class="text-white mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+      </div>
+      <p class="small mb-0">Designed & built with ❤️ by Samson.</p>
+    </div>
+  </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    const darkToggle = document.getElementById('darkToggle');
+    const themeIcon = document.getElementById('theme-icon');
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 150);
+      localStorage.setItem('lightMode', isLight);
+    });
+    window.onload = () => {
+      const isLight = localStorage.getItem('lightMode') === 'true';
+      if (isLight) { document.body.classList.add('light-mode'); themeIcon.className = 'fas fa-moon'; }
+      else { themeIcon.className = 'fas fa-sun'; }
+    };
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'linkedin-share', 'width=600,height=600');
+    }
+    function shareOnWhatsApp() {
+      const text = encodeURIComponent(`${document.title}\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, 'whatsapp-share', 'width=600,height=600');
+    }
+    function shareOnX() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, 'x-share', 'width=600,height=300');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn[onclick="copyLink()"] i');
+        btn.className = 'fas fa-check';
+        setTimeout(() => { btn.className = 'fas fa-link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
