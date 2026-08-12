@@ -229,6 +229,20 @@ p {
   background-clip: text;
 }
 
+.hero-alias {
+  font-size: 0.45em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.hero-tagline {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.03em;
+  margin-bottom: 12px;
+}
+
 .hero-role {
   font-size: clamp(1rem, 2.5vw, 1.4rem);
   color: var(--text-secondary);
@@ -1015,6 +1029,15 @@ html {
 
   .hero-name {
     font-size: 2rem;
+  }
+
+  .hero-alias {
+    display: block;
+    font-size: 0.55em;
+  }
+
+  .hero-tagline {
+    font-size: 1.05rem;
   }
 
   .hero-role {
