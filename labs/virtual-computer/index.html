@@ -1868,6 +1868,9 @@
     (other.attempts || []).forEach(a => { if (!have.has(key(a))) { db.attempts.push(a); have.add(key(a)); } });
     Object.entries(other.progress || {}).forEach(([k, v]) => { if (!db.progress[k] || (v.updated || '') > (db.progress[k].updated || '')) db.progress[k] = v; });
   }
+  function readCode(code) {
+    try { const pack = JSON.parse(decodeURIComponent(escape(atob(code.trim())))); if (!pack.s || !pack.s.reg) return null; return { students: { [pack.s.reg]: pack.s }, attempts: pack.a || [], progress: pack.p || {} }; } catch (e) { return null; }
+  }
   async function writeFile() { if (!fileHandle) return; try { const w = await fileHandle.createWritable(); await w.write(toMarkdown()); await w.close(); } catch (e) { console.warn('records file write failed', e); } }
   async function readFile() { if (!fileHandle) return; try { const f = await fileHandle.getFile(); merge(fromMarkdown(await f.text())); saveLocal(); } catch (e) { console.warn('records file read failed', e); } }
   // IndexedDB keeps the handle between sessions
@@ -1926,7 +1929,9 @@ function doPost(e) {
     clearProgress(reg, lab) { delete db.progress[reg + '|' + lab]; persist(); },
     resetStudent(reg) { delete db.students[reg]; db.attempts = db.attempts.filter(a => a.reg !== reg); Object.keys(db.progress).forEach(k => { if (k.startsWith(reg + '|')) delete db.progress[k]; }); persist(); },
     progressCode(reg) { const s = db.students[reg]; if (!s) return ''; const pack = { s, a: db.attempts.filter(a => a.reg === reg), p: Object.fromEntries(Object.entries(db.progress).filter(([k]) => k.startsWith(reg + '|'))) }; return btoa(unescape(encodeURIComponent(JSON.stringify(pack)))).replace(/=+$/, ''); },
-    importCode(code) { try { const pack = JSON.parse(decodeURIComponent(escape(atob(code.trim())))); merge({ students: { [pack.s.reg]: pack.s }, attempts: pack.a, progress: pack.p }); persist(); return pack.s; } catch (e) { return null; } },
+    importCode(code) { const pack = readCode(code); if (!pack) return null; merge(pack); persist(); return pack.students[Object.keys(pack.students)[0]]; },
+    // Many codes at once (one per line or space-separated), e.g. pasted from an LMS submission export.
+    importCodes(text) { let ok = 0, bad = 0; text.split(/\s+/).filter(Boolean).forEach(c => { const pack = readCode(c); if (pack) { merge(pack); ok++; } else bad++; }); if (ok) persist(); return { ok, bad }; },
     csv() { const rows = [['reg no', 'name', 'lab', 'attempt', 'score', 'passed', 'started', 'finished']]; db.attempts.forEach(a => rows.push([a.reg, (db.students[a.reg] || {}).name || '', a.lab, a.attempt, a.score, a.passed ? 'yes' : 'no', a.started, a.finished])); return rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n'); },
     markdown: toMarkdown, importMarkdown(text) { merge(fromMarkdown(text)); persist(); }, now
   };
@@ -2549,7 +2554,9 @@ function doPost(e) {
   function lecturerView(root) {
     const studs = STORE.students(); const t = h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'reg no'), h('th', {}, 'name'), ...LABS5.map(L => h('th', {}, 'Lab ' + L.id)), h('th', {}, ''))), h('tbody', {}, ...studs.map(s => h('tr', {}, h('td', {}, s.reg), h('td', {}, s.name), ...LABS5.map(L => { const b = STORE.best(s.reg, L.id); const n = STORE.attempts(s.reg).filter(a => a.lab === L.id).length; return h('td', { class: b === null ? '' : b >= PASS ? 'ok' : 'low' }, b === null ? (STORE.progress(s.reg, L.id) ? 'in progress' : '—') : `${b}% (${n})`); }), h('td', {}, h('button', { class: 'btn', onclick: e => { if (e.target.dataset.armed) { STORE.resetStudent(s.reg); renderHome('lecturer'); } else { e.target.dataset.armed = '1'; e.target.textContent = 'Confirm reset'; } } }, 'Reset'))))));
     const csv = h('textarea', { rows: 6, readonly: '', style: 'width:100%;font:11px var(--mono)', hidden: '' });
-    root.append(h('p', { class: 'muted' }, `${studs.length} student${studs.length === 1 ? '' : 's'} on this machine${STORE.hasFile() ? ' and in ' + STORE.fileName() : ''}. Best score (attempts) per lab; green = passed.`), t, h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: () => { const text = STORE.csv(); csv.value = text; csv.hidden = false; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' })); a.download = 'coa-marks.csv'; a.click(); } }, 'Export CSV'), h('button', { class: 'btn', onclick: () => { const text = STORE.markdown(); csv.value = text; csv.hidden = false; } }, 'Show records.md')), csv);
+    const codes = h('textarea', { rows: 4, placeholder: 'Paste the progress codes students submitted, one per line', style: 'width:100%;font:11px var(--mono)' });
+    root.append(h('p', { class: 'muted' }, `${studs.length} student${studs.length === 1 ? '' : 's'} on this machine${STORE.hasFile() ? ' and in ' + STORE.fileName() : ''}. Best score (attempts) per lab; green = passed.`), t, h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: () => { const text = STORE.csv(); csv.value = text; csv.hidden = false; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' })); a.download = 'coa-marks.csv'; a.click(); } }, 'Export CSV'), h('button', { class: 'btn', onclick: () => { const text = STORE.markdown(); csv.value = text; csv.hidden = false; } }, 'Show records.md')), csv,
+      h('h3', {}, 'Add students’ progress codes'), codes, h('div', { class: 'row' }, h('button', { class: 'btn', onclick: () => { const r = STORE.importCodes(codes.value); renderHome('lecturer'); $('labs-body').querySelector('.codes-msg').textContent = `${r.ok} code${r.ok === 1 ? '' : 's'} read` + (r.bad ? `, ${r.bad} could not be read.` : '.'); } }, 'Add codes'), h('span', { class: 'muted codes-msg' })));
   }
   function settingsView(root) {
     const msg = h('p', { class: 'muted' }, STORE.hasFile() ? `Connected to records file: ${STORE.fileName()}` : 'No records file connected — records are kept in this browser only.');
