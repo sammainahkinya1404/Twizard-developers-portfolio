@@ -107,6 +107,25 @@
   #help h2 { margin: 0 0 8px; font-size: 16px; }
   #help ol { margin: 0 0 10px; padding-left: 20px; color: #cfd6de; } #help li { margin-bottom: 4px; }
 
+  /* ---- assessed labs ---- */
+  #labs { grid-column: 2 / 4; grid-row: 1 / 4; justify-self: center; align-self: center; width: min(900px, 100%); max-height: calc(100% - 8px); overflow: auto; padding: 18px 20px; }
+  #labs h2 { margin: 0; font-size: 17px; font-weight: 600; } #labs h3 { margin: 16px 0 4px; font-size: 14px; font-weight: 600; } #labs .ref { font: 400 11px/1.4 var(--mono); color: var(--accent); margin-bottom: 10px; }
+  #labs p { margin: 8px 0; color: #cfd6de; font-size: 13px; } #labs input { font: 500 13px/1.2 var(--mono); color: var(--fg); background: rgba(255,255,255,0.06); border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; } #labs label { font-size: 12px; color: var(--muted); }
+  #labs table { width: 100%; border-collapse: collapse; font: 400 12px/1.4 var(--mono); } #labs th { text-align: left; color: var(--muted); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 6px; border-bottom: 1px solid var(--line); } #labs td { padding: 4px 6px; border-bottom: 1px solid var(--line); } #labs td.ok { color: var(--ok); } #labs td.low { color: #f0a0a0; }
+  .labcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; margin: 10px 0; }
+  .labcard { border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .labcard > span { font: 500 10px/1.2 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); } .labcard > b { font-size: 14px; } .labcard > em { font-style: normal; font-size: 12px; color: #cfd6de; flex: 1; }
+  .labcard.locked { opacity: 0.55; } .labcard.passed { border-color: rgba(125,255,176,0.5); } .labcard.passed > span { color: var(--ok); } .labcard.in-progress { border-color: rgba(208,138,74,0.6); } .labcard.in-progress > span { color: var(--accent); } .labcard.available > span { color: var(--accent-2); }
+  #task { grid-column: 3; grid-row: 1 / 4; align-self: start; padding: 14px 16px; max-height: calc(100% - 8px); overflow: auto; }
+  .thead { display: flex; justify-content: space-between; align-items: center; gap: 8px; } .thead h2 { margin: 0; font-size: 15px; font-weight: 600; }
+  .tmeta { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 500 11px/1.4 var(--mono); color: var(--muted); margin: 8px 0 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  .prompt { white-space: pre-wrap; font: 400 13px/1.5 var(--sans); color: var(--fg); margin: 0 0 6px; background: rgba(255,255,255,0.04); border-radius: 6px; padding: 10px; }
+  #task input { font: 500 14px/1.2 var(--mono); color: var(--fg); background: rgba(255,255,255,0.06); border: 1px solid var(--line); border-radius: 5px; padding: 7px 9px; }
+  .fb { font-size: 13px; margin: 10px 0; } .fb.good { color: var(--ok); } .fb.bad { color: #f0a0a0; } .fb.part { color: var(--accent); }
+  .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 10px; font: 400 12px/1.6 var(--mono); margin: 8px 0; } .chk { color: var(--muted); } .chk.done { color: var(--ok); }
+  .result { text-align: center; padding: 16px; border-radius: 8px; margin: 6px 0 12px; } .result b { display: block; font: 600 40px/1.1 var(--mono); } .result span { font: 500 11px/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+  .result.pass { background: rgba(125,255,176,0.14); color: var(--ok); } .result.fail { background: rgba(239,68,68,0.14); color: #f0a0a0; }
+
   /* ---- concept labs ---- */
   #lab { grid-column: 2; grid-row: 1 / 4; justify-self: center; align-self: center; width: min(760px, 100%); }
   #lab.wide { width: min(1000px, 100%); grid-column: 2 / 4; }
@@ -204,6 +223,7 @@
     #help { grid-column: 1; grid-row: 3; }
     #lab.wide { grid-column: 1; width: 100%; }
     #lab, #lab.side { grid-column: 1; grid-row: 3 / 6; width: 100%; max-height: 100%; margin-top: 0; }
+    #labs { grid-column: 1; grid-row: 3 / 6; width: 100%; } #task { grid-column: 1; grid-row: 3 / 6; max-height: 60vh; align-self: end; }
     .grid2 { grid-template-columns: auto 1fr; }
     .frames { grid-template-columns: repeat(4, 1fr); }
   }
@@ -232,6 +252,7 @@
       <li><b>Read:</b> click any part or connector for what it is and what it does.</li>
       <li><b>Go inside:</b> double-click the installed CPU to open the chip, then a core to see its ALU, instruction logic and caches.</li>
       <li><b>Run the bus:</b> click the copper traces between the CPU and memory and press <i>Run fetch–execute</i> to step through the cycle.</li>
+      <li><b>Assessed labs:</b> enrol with your name and registration number, then work through five auto-marked labs; 65% unlocks the next, and you can stop and resume. The lecturer tab exports marks.</li>
       <li><b>Menu:</b> the left panel lists everything by topic — build steps, parts to open, simulators (blue) and labs — plus a self-test per topic.</li>
       <li><b>Performance and arithmetic:</b> the CPU has the Amdahl / CPI / SPEC lab; the ALU inside a core has two's complement, multiplication, division, IEEE 754 and number-system converters.</li>
       <li><b>I/O and the OS:</b> click the chipset for programmed / interrupt-driven / DMA transfers animated on the bus; click the CPU or a memory module for the scheduler and paging labs.</li>
@@ -255,6 +276,17 @@
     <div id="step-hint"></div>
     <div class="row"><button id="step-undo" class="btn">Undo</button><button id="step-skip" class="btn">Do it for me</button></div>
   </div>
+
+  <div id="labs" class="panel" hidden>
+    <button id="labs-close" class="btn close" aria-label="Close" onclick="document.getElementById('labs').hidden = true">×</button>
+    <div id="labs-body"></div>
+  </div>
+
+  <aside id="task" class="panel" hidden>
+    <div class="thead"><h2 id="task-title"></h2><button id="task-quit" class="btn">Save & exit</button></div>
+    <div id="task-meta" class="tmeta"></div>
+    <div id="task-body"></div>
+  </aside>
 
   <div id="lab" class="panel" hidden>
     <button id="lab-close" class="btn close" aria-label="Close">×</button>
@@ -1794,6 +1826,113 @@
   Object.assign(global.LABS, { hier: hierLab, iomod: iomodLab, fpflow: fpLab, dyn: dynLab, timeline: timelineLab, quiz: quizLab });
 })(window);
 
+/* Virtual Computer — student records store.
+   Always: localStorage. Optional: a records.md file (File System Access API, Chrome/Edge — can sit on a shared drive),
+   and/or a Google Apps Script web-app URL that appends rows to a Google Sheet. Also: progress codes and CSV export. */
+(function (global) {
+  const KEY = 'coa.records.v1', CFG = 'coa.config.v1', OUTBOX = 'coa.outbox.v1';
+  // Web app URL of the lecturer's Google Apps Script deployment; every device sends its results here.
+  const SHEET_URL = '';
+  const now = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16).replace('T', ' ');
+  let db = { students: {}, attempts: [], progress: {} };
+  let config = { fileName: '' };
+  let fileHandle = null;
+  const listeners = [];
+
+  function load() { try { const s = localStorage.getItem(KEY); if (s) db = Object.assign(db, JSON.parse(s)); const c = localStorage.getItem(CFG); if (c) config = Object.assign(config, JSON.parse(c)); } catch (e) {} }
+  function saveLocal() { try { localStorage.setItem(KEY, JSON.stringify(db)); localStorage.setItem(CFG, JSON.stringify(config)); } catch (e) {} }
+  function notify() { listeners.forEach(f => f()); }
+
+  /* ---------- records.md ---------- */
+  function toMarkdown() {
+    const L = ['# Virtual Computer — student records', '', `Updated: ${now()}`, '', '## Students', '', '| reg no | name | enrolled |', '|---|---|---|'];
+    Object.values(db.students).sort((a, b) => a.reg.localeCompare(b.reg)).forEach(s => L.push(`| ${s.reg} | ${s.name} | ${s.enrolledAt} |`));
+    L.push('', '## Attempts', '', '| reg no | lab | attempt | score | passed | started | finished |', '|---|---|---|---|---|---|---|');
+    db.attempts.forEach(a => L.push(`| ${a.reg} | ${a.lab} | ${a.attempt} | ${a.score} | ${a.passed ? 'yes' : 'no'} | ${a.started} | ${a.finished} |`));
+    L.push('', '## In-progress state (machine-readable, do not edit)', '', '```json', JSON.stringify(db.progress), '```', '');
+    return L.join('\n');
+  }
+  function fromMarkdown(text) {
+    const out = { students: {}, attempts: [], progress: {} };
+    const sec = text.split(/^## /m);
+    sec.forEach(s => {
+      if (s.startsWith('Students')) s.split('\n').slice(4).forEach(l => { const c = l.split('|').map(x => x.trim()); if (c.length >= 4 && c[1] && c[1] !== 'reg no' && !/^-+$/.test(c[1])) out.students[c[1]] = { reg: c[1], name: c[2], enrolledAt: c[3] }; });
+      if (s.startsWith('Attempts')) s.split('\n').slice(4).forEach(l => { const c = l.split('|').map(x => x.trim()); if (c.length >= 8 && c[1] && c[1] !== 'reg no' && !/^-+$/.test(c[1])) out.attempts.push({ reg: c[1], lab: +c[2], attempt: +c[3], score: +c[4], passed: c[5] === 'yes', started: c[6], finished: c[7] }); });
+      if (s.startsWith('In-progress')) { const m = s.match(/```json\n([\s\S]*?)\n```/); if (m) try { out.progress = JSON.parse(m[1]); } catch (e) {} }
+    });
+    return out;
+  }
+  function merge(other) {
+    Object.values(other.students || {}).forEach(s => { if (!db.students[s.reg]) db.students[s.reg] = s; });
+    const key = a => `${a.reg}|${a.lab}|${a.attempt}`; const have = new Set(db.attempts.map(key));
+    (other.attempts || []).forEach(a => { if (!have.has(key(a))) { db.attempts.push(a); have.add(key(a)); } });
+    Object.entries(other.progress || {}).forEach(([k, v]) => { if (!db.progress[k] || (v.updated || '') > (db.progress[k].updated || '')) db.progress[k] = v; });
+  }
+  async function writeFile() { if (!fileHandle) return; try { const w = await fileHandle.createWritable(); await w.write(toMarkdown()); await w.close(); } catch (e) { console.warn('records file write failed', e); } }
+  async function readFile() { if (!fileHandle) return; try { const f = await fileHandle.getFile(); merge(fromMarkdown(await f.text())); saveLocal(); } catch (e) { console.warn('records file read failed', e); } }
+  // IndexedDB keeps the handle between sessions
+  function idb() { return new Promise((res, rej) => { const r = indexedDB.open('coa', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+  async function idbSet(k, v) { try { const d = await idb(); await new Promise((res, rej) => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = res; t.onerror = () => rej(t.error); }); } catch (e) {} }
+  async function idbGet(k) { try { const d = await idb(); return await new Promise((res, rej) => { const t = d.transaction('kv', 'readonly'); const r = t.objectStore('kv').get(k); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); } catch (e) { return null; } }
+  async function connectFile(create) {
+    if (!global.showOpenFilePicker) throw new Error('This browser cannot write files directly (use Chrome or Edge). Records stay in this browser; use the progress code or CSV export instead.');
+    const opts = { types: [{ description: 'Markdown', accept: { 'text/markdown': ['.md'] } }] };
+    fileHandle = create ? await global.showSaveFilePicker(Object.assign({ suggestedName: 'coa-records.md' }, opts)) : (await global.showOpenFilePicker(opts))[0];
+    await idbSet('recordsFile', fileHandle); config.fileName = fileHandle.name; saveLocal();
+    if (!create) await readFile(); await writeFile(); notify();
+  }
+  async function reconnectFile() {
+    const h = await idbGet('recordsFile'); if (!h) return false;
+    try { const p = await h.queryPermission({ mode: 'readwrite' }); if (p !== 'granted' && (await h.requestPermission({ mode: 'readwrite' })) !== 'granted') return false; fileHandle = h; config.fileName = h.name; await readFile(); notify(); return true; } catch (e) { return false; }
+  }
+  function disconnectFile() { fileHandle = null; config.fileName = ''; idbSet('recordsFile', null); saveLocal(); notify(); }
+
+  /* ---------- Google Sheet (Apps Script web app) ---------- */
+  let outbox = [], sending = false;
+  function saveOutbox() { try { localStorage.setItem(OUTBOX, JSON.stringify(outbox)); } catch (e) {} }
+  function loadOutbox() { try { outbox = JSON.parse(localStorage.getItem(OUTBOX) || '[]'); } catch (e) { outbox = []; } }
+  // Rows wait here until the request gets through, so a dropped connection does not lose a mark.
+  async function flushSheet() {
+    if (!SHEET_URL || sending) return; sending = true;
+    try { while (outbox.length) { await fetch(SHEET_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(outbox[0]) }); outbox.shift(); saveOutbox(); } } catch (e) {}
+    sending = false;
+  }
+  function postSheet(row) { if (!SHEET_URL) return; outbox.push(row); saveOutbox(); flushSheet(); }
+  const APPS_SCRIPT = `// In a new Google Sheet: Extensions > Apps Script, paste this, then Deploy > New deployment > Web app (execute as me, anyone can access).
+function doPost(e) {
+  var r = JSON.parse(e.postData.contents);
+  var clean = function (v) { v = String(v === undefined || v === null ? '' : v).slice(0, 120); return /^[=+@\\t\\r-]/.test(v) ? "'" + v : v; };
+  var s = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  if (s.getLastRow() === 0) s.appendRow(['received', 'type', 'reg no', 'name', 'lab', 'attempt', 'score', 'passed', 'started', 'finished']);
+  s.appendRow([new Date(), clean(r.type), clean(r.reg), clean(r.name), clean(r.lab), clean(r.attempt), clean(r.score), r.passed === undefined ? '' : (r.passed ? 'yes' : 'no'), clean(r.started), clean(r.finished)]);
+  return ContentService.createTextOutput('ok');
+}`;
+
+  /* ---------- public API ---------- */
+  function persist(row) { saveLocal(); writeFile(); if (row) postSheet(row); notify(); }
+  const api = {
+    init() { load(); loadOutbox(); flushSheet(); global.addEventListener('online', flushSheet); },
+    onChange(f) { listeners.push(f); },
+    sheetConnected: () => !!SHEET_URL,
+    fileName: () => config.fileName, hasFile: () => !!fileHandle, connectFile, reconnectFile, disconnectFile, appsScript: APPS_SCRIPT,
+    students: () => Object.values(db.students), student: reg => db.students[reg] || null,
+    enrol(name, reg) { reg = reg.trim().toUpperCase(); name = name.trim(); if (!db.students[reg]) { db.students[reg] = { reg, name, enrolledAt: now() }; persist({ type: 'enrol', reg, name }); } return db.students[reg]; },
+    attempts: reg => db.attempts.filter(a => a.reg === reg).sort((a, b) => a.lab - b.lab || a.attempt - b.attempt),
+    best(reg, lab) { const a = db.attempts.filter(x => x.reg === reg && x.lab === lab); return a.length ? Math.max(...a.map(x => x.score)) : null; },
+    passed(reg, lab) { return db.attempts.some(a => a.reg === reg && a.lab === lab && a.passed); },
+    recordAttempt(reg, lab, score, passed, started) { const n = db.attempts.filter(a => a.reg === reg && a.lab === lab).length + 1; const row = { reg, lab, attempt: n, score, passed, started, finished: now() }; db.attempts.push(row); delete db.progress[reg + '|' + lab]; persist(Object.assign({ type: 'attempt', name: (db.students[reg] || {}).name }, row)); return row; },
+    saveProgress(reg, lab, state) { db.progress[reg + '|' + lab] = Object.assign({ updated: now() }, state); saveLocal(); writeFile(); },
+    progress(reg, lab) { return db.progress[reg + '|' + lab] || null; },
+    clearProgress(reg, lab) { delete db.progress[reg + '|' + lab]; persist(); },
+    resetStudent(reg) { delete db.students[reg]; db.attempts = db.attempts.filter(a => a.reg !== reg); Object.keys(db.progress).forEach(k => { if (k.startsWith(reg + '|')) delete db.progress[k]; }); persist(); },
+    progressCode(reg) { const s = db.students[reg]; if (!s) return ''; const pack = { s, a: db.attempts.filter(a => a.reg === reg), p: Object.fromEntries(Object.entries(db.progress).filter(([k]) => k.startsWith(reg + '|'))) }; return btoa(unescape(encodeURIComponent(JSON.stringify(pack)))).replace(/=+$/, ''); },
+    importCode(code) { try { const pack = JSON.parse(decodeURIComponent(escape(atob(code.trim())))); merge({ students: { [pack.s.reg]: pack.s }, attempts: pack.a, progress: pack.p }); persist(); return pack.s; } catch (e) { return null; } },
+    csv() { const rows = [['reg no', 'name', 'lab', 'attempt', 'score', 'passed', 'started', 'finished']]; db.attempts.forEach(a => rows.push([a.reg, (db.students[a.reg] || {}).name || '', a.lab, a.attempt, a.score, a.passed ? 'yes' : 'no', a.started, a.finished])); return rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n'); },
+    markdown: toMarkdown, importMarkdown(text) { merge(fromMarkdown(text)); persist(); }, now
+  };
+  global.STORE = api;
+})(window);
+
 /* Virtual Computer — scene, assembly, zoom levels, fetch–execute animation, UI */
 (function () {
   const { K, L, STEPS, buildBoard, buildRemovables, buildCase, buildCoreInternals, buildDramView, buildFlashView, buildCable } = PARTS;
@@ -1882,12 +2021,12 @@
     return true;
   }
   function connect(id) {
-    const m = buildCable(id); scene.add(m); cables[id] = m; rebuildPickable();
+    const m = buildCable(id); scene.add(m); cables[id] = m; rebuildPickable(); window.LABHOOK && LABHOOK.onBuild(id, true);
     if (state.mode === 'guided' && currentStep() && currentStep().cable === id) state.step++;
     toast(K[id].title + ' connected'); select(null); refreshUI();
   }
   function disconnect(id) {
-    if (!cables[id]) return; scene.remove(cables[id]); delete cables[id]; rebuildPickable();
+    if (!cables[id]) return; scene.remove(cables[id]); delete cables[id]; rebuildPickable(); window.LABHOOK && LABHOOK.onBuild(id, false);
     if (state.mode === 'guided') state.step = Math.max(0, state.step - 1);
     select(null); refreshUI();
   }
@@ -1895,15 +2034,18 @@
   function placeAll() {
     removables.forEach(p => { if (installed.has(p)) p.position.copy(p.userData.home); else p.position.copy(binPos(p)); });
   }
+  const keyOf = p => p.userData.pid === 'ram' ? 'ram:' + p.userData.slot : p.userData.pid;
+  let labBuildMode = false;
+  const BENCH_CAM = [50, 80, 40, 16, 8]; // camera x, y, z; target x, z
   function install(p, animate = true) {
-    installed.add(p);
+    installed.add(p); window.LABHOOK && LABHOOK.onBuild(keyOf(p), true);
     const home = p.userData.home.clone(), lifted = home.clone(); lifted.y += p.userData.lift * 0.5;
     if (animate) { tween(p, lifted, 250, () => tween(p, home, 350)); } else p.position.copy(home);
     if (state.mode === 'guided' && partForStep(currentStep()) === p) state.step++;
     refreshUI();
   }
   function remove(p) {
-    installed.delete(p);
+    installed.delete(p); window.LABHOOK && LABHOOK.onBuild(keyOf(p), false);
     const lifted = p.position.clone(); lifted.y += p.userData.lift;
     tween(p, lifted, 300, () => tween(p, binPos(p), 500));
     if (state.mode === 'guided') state.step = Math.max(0, state.step - 1);
@@ -2013,7 +2155,7 @@
     if (down && Math.hypot(ev.clientX - down.x, ev.clientY - down.y) < 5) {
       const mesh = pick(ev); if (!mesh) { select(null); return; }
       const g = groupOf(mesh); const pid = g ? g.userData.pid : mesh.userData.pid;
-      const cid = cableFor(pid); if (state.mode === 'guided' && cid && canConnect(cid)) { connect(cid); down = null; return; }
+      const cid = cableFor(pid); if ((state.mode === 'guided' || labBuildMode) && cid && canConnect(cid)) { connect(cid); down = null; return; }
       select(pid, g || mesh, mesh);
     }
     down = null;
@@ -2051,6 +2193,7 @@
   function select(pid, obj, mesh) {
     state.selected = pid ? { pid, obj, mesh } : null;
     const panel = $('info');
+    if (pid && window.LABHOOK && LABHOOK.active()) { LABHOOK.onSelect(pid); panel.hidden = true; return; }
     if (!pid || !K[pid]) { panel.hidden = true; return; }
     const k = K[pid];
     $('info-title').textContent = k.title; $('info-text').textContent = k.text;
@@ -2190,7 +2333,7 @@
   /* ---------- UI ---------- */
   function refreshUI() {
     const sb = $('stepbar');
-    if (state.mode === 'guided' && state.level === 'system' && $('lab').hidden) {
+    if (state.mode === 'guided' && state.level === 'system' && $('lab').hidden && !labBuildMode) {
       sb.hidden = false;
       if (state.step >= STEPS.length) { $('step-n').textContent = 'Complete'; $('step-title').textContent = 'The computer is assembled'; $('step-hint').textContent = 'Click any part to read about it, double-click the CPU to open it, or run the fetch–execute cycle on the bus.'; }
       else { const st = currentStep(); $('step-n').textContent = `Step ${state.step + 1} of ${STEPS.length}`; $('step-title').textContent = st.title; $('step-hint').textContent = st.hint; }
@@ -2207,10 +2350,11 @@
   }
   /* ---------- Menu: everything a student can do, by topic ---------- */
   const MENU = [
+    { title: 'Assessed labs', sub: 'enrol · 5 labs · auto-marked', items: [{ id: 'btn-labs', label: 'Open my labs', sim: true, act: () => TASKS.openLabs() }] },
     { title: 'Build the computer', items: [
       { id: 'mode-guided', label: 'Guided build', act: () => { state.mode = 'guided'; state.step = STEPS.findIndex(st => st.cable ? !cables[st.cable] : !installed.has(partForStep(st))); if (state.step < 0) state.step = STEPS.length; refreshUI(); } },
       { id: 'mode-sandbox', label: 'Sandbox', act: () => { state.mode = 'sandbox'; refreshUI(); } },
-      { id: 'btn-build', label: 'Assemble all', act: () => { if (state.level !== 'system') setLevel('system'); buildAll(); toast('Assembled'); } },
+      { id: 'btn-build', label: 'Assemble all', act: () => { if (labBuildMode) { toast('Not available during Lab 1'); return; } if (state.level !== 'system') setLevel('system'); buildAll(); toast('Assembled'); } },
       { id: 'btn-strip', label: 'Disassemble', act: () => { if (state.level !== 'system') setLevel('system'); disassembleAll(); } },
       { id: 'btn-labels', label: 'Labels', act: () => { state.labels = !state.labels; $('btn-labels').classList.toggle('on', state.labels); } },
       { id: 'btn-camera', label: 'Reset view', act: () => { closeLab(); if (state.level === 'system') controls.reset(); else setLevel('system'); } },
@@ -2244,6 +2388,13 @@
   })();
   function h(tag, attrs = {}, ...kids) { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (v === null) continue; if (k === 'class') e.className = v; else e.setAttribute(k, v); } kids.flat().forEach(c => e.append(c)); return e; }
   $('btn-labels').classList.add('on');
+  window.APP = {
+    showCooler: on => { cooler.visible = on; rebuildLabels(); },
+    benchView: on => { camTween = null; if (on) { camera.position.set(BENCH_CAM[0], BENCH_CAM[1], BENCH_CAM[2]); controls.target.set(BENCH_CAM[3], 0, BENCH_CAM[4]); controls.update(); } else controls.reset(); },
+    setLevel, setMode: m => { state.mode = m; refreshUI(); }, buildAll, disassembleAll, closeLab, select, state,
+    labBuild: on => { labBuildMode = on; refreshUI(); },
+    installKeys: keys => { keys.forEach(k => { if (k.startsWith('cable')) { if (!cables[k] && cableNeeds(k)) connect(k); } else { const [pid, slot] = k.split(':'); const p = byId[pid] && byId[pid].find(x => slot === undefined || x.userData.slot === +slot); if (p && !installed.has(p)) install(p, false); } }); }
+  };
   $('mode-guided').onclick = () => { state.mode = 'guided'; state.step = STEPS.findIndex(st => st.cable ? !cables[st.cable] : !installed.has(partForStep(st))); if (state.step < 0) state.step = STEPS.length; refreshUI(); };
   $('mode-sandbox').onclick = () => { state.mode = 'sandbox'; refreshUI(); };
   $('step-skip').onclick = () => { const st = currentStep(); if (!st) return; if (st.cable) { if (cableNeeds(st.cable)) connect(st.cable); } else { const p = partForStep(st); if (p) install(p); } };
@@ -2264,6 +2415,207 @@
   placeAll(); refreshUI(); requestAnimationFrame(animate);
   
 })();
+
+/* Virtual Computer — assessed labs: enrolment, five auto-marked labs, 65% unlock, resume, lecturer view */
+(function (global) {
+  const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'class') e.className = v; else if (k.startsWith('on')) e[k] = v; else if (k === 'html') e.innerHTML = v; else if (v !== null) e.setAttribute(k, v); } kids.flat().forEach(c => e.append(c)); return e; };
+  const $ = id => document.getElementById(id);
+  const PASS = 65;
+  const rng = seed => { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
+  const pick = (r, arr, n) => { const a = arr.slice(); const out = []; while (out.length < n && a.length) out.push(a.splice(Math.floor(r() * a.length), 1)[0]); return out; };
+  const hx = (n, w = 4) => n.toString(16).toUpperCase().padStart(w, '0');
+  const bin = (n, w) => (n >>> 0).toString(2).padStart(w, '0').slice(-w);
+  const norm = s => String(s).trim().toUpperCase().replace(/^0X/, '').replace(/\s+/g, '').replace(/_/g, '');
+
+  /* ================= LAB DEFINITIONS ================= */
+  const REQUIRED = ['cpu', 'cooler', 'ram:1', 'ram:3', 'ssd', 'psu', 'gpu', 'hdd', 'ram:0', 'ram:2', 'cable24', 'cable8', 'cableGpu', 'cableSata'];
+  const CORE_ORDER = ['cpu', 'cooler', 'ram:1', 'ram:3', 'ssd', 'psu', 'gpu', 'hdd'];
+  const orderNeeds = k => k.startsWith('ram:') ? ['cpu', 'cooler'] : k.startsWith('cable') ? CORE_ORDER : CORE_ORDER.slice(0, CORE_ORDER.indexOf(k));
+  const NAMES = { cpu: 'CPU', cooler: 'CPU cooler', 'ram:0': 'DIMM slot 1', 'ram:1': 'DIMM slot 2', 'ram:2': 'DIMM slot 3', 'ram:3': 'DIMM slot 4', ssd: 'NVMe SSD', psu: 'Power supply', gpu: 'Graphics card', hdd: 'Hard disk', cable24: '24-pin power cable', cable8: '8-pin CPU power cable', cableGpu: 'GPU power cable', cableSata: 'SATA cable' };
+  const FIND_POOL = [
+    ['cpu', 'The component that fetches and executes instructions.'], ['ram', 'A module of main memory — volatile, holds the running program and its data.'], ['gpu', 'The expansion board with hundreds of small cores for graphics and GPGPU work.'],
+    ['ssd', 'Non-volatile storage made of NAND flash, on an 80 mm card.'], ['hdd', 'External memory with spinning platters and a moving head.'], ['psu', 'Converts mains AC into the +12 V, +5 V and +3.3 V rails.'],
+    ['cooler', 'Moves heat off the processor; sits on the heat spreader with thermal paste.'], ['chipset', 'The I/O module: transfers data between the processor/memory and USB, SATA, LAN.'], ['dimmSlots', 'The slots where main-memory modules plug in.'],
+    ['pcieX16', 'A 16-lane point-to-point slot wired to the processor.'], ['sata', 'Serial ports for hard disks and optical drives.'],
+    ['power24', 'The main power connector from the supply to the board.'], ['power8', 'The dedicated +12 V feed for the processor voltage regulators.'], ['ioPanel', 'Where peripherals connect: USB, Ethernet, video, audio.'],
+    ['bus', 'The copper lines carrying address, data and control signals between CPU and memory.'], ['vrm', 'Convert +12 V into the ~1 V the processor runs on.'], ['battery', 'Keeps the real-time clock and firmware settings while unplugged.'], ['fpanel', 'Pins for the case power button, reset and LEDs.']
+  ];
+  const NAME_OF = pid => (PARTS.K[pid] ? PARTS.K[pid].title : pid);
+
+  const LABS5 = [
+    { id: 1, title: 'Lab 1 — Assemble the computer', ch: 'Structure', objective: 'Install every part and cable in the correct real-world order. 5 marks per item placed (70), up to 30 for doing them in the right sequence.',
+      build: () => [{ type: 'build', marks: 100, prompt: 'Drag the parts from the bin into their sockets and click the connectors to plug in the cables. Do it in the order a technician would. Submit when the computer is complete (or earlier for partial marks).' }] },
+    { id: 2, title: 'Lab 2 — Find the components', ch: 'Structure & interconnection', objective: 'The system describes a component by its function; click it on the 3D computer. 10 marks each, −3 for a wrong click (minimum 0), two wrong clicks moves on.',
+      build: r => pick(r, FIND_POOL, 10).map(([pid, prompt]) => ({ type: 'click', marks: 10, target: pid, prompt })) },
+    { id: 3, title: 'Lab 3 — Trace a program', ch: 'Structure & interconnection', objective: 'Predict what the registers and memory hold as the hypothetical machine and the IAS execute a short program. Exact answers in hexadecimal / decimal as asked.',
+      build: r => {
+        const a = 1 + Math.floor(r() * 9), b = 1 + Math.floor(r() * 9), c = 1 + Math.floor(r() * 9); const twice = r() < 0.5;
+        const prog = twice ? [[0x300, 0x1940], [0x301, 0x5941], [0x302, 0x5941], [0x303, 0x2942]] : [[0x300, 0x1940], [0x301, 0x5941], [0x302, 0x5942], [0x303, 0x2943]];
+        const mem = { 0x940: a, 0x941: b, 0x942: twice ? 0 : c, 0x943: 0 };
+        const listing = `Program (16-bit words: 4-bit opcode, 12-bit address; 1 = load AC, 5 = add to AC, 2 = store AC):\n${prog.map(([p, w]) => `  ${hx(p, 3)}: ${hx(w)}`).join('\n')}\nData: 940 = ${hx(a)}, 941 = ${hx(b)}${twice ? '' : ', 942 = ' + hx(c)}`;
+        const ac1 = a, ac2 = a + b, ac3 = twice ? a + 2 * b : a + b + c, dest = twice ? 0x942 : 0x943;
+        const ia = 1 + Math.floor(r() * 9), ib = 1 + Math.floor(r() * 9);
+        return [
+          { type: 'text', marks: 15, prompt: listing + '\n\nQ1. After the first fetch (PC was 300), what does the IR hold? (4 hex digits)', answer: hx(0x1940), explain: 'Fetch copies the word at 300, 1940, into the IR.' },
+          { type: 'text', marks: 15, prompt: listing + '\n\nQ2. After executing the instruction at 300, what is in the AC? (hex)', answer: hx(ac1), explain: `Opcode 1 loads AC from 940 = ${hx(a)}.`, alt: [a.toString(16).toUpperCase()] },
+          { type: 'text', marks: 20, prompt: listing + '\n\nQ3. After executing the instruction at 301, what is in the AC? (hex)', answer: hx(ac2), explain: `Add 941 (${hx(b)}): ${hx(a)} + ${hx(b)} = ${hx(ac2)}.`, alt: [ac2.toString(16).toUpperCase()] },
+          { type: 'text', marks: 20, prompt: listing + '\n\nQ4. After executing the instruction at 302, what is in the AC? (hex)', answer: hx(ac3), explain: twice ? `Add 941 again: ${hx(ac2)} + ${hx(b)} = ${hx(ac3)}.` : `Add 942 (${hx(c)}): ${hx(ac2)} + ${hx(c)} = ${hx(ac3)}.`, alt: [ac3.toString(16).toUpperCase()] },
+          { type: 'text', marks: 15, prompt: listing + `\n\nQ5. When the program ends, which memory location was written, and with what value? Answer as address=value in hex, e.g. 940=0005`, answer: `${hx(dest, 3)}=${hx(ac3)}`, explain: `Opcode 2 stores AC (${hx(ac3)}) at ${hx(dest, 3)}.`, alt: [`${hx(dest, 3)}=${ac3.toString(16).toUpperCase()}`] },
+          { type: 'text', marks: 15, prompt: `IAS: word 0 holds "LOAD M(10) ; SUB M(11)", M(10) = ${ia}, M(11) = ${ib}. After both instructions execute, what decimal value is in the AC?`, answer: String(ia - ib), explain: `AC ← M(10) = ${ia}; then AC ← AC − M(11) = ${ia} − ${ib} = ${ia - ib}.` }
+        ];
+      } },
+    { id: 4, title: 'Lab 4 — Cache and memory', ch: 'Cache & internal memory', objective: 'Split addresses for an example cache (24-bit, 4-byte lines, 16K lines), predict hits and misses on a toy direct-mapped cache, and find a single-bit error with the Hamming code.',
+      build: r => {
+        const addr = Math.floor(r() * 0xFFFFFF); const maps = [['direct mapping', [['tag', 8], ['line', 14], ['word', 2]]], ['2-way set-associative mapping', [['tag', 9], ['set', 13], ['word', 2]]], ['associative mapping', [['tag', 22], ['word', 2]]]];
+        const [mname, fields] = maps[Math.floor(r() * 3)]; const bits = bin(addr, 24); let pos = 0; const vals = {}; fields.forEach(([n, w]) => { vals[n] = parseInt(bits.slice(pos, pos + w), 2); pos += w; });
+        const items = fields.filter(([n]) => n !== 'word').map(([n, w]) => ({ type: 'text', marks: 12, prompt: `Example system, ${mname}. Address ${hx(addr, 6)}₁₆.\nGive the ${n} field in hexadecimal (${w} bits).`, answer: hx(vals[n], Math.ceil(w / 4)), explain: `${hx(addr, 6)} = ${bits.replace(/(.{4})/g, '$1 ')}; the ${n} is the ${w}-bit field → ${hx(vals[n], Math.ceil(w / 4))}.`, alt: [vals[n].toString(16).toUpperCase()] }));
+        items.push({ type: 'text', marks: 12, prompt: `Same address ${hx(addr, 6)}: which byte within the 4-byte block does it address (0–3)?`, answer: String(vals.word), explain: 'The lowest 2 bits are the word (byte) field.' });
+        // toy direct-mapped trace: 8 lines, 4-byte blocks, 8-bit addresses
+        const lines = Array(8).fill(null); const seq = []; const base = Math.floor(r() * 4) * 4; const cands = [base, base + 2, base + 32, base, base + 64, base + 33]; const trace = pick(r, [cands[0], cands[1], cands[2], cands[3], cands[4], cands[5]], 4);
+        const results = trace.map(ad => { const block = ad >> 2, line = block & 7, tag = block >> 3; const hit = lines[line] === tag; lines[line] = tag; return hit ? 'hit' : 'miss'; });
+        trace.forEach((ad, i) => items.push({ type: 'mcq', marks: 10, prompt: `Toy cache: 8-bit addresses, 4-byte blocks, 8 lines, direct mapping (line = block mod 8), empty at the start. Accesses so far: ${trace.slice(0, i).map(x => hx(x, 2)).join(', ') || 'none'}.\nIs the access to ${hx(ad, 2)} a hit or a miss?`, options: ['hit', 'miss'], answer: results[i] === 'hit' ? 0 : 1, explain: `${hx(ad, 2)} → block ${ad >> 2}, line ${(ad >> 2) & 7}, tag ${(ad >> 2) >> 3}: ${results[i]}.` }));
+        // Hamming
+        const data = Array.from({ length: 8 }, () => r() < 0.5 ? 1 : 0); const DP = [3, 5, 6, 7, 9, 10, 11, 12], CP = [1, 2, 4, 8]; const w = Array(13).fill(0); DP.forEach((p, i) => w[p] = data[i]); CP.forEach(p => { let x = 0; for (let q = 1; q <= 12; q++) if ((q & p) && q !== p) x ^= w[q]; w[p] = x; });
+        const flip = 1 + Math.floor(r() * 12); const bad = w.slice(); bad[flip] ^= 1;
+        items.push({ type: 'text', marks: 16, prompt: `Hamming SEC code: 8 data bits with check bits at positions 1, 2, 4, 8. The word read back is, positions 1→12:\n${bad.slice(1).map((b, i) => `${i + 1}:${b}`).join('  ')}\nOne bit has flipped. Which position is wrong? (1–12)`, answer: String(flip), explain: `The syndrome (C8 C4 C2 C1) = ${bin(flip, 4)} = ${flip}, naming the bad position.` });
+        return items;
+      } },
+    { id: 5, title: 'Lab 5 — I/O, the OS and arithmetic', ch: 'I/O, OS & arithmetic', objective: 'Recognise I/O techniques from what happens on the bus, name process-state transitions, and encode numbers the way the ALU does.',
+      build: r => {
+        const io = pick(r, [['The processor reads the status register over and over until bit 7 is set, then reads the word itself and stores it.', 0], ['The processor issues a READ, runs another program, and a control-line signal makes it save PC and PSW and jump to a handler for each word.', 1], ['Words move from the I/O module straight to memory while the processor is paused one bus cycle at a time; one interrupt arrives at the end.', 2], ['A short program at 200–204 stores 1 into address 517 then loops loading 517 and branching on the sign bit.', 0]], 2);
+        const os = pick(r, [['A running process requests a disk read. Which state does it move to?', ['waiting (blocked)', 'ready', 'new', 'halted'], 0, 'Event wait → waiting.'], ['The timer expires on a running process under round-robin. Which state does it move to?', ['ready', 'waiting (blocked)', 'halted', 'new'], 0, 'Timeout → ready.'], ['A waiting process\'s I/O completes. Which state does it move to?', ['ready', 'running', 'new', 'halted'], 0, 'Event occurs → ready; the dispatcher later makes it running.'], ['Which structure holds a process\'s saved program counter and registers while it is not running?', ['process control block', 'page table', 'free frame list', 'interrupt vector'], 0, 'The process control block keeps its saved state until it runs again.']], 2);
+        const n = 10 + Math.floor(r() * 100), k = 3 + Math.floor(r() * 60), hexv = 0x20 + Math.floor(r() * 0xDF), pg = Math.floor(r() * 4), off = Math.floor(r() * 1024), frames = pick(r, [13, 14, 15, 18, 20, 21], 4);
+        const items = [];
+        io.forEach(([txt, ans]) => items.push({ type: 'mcq', marks: 12, prompt: `On the bus you observe: ${txt}\nWhich I/O technique is this?`, options: ['programmed I/O', 'interrupt-driven I/O', 'DMA'], answer: ans, explain: ['Polling the status register is programmed I/O.', 'One interrupt per word with context save is interrupt-driven I/O.', 'Cycle stealing with one interrupt per block is DMA.'][ans] }));
+        os.forEach(([q, opts, ans, why]) => items.push({ type: 'mcq', marks: 12, prompt: q, options: opts, answer: ans, explain: why }));
+        items.push({ type: 'text', marks: 14, prompt: `Write −${n} in 8-bit two's complement (8 binary digits).`, answer: bin(-n, 8), explain: `+${n} = ${bin(n, 8)}; complement → ${bin(~n, 8)}; add 1 → ${bin(-n, 8)}.` });
+        items.push({ type: 'text', marks: 12, prompt: `IEEE 754 single precision: what is the stored (biased) exponent field, in decimal, for a number of the form 1.xxx × 2^${k}?`, answer: String(k + 127), explain: `Bias 127: ${k} + 127 = ${k + 127}.` });
+        items.push({ type: 'text', marks: 12, prompt: `Convert ${hx(hexv, 2)}₁₆ to decimal.`, answer: String(hexv), explain: `${hx(hexv, 2)} = ${hexv >> 4} × 16 + ${hexv & 15} = ${hexv}.` });
+        items.push({ type: 'text', marks: 14, prompt: `Paging with 1 KB pages. Process page table: page 0 → frame ${frames[0]}, page 1 → frame ${frames[1]}, page 2 → frame ${frames[2]}, page 3 → frame ${frames[3]}.\nWhat physical address (decimal) does logical address ${pg * 1024 + off} map to?`, answer: String(frames[pg] * 1024 + off), explain: `${pg * 1024 + off} = page ${pg}, offset ${off}; frame ${frames[pg]} × 1024 + ${off} = ${frames[pg] * 1024 + off}.` });
+        return items;
+      } }
+  ];
+
+  function normalise(items) { const tot = items.reduce((a, i) => a + i.marks, 0); if (tot === 100) return items; let acc = 0; items.forEach((it, i) => { it.marks = i === items.length - 1 ? 100 - acc : Math.round(it.marks * 100 / tot); acc += it.marks; }); return items; }
+
+  /* ================= STATE ================= */
+  let student = null, run = null, timer = null;
+  // Salted PBKDF2-SHA256 of the lecturer password; the password itself is not stored here.
+  const LECTURER = { salt: '1dad5ab24d8b38a25f3a9a4aa407ae9b', hash: 'c445ae340e95ce0ceaa4936d53a544aaed70206dea7de2f849b6837874021862', iterations: 200000 };
+  let lecturerOk = false;
+  async function checkPassword(pw) {
+    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
+    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: Uint8Array.from(LECTURER.salt.match(/../g), x => parseInt(x, 16)), iterations: LECTURER.iterations }, key, 256);
+    return [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, '0')).join('') === LECTURER.hash;
+  }
+  const APP = () => global.APP;
+
+  /* ================= LABS HOME PANEL ================= */
+  function openLabs() { $('labs').hidden = false; APP().closeLab && APP().closeLab(); renderHome(); STORE.reconnectFile().then(() => renderHome()); }
+  function closeLabs() { $('labs').hidden = true; }
+  function renderHome(tab) {
+    const root = $('labs-body'); root.innerHTML = '';
+    tab = tab || (student ? 'student' : 'enrol');
+    if (tab === 'enrol' || tab === 'student') lecturerOk = false;
+    const tabs = h('div', { class: 'tabs' }, h('button', { class: 'btn' + (tab === 'enrol' || tab === 'student' ? ' on' : ''), onclick: () => renderHome(student ? 'student' : 'enrol') }, student ? 'My labs' : 'Enrol / sign in'), h('button', { class: 'btn' + (tab === 'lecturer' ? ' on' : ''), onclick: () => renderHome('lecturer') }, 'Lecturer'), h('button', { class: 'btn' + (tab === 'settings' ? ' on' : ''), onclick: () => renderHome('settings') }, 'Records & settings'));
+    root.append(h('h2', {}, 'Assessed labs'), h('div', { class: 'ref' }, `Five practical labs · auto-marked · pass mark ${PASS}% unlocks the next · progress is saved so you can continue later`), tabs);
+    if (tab === 'enrol') enrolView(root); else if (tab === 'student') studentView(root); else if (!lecturerOk) passwordView(root, tab); else if (tab === 'lecturer') lecturerView(root); else settingsView(root);
+  }
+  function passwordView(root, tab) {
+    const pw = h('input', { id: 'lec-pw', type: 'password', placeholder: 'Password', autocomplete: 'off' }), msg = h('p', { class: 'muted' });
+    const go = async () => { if (!global.crypto || !crypto.subtle) { msg.textContent = 'Open this page over https to use the lecturer tabs.'; return; } msg.textContent = 'Checking…'; if (await checkPassword(pw.value)) { lecturerOk = true; renderHome(tab); } else { pw.value = ''; msg.textContent = 'Incorrect password.'; } };
+    pw.onkeydown = e => { if (e.key === 'Enter') go(); };
+    root.append(h('p', {}, 'Lecturer access only. Leaving these tabs locks them again.'), h('div', { class: 'row' }, h('label', { for: 'lec-pw' }, 'Password'), pw, h('button', { class: 'btn primary', onclick: go }, 'Unlock')), msg);
+  }
+  function enrolView(root) {
+    const name = h('input', { id: 'en-name', placeholder: 'Full name', autocomplete: 'off' }), reg = h('input', { id: 'en-reg', placeholder: 'Registration number', autocomplete: 'off' }), msg = h('p', { class: 'muted' });
+    const go = () => { const r = reg.value.trim().toUpperCase(), n = name.value.trim(); if (!r) { msg.textContent = 'Enter your registration number.'; return; } const ex = STORE.student(r); if (ex) { student = ex; msg.textContent = ''; renderHome('student'); return; } if (!n) { msg.textContent = 'First time here: enter your name as well.'; return; } student = STORE.enrol(n, r); renderHome('student'); };
+    reg.onkeydown = name.onkeydown = e => { if (e.key === 'Enter') go(); };
+    root.append(h('p', {}, 'Enter your registration number. If you have been here before, your labs and scores come back; if not, add your name to enrol.'), h('div', { class: 'row' }, h('label', { for: 'en-reg' }, 'Reg no'), reg, h('label', { for: 'en-name' }, 'Name'), name, h('button', { class: 'btn primary', onclick: go }, 'Continue')), msg,
+      h('h3', {}, 'Coming from another computer?'), h('p', { class: 'muted' }, 'Paste the progress code you copied there.'), h('div', { class: 'row' }, h('input', { id: 'en-code', placeholder: 'progress code', style: 'width:18em' }), h('button', { class: 'btn', onclick: () => { const s = STORE.importCode($('en-code').value); if (s) { student = s; renderHome('student'); } else msg.textContent = 'That code could not be read.'; } }, 'Restore')));
+  }
+  function studentView(root) {
+    const cards = h('div', { class: 'labcards' });
+    LABS5.forEach((L, i) => {
+      const best = STORE.best(student.reg, L.id), passed = STORE.passed(student.reg, L.id), prog = STORE.progress(student.reg, L.id);
+      const unlocked = i === 0 || STORE.passed(student.reg, LABS5[i - 1].id); const attempts = STORE.attempts(student.reg).filter(a => a.lab === L.id).length;
+      const status = !unlocked ? 'locked' : passed ? 'passed' : prog ? 'in progress' : attempts ? 'not yet passed' : 'available';
+      const card = h('div', { class: 'labcard ' + status.replace(' ', '-') }, h('span', {}, `${L.ch} · ${status}`), h('b', {}, L.title), h('em', {}, L.objective), h('div', { class: 'facts' }, h('div', { class: 'fact' }, h('span', {}, 'best score'), h('b', {}, best === null ? '—' : best + '%')), h('div', { class: 'fact' }, h('span', {}, 'attempts'), h('b', {}, attempts))),
+        h('div', { class: 'row' }, unlocked ? h('button', { class: 'btn primary', onclick: () => startLab(L, !!prog) }, prog ? `Resume (item ${prog.idx + 1})` : passed ? 'Replay' : attempts ? 'Try again' : 'Start') : h('span', { class: 'muted' }, `Pass Lab ${L.id - 1} with ${PASS}% or more to unlock`)));
+      cards.append(card);
+    });
+    root.append(h('p', {}, `${student.name} · ${student.reg}`), cards, h('div', { class: 'row' }, h('button', { class: 'btn', onclick: () => { const c = STORE.progressCode(student.reg); const ta = $('labs-code'); ta.value = c; ta.hidden = false; ta.select(); try { navigator.clipboard.writeText(c); } catch (e) {} } }, 'Copy my progress code'), h('button', { class: 'btn', onclick: () => { student = null; renderHome('enrol'); } }, 'Sign out')), h('textarea', { id: 'labs-code', rows: 3, readonly: '', hidden: '', style: 'width:100%;font:11px var(--mono)' }));
+  }
+  function lecturerView(root) {
+    const studs = STORE.students(); const t = h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'reg no'), h('th', {}, 'name'), ...LABS5.map(L => h('th', {}, 'Lab ' + L.id)), h('th', {}, ''))), h('tbody', {}, ...studs.map(s => h('tr', {}, h('td', {}, s.reg), h('td', {}, s.name), ...LABS5.map(L => { const b = STORE.best(s.reg, L.id); const n = STORE.attempts(s.reg).filter(a => a.lab === L.id).length; return h('td', { class: b === null ? '' : b >= PASS ? 'ok' : 'low' }, b === null ? (STORE.progress(s.reg, L.id) ? 'in progress' : '—') : `${b}% (${n})`); }), h('td', {}, h('button', { class: 'btn', onclick: e => { if (e.target.dataset.armed) { STORE.resetStudent(s.reg); renderHome('lecturer'); } else { e.target.dataset.armed = '1'; e.target.textContent = 'Confirm reset'; } } }, 'Reset'))))));
+    const csv = h('textarea', { rows: 6, readonly: '', style: 'width:100%;font:11px var(--mono)', hidden: '' });
+    root.append(h('p', { class: 'muted' }, `${studs.length} student${studs.length === 1 ? '' : 's'} on this machine${STORE.hasFile() ? ' and in ' + STORE.fileName() : ''}. Best score (attempts) per lab; green = passed.`), t, h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: () => { const text = STORE.csv(); csv.value = text; csv.hidden = false; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' })); a.download = 'coa-marks.csv'; a.click(); } }, 'Export CSV'), h('button', { class: 'btn', onclick: () => { const text = STORE.markdown(); csv.value = text; csv.hidden = false; } }, 'Show records.md')), csv);
+  }
+  function settingsView(root) {
+    const msg = h('p', { class: 'muted' }, STORE.hasFile() ? `Connected to records file: ${STORE.fileName()}` : 'No records file connected — records are kept in this browser only.');
+    const scriptBox = h('textarea', { rows: 8, readonly: '', style: 'width:100%;font:11px var(--mono)', hidden: '' }); scriptBox.value = STORE.appsScript;
+    const md = h('textarea', { rows: 5, placeholder: 'Paste the contents of a records.md from another machine to merge it here', style: 'width:100%;font:11px var(--mono)' });
+    root.append(h('h3', {}, 'Records file (Chrome / Edge)'), h('p', {}, 'Point the platform at a records.md file. Every enrolment and attempt is written to it; on a shared drive, every lab PC writes to the same file. The browser asks once per session to allow access.'), msg,
+      h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: () => STORE.connectFile(false).then(() => renderHome('settings')).catch(e => msg.textContent = e.message) }, 'Open existing records.md'), h('button', { class: 'btn', onclick: () => STORE.connectFile(true).then(() => renderHome('settings')).catch(e => msg.textContent = e.message) }, 'Create new records.md'), STORE.hasFile() ? h('button', { class: 'btn', onclick: () => { STORE.disconnectFile(); renderHome('settings'); } }, 'Disconnect') : ''),
+      h('h3', {}, 'Google Sheet'), h('p', {}, STORE.sheetConnected() ? 'Connected: every enrolment and attempt, on any device, is sent to the sheet.' : 'Not connected yet: results stay in this browser.'), h('div', { class: 'row' }, h('button', { class: 'btn', onclick: () => scriptBox.hidden = !scriptBox.hidden }, 'Show the script')), scriptBox,
+      h('h3', {}, 'Merge records from another machine'), md, h('div', { class: 'row' }, h('button', { class: 'btn', onclick: () => { STORE.importMarkdown(md.value); md.value = ''; renderHome('lecturer'); } }, 'Merge')));
+  }
+
+  /* ================= RUNNING A LAB ================= */
+  function startLab(L, resume) {
+    const prog = resume ? STORE.progress(student.reg, L.id) : null;
+    const seed = prog ? prog.seed : (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
+    const items = normalise(L.build(rng(seed)));
+    run = { L, seed, items, idx: prog ? prog.idx : 0, scores: prog ? prog.scores : [], started: prog ? prog.started : STORE.now(), wrong: 0, buildLog: prog ? prog.buildLog || [] : [], t0: performance.now() };
+    closeLabs(); $('task').hidden = false; $('menu').classList.add('collapsed'); $('menu-toggle').textContent = '☰';
+    const A = APP();
+    if (L.id === 1) { const saved = run.buildLog.slice(); A.setLevel('system'); A.benchView(true); A.setMode('sandbox'); A.disassembleAll(); A.labBuild(true); setTimeout(() => { if (run && saved.length) { run.buildLog = []; A.installKeys(saved); } }, 1800); }
+    else if (L.id === 2) { A.setLevel('system'); A.buildAll(); }
+    clearInterval(timer); timer = setInterval(() => { const el = $('task-timer'); if (el) el.textContent = elapsed(); }, 1000);
+    renderTask();
+  }
+  function elapsed() { const s = Math.floor((performance.now() - run.t0) / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
+  function saveProgress() { if (!run || !student) return; STORE.saveProgress(student.reg, run.L.id, { seed: run.seed, idx: run.idx, scores: run.scores, started: run.started, buildLog: run.buildLog }); }
+  function total() { return Math.round(run.scores.reduce((a, b) => a + b, 0)); }
+  function maxSoFar() { return run.items.reduce((a, it) => a + it.marks, 0); }
+  function renderTask() {
+    const root = $('task-body'); root.innerHTML = ''; const it = run.items[run.idx]; const cpuQ = !!it && it.target === 'cpu'; APP().showCooler(!cpuQ); if (cpuQ) APP().benchView(true);
+    $('task-title').textContent = run.L.title; $('task-meta').replaceChildren(h('span', {}, `${student.name} · ${student.reg}`), h('span', {}, `item ${Math.min(run.idx + 1, run.items.length)} / ${run.items.length}`), h('span', {}, `marks ${total()} / ${maxSoFar()}`), h('span', { id: 'task-timer' }, elapsed()));
+    if (!it) return finish();
+    root.append(h('pre', { class: 'prompt' }, it.prompt), h('div', { class: 'muted small' }, `${it.marks} marks`));
+    const fb = h('p', { class: 'fb' }); let answered = false;
+    const next = (got, text) => { if (answered) return; answered = true; run.scores[run.idx] = got; fb.textContent = text; fb.className = 'fb ' + (got >= it.marks ? 'good' : got > 0 ? 'part' : 'bad'); root.append(h('button', { class: 'btn primary', onclick: () => { run.idx++; saveProgress(); renderTask(); } }, run.idx + 1 < run.items.length ? 'Next' : 'Finish')); $('task-meta').children[2].textContent = `marks ${total()} / ${maxSoFar()}`; };
+    if (it.type === 'text') { const inp = h('input', { id: 'task-ans', autocomplete: 'off', spellcheck: 'false', style: 'width:14em' }); const sub = () => { const a = norm(inp.value); const ok = a === norm(it.answer) || (it.alt || []).some(x => norm(x) === a); next(ok ? it.marks : 0, (ok ? 'Correct. ' : `Not correct — the answer is ${it.answer}. `) + (it.explain || '')); }; inp.onkeydown = e => { if (e.key === 'Enter') sub(); }; root.append(h('div', { class: 'row' }, inp, h('button', { class: 'btn primary', onclick: sub }, 'Submit'), h('button', { class: 'btn', onclick: () => next(0, `Skipped — the answer was ${it.answer}. ` + (it.explain || '')) }, 'Skip')), fb); inp.focus(); }
+    else if (it.type === 'mcq') { const r = rng(run.seed + run.idx * 7919); const order = it.options.map((o, i) => i).sort(() => r() - 0.5); root.append(h('div', { class: 'opts' }, ...order.map(i => h('button', { class: 'btn opt', onclick: e => { const ok = i === it.answer; e.target.classList.add(ok ? 'good' : 'bad'); next(ok ? it.marks : 0, (ok ? 'Correct. ' : `Not correct — the answer is "${it.options[it.answer]}". `) + (it.explain || '')); } }, it.options[i]))), fb); }
+    else if (it.type === 'click') { run.wrong = 0; root.append(h('p', { class: 'muted' }, 'Click the component on the 3D computer. Orbit with the mouse if it is hidden.'), fb); run.onSelect = pid => { if (answered) return; if (pid === it.target) next(Math.max(0, it.marks - 3 * run.wrong), `Correct — ${NAME_OF(pid)}.`); else { run.wrong++; if (run.wrong >= 2) next(0, `That was ${NAME_OF(pid)}. The answer was ${NAME_OF(it.target)}.`); else fb.textContent = `No — that is ${NAME_OF(pid)} (−3). One more try.`; } }; }
+    else if (it.type === 'build') { const list = h('div', { class: 'checklist' }); const draw = () => { list.innerHTML = ''; REQUIRED.slice().sort((a, b) => NAMES[a].localeCompare(NAMES[b])).forEach(k => list.append(h('div', { class: 'chk' + (run.buildLog.includes(k) ? ' done' : '') }, (run.buildLog.includes(k) ? '✓ ' : '○ ') + NAMES[k]))); const sc = buildScore(); $('task-meta').children[2].textContent = `marks ${sc.total} / 100`; }; run.onBuild = () => { draw(); saveProgress(); if (REQUIRED.every(k => run.buildLog.includes(k))) submitBuild(); }; draw(); root.append(list, h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: submitBuild }, 'Submit build')), fb);
+      function submitBuild() { if (answered) return; const sc = buildScore(); next(sc.total, `${sc.placed} of 14 items placed (${sc.placedMarks}); order ${sc.orderMarks}/30 — ${sc.inOrder} of ${sc.placed} items came after everything they depend on. Real order: CPU → cooler → RAM → SSD → PSU → GPU → HDD → cables.`); APP().labBuild(false); }
+    }
+    $('task-quit').onclick = () => { saveProgress(); clearInterval(timer); $('task').hidden = true; if (run.L.id <= 2) APP().benchView(false); run = null; APP().showCooler(true); APP().labBuild(false); openLabs(); };
+  }
+  function buildScore() {
+    const placed = run.buildLog.filter(k => REQUIRED.includes(k)); const placedMarks = placed.length * 5;
+    let inOrder = 0; placed.forEach(k => { const before = orderNeeds(k); const pos = run.buildLog.indexOf(k); if (before.every(b => run.buildLog.indexOf(b) !== -1 && run.buildLog.indexOf(b) < pos)) inOrder++; });
+    const orderMarks = placed.length ? Math.round(30 * inOrder / placed.length) : 0;
+    return { placed: placed.length, placedMarks, inOrder, orderMarks, total: placedMarks + orderMarks };
+  }
+  function finish() {
+    clearInterval(timer); const score = Math.min(100, total()), passed = score >= PASS; const row = STORE.recordAttempt(student.reg, run.L.id, score, passed, run.started);
+    const nextL = LABS5.find(x => x.id === run.L.id + 1); const root = $('task-body'); root.innerHTML = '';
+    root.append(h('div', { class: 'result ' + (passed ? 'pass' : 'fail') }, h('b', {}, `${score}%`), h('span', {}, passed ? 'PASSED' : `not passed — ${PASS}% needed`)), h('p', {}, passed ? (nextL ? `${nextL.title} is now unlocked.` : 'That was the last lab — all five complete.') : 'Have another go: a fresh variant of the same lab is generated each attempt.'), h('div', { class: 'facts' }, h('div', { class: 'fact' }, h('span', {}, 'attempt'), h('b', {}, row.attempt)), h('div', { class: 'fact' }, h('span', {}, 'time'), h('b', {}, elapsed())), h('div', { class: 'fact' }, h('span', {}, 'best so far'), h('b', {}, STORE.best(student.reg, run.L.id) + '%'))),
+      h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: () => { $('task').hidden = true; if (run.L.id <= 2) APP().benchView(false); run = null; APP().labBuild(false); openLabs(); } }, 'Back to my labs')));
+    APP().labBuild(false);
+  }
+
+  /* hooks called by the 3D app */
+  global.LABHOOK = {
+    onSelect: pid => { if (run && run.onSelect) run.onSelect(pid); },
+    onBuild: (key, added) => { if (!run || run.L.id !== 1) return; if (added) { if (!run.buildLog.includes(key)) run.buildLog.push(key); } else run.buildLog = run.buildLog.filter(k => k !== key); run.onBuild && run.onBuild(); },
+    active: () => !!run
+  };
+  global.TASKS = { openLabs, closeLabs, LABS5, PASS, normalise };
+  STORE.init();
+})(window);
 
 </script>
 </body>
