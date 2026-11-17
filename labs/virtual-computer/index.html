@@ -115,7 +115,7 @@
   .labcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; margin: 10px 0; }
   .labcard { border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
   .labcard > span { font: 500 10px/1.2 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); } .labcard > b { font-size: 14px; } .labcard > em { font-style: normal; font-size: 12px; color: #cfd6de; flex: 1; }
-  .labcard.locked { opacity: 0.55; } .labcard.passed { border-color: rgba(125,255,176,0.5); } .labcard.passed > span { color: var(--ok); } .labcard.in-progress { border-color: rgba(208,138,74,0.6); } .labcard.in-progress > span { color: var(--accent); } .labcard.available > span { color: var(--accent-2); }
+  .labcard.locked, .labcard.closed { opacity: 0.55; } .labcard.passed { border-color: rgba(125,255,176,0.5); } .labcard.passed > span { color: var(--ok); } .labcard.in-progress { border-color: rgba(208,138,74,0.6); } .labcard.in-progress > span { color: var(--accent); } .labcard.available > span { color: var(--accent-2); }
   #task { grid-column: 3; grid-row: 1 / 4; align-self: start; padding: 14px 16px; max-height: calc(100% - 8px); overflow: auto; }
   .thead { display: flex; justify-content: space-between; align-items: center; gap: 8px; } .thead h2 { margin: 0; font-size: 15px; font-weight: 600; }
   .tmeta { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 500 11px/1.4 var(--mono); color: var(--muted); margin: 8px 0 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
@@ -252,7 +252,7 @@
       <li><b>Read:</b> click any part or connector for what it is and what it does.</li>
       <li><b>Go inside:</b> double-click the installed CPU to open the chip, then a core to see its ALU, instruction logic and caches.</li>
       <li><b>Run the bus:</b> click the copper traces between the CPU and memory and press <i>Run fetch–execute</i> to step through the cycle.</li>
-      <li><b>Assessed labs:</b> enrol with your name and registration number, then work through five auto-marked labs; 60% unlocks the next, and you can stop and resume. The lecturer tab exports marks.</li>
+      <li><b>Assessed labs:</b> enrol with your name and registration number, then work through five auto-marked labs; 60% unlocks the next, each lab closes at its deadline, and you can stop and resume. The lecturer tab exports marks.</li>
       <li><b>Menu:</b> the left panel lists everything by topic — build steps, parts to open, simulators (blue) and labs — plus a self-test per topic.</li>
       <li><b>Performance and arithmetic:</b> the CPU has the Amdahl / CPI / SPEC lab; the ALU inside a core has two's complement, multiplication, division, IEEE 754 and number-system converters.</li>
       <li><b>I/O and the OS:</b> click the chipset for programmed / interrupt-driven / DMA transfers animated on the bus; click the CPU or a memory module for the scheduler and paging labs.</li>
@@ -2429,6 +2429,14 @@ function doPost(e) {
   const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'class') e.className = v; else if (k.startsWith('on')) e[k] = v; else if (k === 'html') e.innerHTML = v; else if (v !== null) e.setAttribute(k, v); } kids.flat().forEach(c => e.append(c)); return e; };
   const $ = id => document.getElementById(id);
   const PASS = 60;
+  // Last moment to submit each lab, East Africa Time. After it the lab is closed for good: no starting, resuming or
+  // submitting, the score already earned stands, and the next lab opens even if this one was not passed.
+  const DEADLINES = { 1: '2026-11-24T23:59:59+03:00', 2: '2026-12-01T23:59:59+03:00', 3: '2026-12-08T23:59:59+03:00', 4: '2026-12-15T23:59:59+03:00', 5: '2026-12-22T23:59:59+03:00' };
+  // Deadlines follow the web server's clock, so changing the device's date does not reopen a lab.
+  let clockOffset = 0;
+  const syncClock = () => fetch(location.href, { method: 'HEAD', cache: 'no-store' }).then(r => { const t = Date.parse(r.headers.get('Date')); if (t) clockOffset = t - Date.now(); }).catch(() => {});
+  const isClosed = L => Date.now() + clockOffset > Date.parse(DEADLINES[L.id]);
+  const dueText = L => new Date(DEADLINES[L.id]).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Nairobi' });
   const rng = seed => { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
   const pick = (r, arr, n) => { const a = arr.slice(); const out = []; while (out.length < n && a.length) out.push(a.splice(Math.floor(r() * a.length), 1)[0]); return out; };
   const hx = (n, w = 4) => n.toString(16).toUpperCase().padStart(w, '0');
@@ -2519,14 +2527,14 @@ function doPost(e) {
   const APP = () => global.APP;
 
   /* ================= LABS HOME PANEL ================= */
-  function openLabs() { $('labs').hidden = false; APP().closeLab && APP().closeLab(); renderHome(); STORE.reconnectFile().then(() => renderHome()); }
+  function openLabs() { $('labs').hidden = false; APP().closeLab && APP().closeLab(); renderHome(); STORE.reconnectFile().then(() => renderHome()); syncClock().then(() => { if (!$('labs').hidden && $('labs-body').querySelector('.labcards')) renderHome('student'); }); }
   function closeLabs() { $('labs').hidden = true; }
   function renderHome(tab) {
     const root = $('labs-body'); root.innerHTML = '';
     tab = tab || (student ? 'student' : 'enrol');
     if (tab === 'enrol' || tab === 'student') lecturerOk = false;
     const tabs = h('div', { class: 'tabs' }, h('button', { class: 'btn' + (tab === 'enrol' || tab === 'student' ? ' on' : ''), onclick: () => renderHome(student ? 'student' : 'enrol') }, student ? 'My labs' : 'Enrol / sign in'), h('button', { class: 'btn' + (tab === 'lecturer' ? ' on' : ''), onclick: () => renderHome('lecturer') }, 'Lecturer'), h('button', { class: 'btn' + (tab === 'settings' ? ' on' : ''), onclick: () => renderHome('settings') }, 'Records & settings'));
-    root.append(h('h2', {}, 'Assessed labs'), h('div', { class: 'ref' }, `Five practical labs · auto-marked · pass mark ${PASS}% unlocks the next · progress is saved so you can continue later`), tabs);
+    root.append(h('h2', {}, 'Assessed labs'), h('div', { class: 'ref' }, `Five practical labs · auto-marked · pass mark ${PASS}% unlocks the next · each lab closes at its deadline · progress is saved so you can continue later`), tabs);
     if (tab === 'enrol') enrolView(root); else if (tab === 'student') studentView(root); else if (!lecturerOk) passwordView(root, tab); else if (tab === 'lecturer') lecturerView(root); else settingsView(root);
   }
   function passwordView(root, tab) {
@@ -2546,19 +2554,21 @@ function doPost(e) {
     const cards = h('div', { class: 'labcards' });
     LABS5.forEach((L, i) => {
       const best = STORE.best(student.reg, L.id), passed = STORE.passed(student.reg, L.id), prog = STORE.progress(student.reg, L.id);
-      const unlocked = i === 0 || STORE.passed(student.reg, LABS5[i - 1].id); const attempts = STORE.attempts(student.reg).filter(a => a.lab === L.id).length;
-      const status = !unlocked ? 'locked' : passed ? 'passed' : prog ? 'in progress' : attempts ? 'not yet passed' : 'available';
-      const card = h('div', { class: 'labcard ' + status.replace(' ', '-') }, h('span', {}, `${L.ch} · ${status}`), h('b', {}, L.title), h('em', {}, L.objective), h('div', { class: 'facts' }, h('div', { class: 'fact' }, h('span', {}, 'best score'), h('b', {}, best === null ? '—' : best + '%')), h('div', { class: 'fact' }, h('span', {}, 'attempts'), h('b', {}, attempts))),
-        h('div', { class: 'row' }, unlocked ? h('button', { class: 'btn primary', onclick: () => startLab(L, !!prog) }, prog ? `Resume (item ${prog.idx + 1})` : passed ? 'Replay' : attempts ? 'Try again' : 'Start') : h('span', { class: 'muted' }, `Pass Lab ${L.id - 1} with ${PASS}% or more to unlock`)));
+      const prev = LABS5[i - 1], closed = isClosed(L);
+      const unlocked = i === 0 || STORE.passed(student.reg, prev.id) || isClosed(prev); const attempts = STORE.attempts(student.reg).filter(a => a.lab === L.id).length;
+      const status = closed ? 'closed' : !unlocked ? 'locked' : passed ? 'passed' : prog ? 'in progress' : attempts ? 'not yet passed' : 'available';
+      const card = h('div', { class: 'labcard ' + status.replace(' ', '-') }, h('span', {}, `${L.ch} · ${status}`), h('b', {}, L.title), h('em', {}, L.objective), h('div', { class: 'facts' }, h('div', { class: 'fact' }, h('span', {}, closed ? 'final score' : 'best score'), h('b', {}, best === null ? '—' : best + '%')), h('div', { class: 'fact' }, h('span', {}, 'attempts'), h('b', {}, attempts)), h('div', { class: 'fact' }, h('span', {}, closed ? 'closed' : 'deadline'), h('b', {}, dueText(L)))),
+        h('div', { class: 'row' }, closed ? h('span', { class: 'muted' }, attempts ? `The deadline has passed. Your score of ${best}% stands.` : 'The deadline has passed. This lab was not attempted.')
+          : unlocked ? h('button', { class: 'btn primary', onclick: () => startLab(L, !!prog) }, prog ? `Resume (item ${prog.idx + 1})` : passed ? 'Replay' : attempts ? 'Try again' : 'Start') : h('span', { class: 'muted' }, `Pass Lab ${L.id - 1} with ${PASS}% or more to unlock (or it opens when Lab ${L.id - 1} closes)`)));
       cards.append(card);
     });
     root.append(h('p', {}, `${student.name} · ${student.reg}`), cards, h('div', { class: 'row' }, h('button', { class: 'btn', onclick: () => { const c = STORE.progressCode(student.reg); const ta = $('labs-code'); ta.value = c; ta.hidden = false; ta.select(); try { navigator.clipboard.writeText(c); } catch (e) {} } }, 'Copy my progress code'), h('button', { class: 'btn', onclick: () => { student = null; renderHome('enrol'); } }, 'Sign out')), h('textarea', { id: 'labs-code', rows: 3, readonly: '', hidden: '', style: 'width:100%;font:11px var(--mono)' }));
   }
   function lecturerView(root) {
-    const studs = STORE.students(); const t = h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'reg no'), h('th', {}, 'name'), ...LABS5.map(L => h('th', {}, 'Lab ' + L.id)), h('th', {}, ''))), h('tbody', {}, ...studs.map(s => h('tr', {}, h('td', {}, s.reg), h('td', {}, s.name), ...LABS5.map(L => { const b = STORE.best(s.reg, L.id); const n = STORE.attempts(s.reg).filter(a => a.lab === L.id).length; return h('td', { class: b === null ? '' : b >= PASS ? 'ok' : 'low' }, b === null ? (STORE.progress(s.reg, L.id) ? 'in progress' : '—') : `${b}% (${n})`); }), h('td', {}, h('button', { class: 'btn', onclick: e => { if (e.target.dataset.armed) { STORE.resetStudent(s.reg); renderHome('lecturer'); } else { e.target.dataset.armed = '1'; e.target.textContent = 'Confirm reset'; } } }, 'Reset'))))));
+    const studs = STORE.students(); const t = h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'reg no'), h('th', {}, 'name'), ...LABS5.map(L => h('th', {}, 'Lab ' + L.id)), h('th', {}, ''))), h('tbody', {}, ...studs.map(s => h('tr', {}, h('td', {}, s.reg), h('td', {}, s.name), ...LABS5.map(L => { const b = STORE.best(s.reg, L.id); const n = STORE.attempts(s.reg).filter(a => a.lab === L.id).length; return h('td', { class: b === null ? '' : b >= PASS ? 'ok' : 'low' }, b === null ? (isClosed(L) ? 'missed' : STORE.progress(s.reg, L.id) ? 'in progress' : '—') : `${b}% (${n})`); }), h('td', {}, h('button', { class: 'btn', onclick: e => { if (e.target.dataset.armed) { STORE.resetStudent(s.reg); renderHome('lecturer'); } else { e.target.dataset.armed = '1'; e.target.textContent = 'Confirm reset'; } } }, 'Reset'))))));
     const csv = h('textarea', { rows: 6, readonly: '', style: 'width:100%;font:11px var(--mono)', hidden: '' });
     const codes = h('textarea', { rows: 4, placeholder: 'Paste the progress codes students submitted, one per line', style: 'width:100%;font:11px var(--mono)' });
-    root.append(h('p', { class: 'muted' }, `${studs.length} student${studs.length === 1 ? '' : 's'} on this machine${STORE.hasFile() ? ' and in ' + STORE.fileName() : ''}. Best score (attempts) per lab; green = passed.`), t, h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: () => { const text = STORE.csv(); csv.value = text; csv.hidden = false; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' })); a.download = 'coa-marks.csv'; a.click(); } }, 'Export CSV'), h('button', { class: 'btn', onclick: () => { const text = STORE.markdown(); csv.value = text; csv.hidden = false; } }, 'Show records.md')), csv,
+    root.append(h('p', { class: 'muted' }, `${studs.length} student${studs.length === 1 ? '' : 's'} on this machine${STORE.hasFile() ? ' and in ' + STORE.fileName() : ''}. Best score (attempts) per lab; green = passed.`), t, h('p', { class: 'muted' }, 'Deadlines (EAT): ' + LABS5.map(L => `Lab ${L.id} ${dueText(L)}${isClosed(L) ? ' (closed)' : ''}`).join(' · ')), h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: () => { const text = STORE.csv(); csv.value = text; csv.hidden = false; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' })); a.download = 'coa-marks.csv'; a.click(); } }, 'Export CSV'), h('button', { class: 'btn', onclick: () => { const text = STORE.markdown(); csv.value = text; csv.hidden = false; } }, 'Show records.md')), csv,
       h('h3', {}, 'Add students’ progress codes'), codes, h('div', { class: 'row' }, h('button', { class: 'btn', onclick: () => { const r = STORE.importCodes(codes.value); renderHome('lecturer'); $('labs-body').querySelector('.codes-msg').textContent = `${r.ok} code${r.ok === 1 ? '' : 's'} read` + (r.bad ? `, ${r.bad} could not be read.` : '.'); } }, 'Add codes'), h('span', { class: 'muted codes-msg' })));
   }
   function settingsView(root) {
@@ -2573,6 +2583,7 @@ function doPost(e) {
 
   /* ================= RUNNING A LAB ================= */
   function startLab(L, resume) {
+    if (isClosed(L)) { renderHome('student'); return; }
     const prog = resume ? STORE.progress(student.reg, L.id) : null;
     const seed = prog ? prog.seed : (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
     const items = normalise(L.build(rng(seed)));
@@ -2610,7 +2621,14 @@ function doPost(e) {
     return { placed: placed.length, placedMarks, inOrder, orderMarks, total: placedMarks + orderMarks };
   }
   function finish() {
-    clearInterval(timer); const score = Math.min(100, total()), passed = score >= PASS; const row = STORE.recordAttempt(student.reg, run.L.id, score, passed, run.started);
+    clearInterval(timer);
+    if (isClosed(run.L)) {
+      const best = STORE.best(student.reg, run.L.id); STORE.clearProgress(student.reg, run.L.id);
+      $('task-body').replaceChildren(h('div', { class: 'result fail' }, h('b', {}, 'Closed'), h('span', {}, `deadline was ${dueText(run.L)}`)), h('p', {}, 'The deadline passed before this attempt was finished, so it was not recorded. ' + (best === null ? 'This lab has no score.' : `Your score of ${best}% stands.`)),
+        h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: () => { $('task').hidden = true; if (run.L.id <= 2) APP().benchView(false); run = null; APP().labBuild(false); openLabs(); } }, 'Back to my labs')));
+      APP().labBuild(false); return;
+    }
+    const score = Math.min(100, total()), passed = score >= PASS; const row = STORE.recordAttempt(student.reg, run.L.id, score, passed, run.started);
     const nextL = LABS5.find(x => x.id === run.L.id + 1); const root = $('task-body'); root.innerHTML = '';
     root.append(h('div', { class: 'result ' + (passed ? 'pass' : 'fail') }, h('b', {}, `${score}%`), h('span', {}, passed ? 'PASSED' : `not passed — ${PASS}% needed`)), h('p', {}, passed ? (nextL ? `${nextL.title} is now unlocked.` : 'That was the last lab — all five complete.') : 'Have another go: a fresh variant of the same lab is generated each attempt.'), h('div', { class: 'facts' }, h('div', { class: 'fact' }, h('span', {}, 'attempt'), h('b', {}, row.attempt)), h('div', { class: 'fact' }, h('span', {}, 'time'), h('b', {}, elapsed())), h('div', { class: 'fact' }, h('span', {}, 'best so far'), h('b', {}, STORE.best(student.reg, run.L.id) + '%'))),
       h('div', { class: 'row' }, h('button', { class: 'btn primary', onclick: () => { $('task').hidden = true; if (run.L.id <= 2) APP().benchView(false); run = null; APP().labBuild(false); openLabs(); } }, 'Back to my labs')));
