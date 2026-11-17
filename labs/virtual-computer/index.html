@@ -2049,6 +2049,8 @@ function doPost(e) {
     if (state.mode === 'guided' && partForStep(currentStep()) === p) state.step++;
     refreshUI();
   }
+  // In Lab 1 there is no guided step to say the cables come from clicking the connectors.
+  function cableHint(p) { return !labBuildMode ? '' : p === psu ? ': now click the connectors on the board to plug in its cables' : p === hdd && installed.has(psu) ? ': click a SATA port to connect it' : ''; }
   function remove(p) {
     installed.delete(p); window.LABHOOK && LABHOOK.onBuild(keyOf(p), false);
     const lifted = p.position.clone(); lifted.y += p.userData.lift;
@@ -2153,7 +2155,7 @@ function doPost(e) {
   renderer.domElement.addEventListener('pointerup', ev => {
     if (drag) {
       const p = drag.part; drag = null; controls.enabled = true; ghost.visible = false;
-      if (nearHome(p)) { p.position.copy(p.userData.home); p.position.y = p.userData.home.y + p.userData.lift * 0.5; install(p); toast(K[p.userData.pid].title + ' installed'); }
+      if (nearHome(p)) { p.position.copy(p.userData.home); p.position.y = p.userData.home.y + p.userData.lift * 0.5; install(p); toast(K[p.userData.pid].title + ' installed' + cableHint(p)); }
       else { tween(p, new THREE.Vector3(p.position.x, L.tray.y + 0.1, p.position.z), 250); }
       return;
     }
@@ -2161,6 +2163,7 @@ function doPost(e) {
       const mesh = pick(ev); if (!mesh) { select(null); return; }
       const g = groupOf(mesh); const pid = g ? g.userData.pid : mesh.userData.pid;
       const cid = cableFor(pid); if ((state.mode === 'guided' || labBuildMode) && cid && canConnect(cid)) { connect(cid); down = null; return; }
+      if (labBuildMode && ['power24', 'power8', 'vrm', 'sata'].includes(pid) && !cables[cid] && !cableNeeds(cid)) toast(cid === 'cableSata' ? 'Install the hard disk first, then click here for its cable' : 'Install the power supply first, then click here for its cable');
       select(pid, g || mesh, mesh);
     }
     down = null;
@@ -2219,7 +2222,7 @@ function doPost(e) {
     $('info-actions').innerHTML = acts.join('');
     const q = id => document.getElementById(id);
     q('act-remove') && (q('act-remove').onclick = () => remove(g));
-    q('act-install') && (q('act-install').onclick = () => { install(g); select(null); });
+    q('act-install') && (q('act-install').onclick = () => { install(g); select(null); const hint = cableHint(g); if (hint) toast(K[g.userData.pid].title + ' installed' + hint); });
     q('act-connect') && (q('act-connect').onclick = () => connect(cid));
     q('act-unplug') && (q('act-unplug').onclick = () => disconnect(pid));
     q('act-open') && (q('act-open').onclick = () => openLevel(pid, mesh));
@@ -2449,7 +2452,7 @@ function doPost(e) {
 
   const LABS5 = [
     { id: 1, title: 'Lab 1 — Assemble the computer', ch: 'Structure', objective: 'Install every part and cable in the correct real-world order. 5 marks per item placed (70), up to 30 for doing them in the right sequence.',
-      build: () => [{ type: 'build', marks: 100, prompt: 'Drag the parts from the bin into their sockets and click the connectors to plug in the cables. Do it in the order a technician would. Submit when the computer is complete (or earlier for partial marks).' }] },
+      build: () => [{ type: 'build', marks: 100, prompt: 'Drag the parts from the bin into their sockets. The cables are not in the bin: once the power supply is in, click a connector to plug its cable in (the 24-pin header, the 8-pin CPU header beside the socket, the graphics card, and a SATA port once the hard disk is in). Rotate and zoom the view to find small parts. Do it in the order a technician would. Submit when the computer is complete (or earlier for partial marks).' }] },
     { id: 2, title: 'Lab 2 — Find the components', ch: 'Structure & interconnection', objective: 'The system describes a component by its function; click it on the 3D computer. 10 marks each, −3 for a wrong click (minimum 0), two wrong clicks moves on.',
       build: r => pick(r, FIND_POOL, 10).map(([pid, prompt]) => ({ type: 'click', marks: 10, target: pid, prompt })) },
     { id: 3, title: 'Lab 3 — Trace a program', ch: 'Structure & interconnection', objective: 'Predict what the registers and memory hold as the hypothetical machine and the IAS execute a short program. Exact answers in hexadecimal / decimal as asked.',
