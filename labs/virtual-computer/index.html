@@ -2516,13 +2516,20 @@ function doPost(e) {
 
   /* ================= STATE ================= */
   let student = null, run = null, timer = null;
-  // Salted PBKDF2-SHA256 of the lecturer password; the password itself is not stored here.
-  const LECTURER = { salt: '1dad5ab24d8b38a25f3a9a4aa407ae9b', hash: 'c445ae340e95ce0ceaa4936d53a544aaed70206dea7de2f849b6837874021862', iterations: 200000 };
+  // Salted PBKDF2-SHA256 of each staff password; the passwords themselves are not stored here.
+  // Remove the TA entry to withdraw the TA's access without changing the lecturer's password.
+  const STAFF = [
+    { who: 'lecturer', salt: '1dad5ab24d8b38a25f3a9a4aa407ae9b', hash: 'c445ae340e95ce0ceaa4936d53a544aaed70206dea7de2f849b6837874021862', iterations: 200000 },
+    { who: 'TA', salt: 'c56a67a391a8f22f227985952f827eb7', hash: 'a6b2d78823595581f2543c7a119989bac9c8b6dee1992038394b9683a3ff08cd', iterations: 200000 }
+  ];
   let lecturerOk = false;
   async function checkPassword(pw) {
     const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
-    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: Uint8Array.from(LECTURER.salt.match(/../g), x => parseInt(x, 16)), iterations: LECTURER.iterations }, key, 256);
-    return [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, '0')).join('') === LECTURER.hash;
+    const matches = await Promise.all(STAFF.map(async s => {
+      const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: Uint8Array.from(s.salt.match(/../g), x => parseInt(x, 16)), iterations: s.iterations }, key, 256);
+      return [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, '0')).join('') === s.hash;
+    }));
+    return matches.includes(true);
   }
   const APP = () => global.APP;
 
