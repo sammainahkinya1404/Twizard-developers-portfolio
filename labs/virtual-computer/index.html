@@ -252,7 +252,7 @@
       <li><b>Read:</b> click any part or connector for what it is and what it does.</li>
       <li><b>Go inside:</b> double-click the installed CPU to open the chip, then a core to see its ALU, instruction logic and caches.</li>
       <li><b>Run the bus:</b> click the copper traces between the CPU and memory and press <i>Run fetch–execute</i> to step through the cycle.</li>
-      <li><b>Assessed labs:</b> enrol with your name and registration number, then work through five auto-marked labs; 65% unlocks the next, and you can stop and resume. The lecturer tab exports marks.</li>
+      <li><b>Assessed labs:</b> enrol with your name and registration number, then work through five auto-marked labs; 60% unlocks the next, and you can stop and resume. The lecturer tab exports marks.</li>
       <li><b>Menu:</b> the left panel lists everything by topic — build steps, parts to open, simulators (blue) and labs — plus a self-test per topic.</li>
       <li><b>Performance and arithmetic:</b> the CPU has the Amdahl / CPI / SPEC lab; the ALU inside a core has two's complement, multiplication, division, IEEE 754 and number-system converters.</li>
       <li><b>I/O and the OS:</b> click the chipset for programmed / interrupt-driven / DMA transfers animated on the bus; click the CPU or a memory module for the scheduler and paging labs.</li>
@@ -2424,11 +2424,11 @@ function doPost(e) {
   
 })();
 
-/* Virtual Computer — assessed labs: enrolment, five auto-marked labs, 65% unlock, resume, lecturer view */
+/* Virtual Computer — assessed labs: enrolment, five auto-marked labs, 60% unlock, resume, lecturer view */
 (function (global) {
   const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'class') e.className = v; else if (k.startsWith('on')) e[k] = v; else if (k === 'html') e.innerHTML = v; else if (v !== null) e.setAttribute(k, v); } kids.flat().forEach(c => e.append(c)); return e; };
   const $ = id => document.getElementById(id);
-  const PASS = 65;
+  const PASS = 60;
   const rng = seed => { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
   const pick = (r, arr, n) => { const a = arr.slice(); const out = []; while (out.length < n && a.length) out.push(a.splice(Math.floor(r() * a.length), 1)[0]); return out; };
   const hx = (n, w = 4) => n.toString(16).toUpperCase().padStart(w, '0');
